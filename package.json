@@ -1,0 +1,22 @@
+{
+  "name": "pm_project_rapla",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "run": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxomnia/pm_project_rapla.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxomnia/pm_project_rapla/issues"
+  },
+  "homepage": "https://github.com/maxomnia/pm_project_rapla#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
