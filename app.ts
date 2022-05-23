@@ -5,7 +5,6 @@ const path = require('path');
 
 const app = express();
 
-// Dont use any here, this is just to disable the warning of implicit any type
 app.get("/", (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, "src", "index.html"));
 });
