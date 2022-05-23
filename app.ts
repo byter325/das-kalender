@@ -1,11 +1,13 @@
+import { Request, Response } from "express";
+
 const express = require('express');
 const path = require('path');
 
 const app = express();
 
 // Dont use any here, this is just to disable the warning of implicit any type
-app.get("/", (res:any, req:any) => {
-    req.sendFile(path.join(__dirname, "src", "index.html"));
+app.get("/", (req:Request, res:Response) => {
+    res.sendFile(path.join(__dirname, "src", "index.html"));
 });
 
 const server = app.listen(80, () => {
