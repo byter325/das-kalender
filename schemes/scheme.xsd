@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="event">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="uid" type="xs:string"/>
+                <xs:element name="title" type="xs:string"/>
+                <xs:element name="description" type="xs:string"/>
+                <xs:element name="presenter" type="personInfo"/>
+                <xs:element name="category" type="category"/>
+                <xs:element name="participant" type="group"/>
+                <xs:element name="start" type="xs:dateTime"/>
+                <xs:element name="end" type="xs:dateTime"/>
+                <xs:element name="location" type="xs:string"/>
+                <xs:element name="created" type="xs:dateTime"/>
+                <xs:element name="createdBy" type="personInfo"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="person">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="uid" type="xs:string"/>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="lastName" type="xs:string"/>
+                <xs:element name="initials">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="[A-Z][A-Z]"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="mail">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="^.+@.+\..{2,}$"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="passwordHash" type="xs:string"/>
+                <xs:element name="group" type="group"/>
+                <xs:element name="editableGroup" type="group"/>
+                <xs:element name="darkMode" type="xs:boolean"/>
+                <xs:element name="isAdministrator" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="personInfo">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="initials">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="[A-Z][A-Z]"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="mail">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="^.+@.+\..{2,}$"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="category">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Lecture"/>
+            <xs:enumeration value="Exam"/>
+            <xs:enumeration value="Oral Exam"/>
+            <xs:enumeration value="Meeting"/>
+            <xs:enumeration value="Other"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="group">
+        <xs:sequence>
+            <xs:element name="uid" type="xs:string"/>
+            <xs:element name="name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

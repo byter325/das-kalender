@@ -1,0 +1,18 @@
+<person>
+    <uid>UserID</uid>
+    <name>Vorname</name>
+    <lastName>Nachname</lastName>
+    <initials>VN</initials>
+    <mail>vn@test.example</mail>
+    <passwordHash>gehashtes Passwort</passwordHash>
+    <group>
+        <uid>GruppenID</uid>
+        <name>TestGruppe</name>
+    </group>
+    <editableGroup>
+        <uid>GruppenID2</uid>
+        <name>bearbeitbare TestGruppe</name>
+    </editableGroup>
+    <darkMode>true</darkMode>
+    <isAdministrator>true</isAdministrator>
+</person>
