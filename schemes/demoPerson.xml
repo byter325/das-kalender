@@ -1,6 +1,5 @@
-<person>
-    <uid>UserID</uid>
-    <name>Vorname</name>
+<person uid="UID">
+    <firstName>Vorname</firstName>
     <lastName>Nachname</lastName>
     <initials>VN</initials>
     <mail>vn@test.example</mail>
