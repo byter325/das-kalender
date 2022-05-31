@@ -1,0 +1,68 @@
+<as:CAM
+ xmlns:as="http://www.oasis-open.org/committees/cam"
+ xmlns:xml="http://www.w3.org/XML/1998/namespace"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema" CAMlevel="1" version="1.1" cameditor="3.2.1">
+  <as:Header>
+    <as:Description>No Description</as:Description>
+    <as:Owner>Not Set</as:Owner>
+    <as:Version>0.1</as:Version>
+    <as:DateTime>2022-05-31T12:29:39</as:DateTime>
+  </as:Header>
+  <as:AssemblyStructure>
+    <as:Structure ID="events" taxonomy="XML" reference="">
+      <events>
+        <event>
+          <type>%string%</type>
+          <lastmodified>%YYYY-MM-DD:HH:MM:SS%</lastmodified>
+          <created>%YYYY-MM-DD:HH:MM:SS%</created>
+          <start>%YYYY-MM-DD:HH:MM:SS%</start>
+          <dtstamp>%YYYY-MM-DD:HH:MM:SS%</dtstamp>
+          <end>%YYYY-MM-DD:HH:MM:SS%</end>
+          <uid>%string%</uid>
+          <summary>%string%</summary>
+          <description>%string%</description>
+          <location>%string%</location>
+          <categories>%string%</categories>
+          <organizer>
+            <params>
+              <CN>%string%</CN>
+            </params>
+            <val>%string%</val>
+          </organizer>
+          <attendee>
+            <params>
+              <ROLE>%string%</ROLE>
+              <CN>%string%</CN>
+              <PARTSTAT>%string%</PARTSTAT>
+            </params>
+            <val>%string%</val>
+          </attendee>
+          <rrule>%%string%%</rrule>
+        </event>
+      </events>
+    </as:Structure>
+  </as:AssemblyStructure>
+  <as:BusinessUseContext>
+    <as:Rules>
+      <as:default>
+        <as:context>
+          <as:constraint action="makeOptional(//attendee/params)" />
+          <as:constraint action="makeOptional(//attendee/val)" />
+          <as:constraint action="makeOptional(//event/attendee)" />
+          <as:constraint action="makeRepeatable(//event/attendee)" />
+          <as:constraint action="datatype(//event/created,dateTime)" />
+          <as:constraint action="datatype(//event/dtstamp,dateTime)" />
+          <as:constraint action="datatype(//event/end,dateTime)" />
+          <as:constraint action="datatype(//event/lastmodified,dateTime)" />
+          <as:constraint action="makeOptional(//event/rrule)" />
+          <as:constraint action="datatype(//event/start,dateTime)" />
+          <as:constraint action="makeOptional(//events/event)" />
+          <as:constraint action="makeRepeatable(//events/event)" />
+          <as:constraint action="makeOptional(//params/CN)" />
+          <as:constraint action="makeOptional(//params/PARTSTAT)" />
+          <as:constraint action="makeOptional(//params/ROLE)" />
+        </as:context>
+      </as:default>
+    </as:Rules>
+  </as:BusinessUseContext>
+</as:CAM>
