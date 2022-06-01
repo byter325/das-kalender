@@ -1,11 +1,13 @@
 import { ParsedPath } from "path";
-import { application, request, Request, Response } from "express";
+import { application, request, Request, response, Response } from "express";
 import { json2xml, xml2json } from "xml-js";
 import { CalendarComponent, FullCalendar, parseICS } from "ical";
 import { readFileSync, existsSync, writeFileSync, appendFile, fstat } from "fs";
 import { Application, Express } from "express";
+import * as CryptoJs from "crypto-js";
+import download from "download";
 
-export module Handlers{
+export module Handlers {
 	const pathUtils = require('path');
 	// const fs = require('fs');
 	// const https = require('https');
@@ -15,9 +17,10 @@ export module Handlers{
 	const dataDir: ParsedPath = pathUtils.resolve(__dirname, '..', 'data');
 	const raplaUrl: string = "https://rapla.dhbw-karlsruhe.de/rapla?page=@@page@@&user=@@lecturer@@&file=@@course@@";
 	const guidRegex: RegExp = /[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?/;
+	const hashsFile: string = `${dataDir}/hashs.dat`;
 
-	export function getRaplaEvents(req:Request, res:Response){
-		const course: string= req.params.course;
+	export function getRaplaEvents(req: Request, res: Response) {
+		const course: string = req.params.course;
 		console.log(req.path);
 		const fileName = `${dataDir}/${course}.xml`;
 		// Maybe use fs/promise to read File async
@@ -51,7 +54,7 @@ export module Handlers{
 		}
 
 	}
-	export function fetchRaplaEvents(lecturer: string, course: string){
+	export function fetchRaplaEvents(lecturer: string, course: string) {
 		console.log(`Fetching events from Rapla for ${lecturer}/${course}`);
 		const outfile: string = `${dataDir}/${course}.xml`;
 		const icsOutfile: string = `${dataDir}/${course}.ics`;
@@ -71,54 +74,25 @@ export module Handlers{
 		});
 	}
 
-	async function download(url: string, filePath: string) {
-		return new Promise(async () => {
-			let res: globalThis.Response = await fetch(url);
-			let data: string = await res.text();
-			writeFileSync(filePath, data);
-		});
-
-		// Just a quicker and smaller way to fetch data from external source
-		
-		// const proto = !url.charAt(4).localeCompare('s') ? "https" : "http"
-		// return new Promise((resolve, reject) => {
-		// 	const file = createWriteStream(filePath)
-		// 	let fileInfo = null
-
-		// 	const request = proto.get(url, response => {
-		// 		if (response.statusCode !== 200) {
-		// 			fs.unlink(filePath, () => {
-		// 				reject(new Error(`Failed to get '${url}' (${response.statusCode})`))
-		// 			})
-		// 			return
-		// 		}
-
-		// 		fileInfo = {
-		// 			mime: response.headers['content-type'],
-		// 			size: parseInt(response.headers['content-length'], 10),
-		// 		}
-
-		// 		response.pipe(file)
-		// 	})
-
-		// 	// The destination stream is ended by the time it's called
-		// 	file.on('finish', () => resolve(fileInfo))
-
-		// 	request.on('error', err => {
-		// 		fs.unlink(filePath, () => reject(err))
-		// 	})
-
-		// 	file.on('error', err => {
-		// 		fs.unlink(filePath, () => reject(err))
-		// 	})
-
-		// 	request.end()
-		// })
-
-
+	export function authenticate(req: Request, res: Response) {
+		if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
+			res.status(401).setHeader("WWW-Authenticate", "Basic realm=\"Geschuetzter Bereich\", charset=\"UTF-8\"").send();
+		} else {
+			const creds64: string = req.headers.authorization.split(' ')[1];
+			const credentials: string = CryptoJs.enc.Utf8.stringify(CryptoJs.enc.Base64.parse(creds64));
+			const hash: string = CryptoJs.SHA256(credentials).toString();
+			const hashs: string[] = readFileSync(hashsFile, "utf-8").split("\n");
+			if (!hashs.includes(hash)) {
+				res.status(401).send("Forbidden");
+				return false;
+			}
+			return true;
+		}
 	}
 
 	function toXml(jsObj: Object): string {
 		return json2xml(JSON.stringify({ "events": { "event": jsObj } }), { compact: true })
 	}
+
+
 }
