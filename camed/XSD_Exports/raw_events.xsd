@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:as="http://www.oasis-open.org/committees/cam"
+ xmlns:camed="http://jcam.org.uk/editor"
+ xmlns:dblook="http://jcam.org.uk/DbLookupLists"
+ xmlns:look="http://jcam.org.uk/LookupLists"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema" version="0.1" elementFormDefault="qualified">
+  <xsd:annotation>
+    <xsd:documentation>NOTICE: Generated from CAM template by XSLT
+                    NOTICE:  This schema is designed to maximize software interoperability and uses basic XSD Schema constructs only.
+                     
+                    CAM Template Header information: 
+                    
+                    Description: No Description 
+                    Owner: Not Set 
+                    Date: 2022-05-31T12:29:39 
+                    Version: 0.1 
+                    XSD generator: v1.87 
+                    NS Mode: true 
+                    XSDOutput Mode: default
+                    NOTICE: Please refer to the original source owner schema, dictionary, and/or CAM template for updates and changes.
+                    NOTICE: For copyright, licensing and use criteria please refer to owner authority.</xsd:documentation>
+    <xsd:appinfo source="CAM">events</xsd:appinfo>
+  </xsd:annotation>
+  <xsd:element name="events" id="d2e34">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="event" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="type" minOccurs="1" maxOccurs="1" type="typeDefinition" id="d2e49" />
+              <xsd:element name="lastmodified" minOccurs="1" maxOccurs="1" type="lastmodifiedDefinition" id="d2e57" />
+              <xsd:element name="created" minOccurs="1" maxOccurs="1" type="createdDefinition" id="d2e64" />
+              <xsd:element name="start" minOccurs="1" maxOccurs="1" type="startDefinition" id="d2e71" />
+              <xsd:element name="dtstamp" minOccurs="1" maxOccurs="1" type="dtstampDefinition" id="d2e78" />
+              <xsd:element name="end" minOccurs="1" maxOccurs="1" type="endDefinition" id="d2e86" />
+              <xsd:element name="uid" minOccurs="1" maxOccurs="1" type="uidDefinition" id="d2e93" />
+              <xsd:element name="summary" minOccurs="1" maxOccurs="1" type="summaryDefinition" id="d2e101" />
+              <xsd:element name="description" minOccurs="1" maxOccurs="1" type="descriptionDefinition" id="d2e109" />
+              <xsd:element name="location" minOccurs="1" maxOccurs="1" type="locationDefinition" id="d2e117" />
+              <xsd:element name="categories" minOccurs="1" maxOccurs="1" type="categoriesDefinition" id="d2e125" />
+              <xsd:element name="organizer" minOccurs="1" maxOccurs="1">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="params" minOccurs="1" maxOccurs="1">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="CN" minOccurs="0" maxOccurs="1" type="CNDefinition" id="d2e148" />
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="val" minOccurs="1" maxOccurs="1" type="valDefinition" id="d2e156" />
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="attendee" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="params" minOccurs="0" maxOccurs="1">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="ROLE" minOccurs="0" maxOccurs="1" type="ROLEDefinition" id="d2e179" />
+                          <xsd:element name="CN" minOccurs="0" maxOccurs="1" type="CNDefinition" id="d2e186" />
+                          <xsd:element name="PARTSTAT" minOccurs="0" maxOccurs="1" type="PARTSTATDefinition" id="d2e193" />
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="val" minOccurs="0" maxOccurs="1" type="valDefinition" id="d2e201" />
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="rrule" minOccurs="0" maxOccurs="1" type="rruleDefinition" id="d2e209" />
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- Parent complexTypes  -->
+  <!-- Local simpleTypes (default namespace)  -->
+  <xsd:simpleType name="typeDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for type.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="lastmodifiedDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for lastmodified.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:dateTime" />
+  </xsd:simpleType>
+  <xsd:simpleType name="createdDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for created.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:dateTime" />
+  </xsd:simpleType>
+  <xsd:simpleType name="startDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for start.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:dateTime" />
+  </xsd:simpleType>
+  <xsd:simpleType name="dtstampDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for dtstamp.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:dateTime" />
+  </xsd:simpleType>
+  <xsd:simpleType name="endDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for end.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:dateTime" />
+  </xsd:simpleType>
+  <xsd:simpleType name="uidDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for uid.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="summaryDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for summary.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="descriptionDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for description.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="locationDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for location.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="categoriesDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for categories.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="CNDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for CN.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="valDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for val.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="ROLEDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for ROLE.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="PARTSTATDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for PARTSTAT.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="rruleDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for rrule.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+</xsd:schema>
+
