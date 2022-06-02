@@ -35,5 +35,3 @@ const server = app.listen(8080, () => {
     console.log(server.address());
     const host = server.address()["address"];
     const port = server.address()["port"];
-    console.log(`Listening on ${host}:${port}`);
-});
