@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <title>Rapla, nur besser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="container pt-3">
+    <h1>Rapla, nur besser</h1>
+    <table class="table table-bordered border-secondary table-sm">
+        <thead>
+            <tr>
+                <th scope="col">KW 20</th>
+                <th scope="col">Mo</th>
+                <th scope="col">Di</th>
+                <th scope="col">Mi</th>
+                <th scope="col">Do</th>
+                <th scope="col">Fr</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">8:00</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td rowspan="9" style="background-color: lightblue">
+                    <div class="mh-100 bg-white text-black rounded border p-2">
+                        <span class="text-muted">8:00-12:15 (4 h 15 min)</span><br> Mathe
+                        <br>Gröll<br>
+                        <span class="badge bg-secondary">A268</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">9:00</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">9:15</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">9:30</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">9:45</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">10:00</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">11:00</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">12:00</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">12:15</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">13:00</th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="mb-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <i class="bi bi-funnel-fill"></i>
+            Vorlesungen filtern
+        </button>
+    </div>
+
+    <h3>Montag, 16.05.2022</h3>
+    <div class="card my-2">
+        <h5 class="card-header">
+            Web-Engineering I
+            <span class="badge bg-secondary float-end">
+                <i class="bi bi-geo-alt-fill"></i>
+                A268 Hörsaal
+            </span>
+        </h5>
+        <div class="card-body">
+            <i class="bi bi-clock-fill me-1"></i> 9:00 - 10:30 (90 Minuten)
+            <br>
+            <i class="bi bi-person-square"></i> Röthig, Jürgen
+        </div>
+    </div>
+    <span class="badge bg-success">Pause (45 min)</span>
+    <div class="card my-2">
+        <h5 class="card-header">
+            Intercultural Comm Gruppe 1
+            <span class="badge bg-secondary float-end">
+                <i class="bi bi-geo-alt-fill"></i>
+                A268 Hörsaal
+            </span>
+        </h5>
+        <div class="card-body">
+            <i class="bi bi-clock-fill me-1"></i> 11:15 - 12:45 (90 Minuten)<br>
+            <i class="bi bi-person-square"></i> Koretnikov, Mila
+        </div>
+    </div>
+    <span class="badge bg-success">Pause (2 h 15 min)</span>
+    <div class="card my-2">
+        <h5 class="card-header">
+            Marketing (nur AI/INF)
+            <span class="badge bg-info float-end">
+                <i class="bi bi-geo-alt-fill"></i>
+                XOnline-Veranstaltung
+            </span>
+        </h5>
+        <div class="card-body">
+            <i class="bi bi-clock-fill me-1"></i> 15:00 - 18:15 (195 Minuten)<br>
+            <i class="bi bi-person-square"></i> Rudolf, Sabine
+        </div>
+    </div>
+    <hr>
+    <h3>Dienstag, 17.05.2022</h3>
+    <hr>
+    <h3>Mittwoch, 18.05.2022</h3>
+    <hr>
+    <h3>Donnerstag, 19.05.2022</h3>
+    <hr>
+    <h3>Freitag, 20.05.2022</h3>
+    <hr>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Vorlesungen filtern</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <input class="form-check-input me-1" type="checkbox" checked="checked" aria-label=""> Web-Engineering I
+                        </li>
+                        <li class="list-group-item">
+                            <input class="form-check-input me-1" type="checkbox" checked="checked" aria-label=""> Mathematik-Analysis
+                        </li>
+                        <li class="list-group-item">
+                            <input class="form-check-input me-1" type="checkbox" checked="checked" aria-label=""> Programmieren
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button> -->
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Bestätigen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
