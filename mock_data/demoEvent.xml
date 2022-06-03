@@ -1,21 +1,129 @@
 <events>
-    <event uid="UID">
-        <title>Title</title>
+    <event uid="UID1">
+        <title>Web-Engineering (nur AI/INF)</title>
         <description>Beschreibung</description>
         <presenter>
-            <firstName>Vorname</firstName>
-            <lastName>Nachname</lastName>
-            <initials>VN</initials>
-            <mail>vn@test.example</mail>
+            <firstName>Jürgen</firstName>
+            <lastName>Röthig</lastName>
+            <initials>JR</initials>
+            <mail>jr@test.example</mail>
         </presenter>
         <category>Lecture</category>
         <participant>
-            <uid>GruppenUID</uid>
-            <name>TestGruppe</name>
+            <uid>123456</uid>
+            <name>TINF21B1 (AI)</name>
         </participant>
-        <start>2002-05-30T09:00:00</start>
-        <end>2022-05-30T09:00:00</end>
-        <location>Testraum</location>
+        <start>2022-05-16T09:00:00</start>
+        <end>2022-05-30T10:30:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID2">
+        <title>Intercultural Comm Gruppe 1</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Mila</firstName>
+            <lastName>Koretnikov</lastName>
+            <initials>MK</initials>
+            <mail>mk@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>123456</uid>
+            <name>TINF21B1 (AI)</name>
+        </participant>
+        <participant>
+            <uid>654321</uid>
+            <name>TINF21B1 (MI)</name>
+        </participant>
+        <start>2002-05-16T11:15:00</start>
+        <end>2022-05-16T12:45:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID2">
+        <title>Intercultural Comm Gruppe 1</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Mila</firstName>
+            <lastName>Koretnikov</lastName>
+            <initials>MK</initials>
+            <mail>mk@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>123456</uid>
+            <name>TINF21B1 (AI)</name>
+        </participant>
+        <participant>
+            <uid>654321</uid>
+            <name>TINF21B1 (MI)</name>
+        </participant>
+        <start>2022-05-16T11:15:00</start>
+        <end>2022-05-16T12:45:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID3">
+        <title>Marketing (nur AI/INF)</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Sabine</firstName>
+            <lastName>Rudolf</lastName>
+            <initials>SR</initials>
+            <mail>sr@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>123456</uid>
+            <name>TINF21B1 (AI)</name>
+        </participant>
+        <start>2022-05-16T15:00:00</start>
+        <end>2022-05-16T18:15:00</end>
+        <location>XOnline-Verantstaltung Virtueller Raum</location>
+        <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID6">
+        <title>Marketing (nur AI/INF)</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Sabine</firstName>
+            <lastName>Rudolf</lastName>
+            <initials>SR</initials>
+            <mail>sr@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>123456</uid>
+            <name>TINF21B1 (AI)</name>
+        </participant>
+        <start>2022-05-17T15:00:00</start>
+        <end>2022-05-17T18:15:00</end>
+        <location>XOnline-Verantstaltung Virtueller Raum</location>
         <modified>2001-05-30T09:00:00</modified>
         <modifiedBy>
             <firstName>Test</firstName>
