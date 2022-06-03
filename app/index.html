@@ -524,12 +524,12 @@
     <div class="modal fade" id="newAppointment" tabindex="-1" aria-labelledby="newAppointmentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="newAppointmentModalLabel">Neuen Termin hinzufügen</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
+                <form>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="newAppointmentModalLabel">Neuen Termin hinzufügen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
                         <div class="mb-2">
                             <label for="newAppointmentTitle" class="form-label">Titel</label>
                             <input type="text" class="form-control" id="newAppointmentTitle">
@@ -540,7 +540,8 @@
                         </div>
                         <div class="row">
                             <div class="mb-2 col-sm-6">
-                                <label for="newAppointmentCategory" class="form-label">Kategorie</label>
+                                <label for="newAppointmentCategory" class="form-label">
+                                    <i class="bi bi-list me-1"></i> Kategorie</label>
                                 <select class="form-select" aria-label="Select a category">
                                     <option selected value="Lecture">Vorlesung</option>
                                     <option value="Exam">Klausur</option>
@@ -550,26 +551,29 @@
                                 </select>
                             </div>
                             <div class="mb-2 col-sm-6">
-                                <label for="newAppointmentOrt" class="form-label">Ort</label>
-                                <input type="text" class="form-control" id="newAppointmentOrt">
+                                <label for="newAppointmentOrt" class="form-label">
+                                    <i class="bi bi-geo-alt me-1"></i> Ort</label>
+                                <input type="text" class="form-control" id="newAppointmentOrt" required>
                             </div>
                         </div>
                         <div class="row">
                             <div class="mb-2 col-sm-6">
-                                <label for="newAppointmentStart" class="form-label">Start</label>
-                                <input type="datetime-local" class="form-control" id="newAppointmentStart">
+                                <label for="newAppointmentStart" class="form-label">
+                                    <i class="bi bi-clock me-1"></i> Start</label>
+                                <input type="datetime-local" class="form-control" id="newAppointmentStart" required>
                             </div>
                             <div class="mb-2 col-sm-6">
-                                <label for="newAppointmentEnd" class="form-label">Ende</label>
-                                <input type="datetime-local" class="form-control" id="newAppointmentEnd">
+                                <label for="newAppointmentEnd" class="form-label">
+                                    <i class="bi bi-clock me-1"></i> Ende</label>
+                                <input type="datetime-local" class="form-control" id="newAppointmentEnd" required>
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                    <button type="button" class="btn btn-primary">Termin hinzufügen</button>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                        <button type="submit" class="btn btn-primary">Termin hinzufügen</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
