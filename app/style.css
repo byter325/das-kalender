@@ -2,6 +2,19 @@ h1 {
     font-family: 'Comic Sans MS';
 }
 
-.row-full-hour {
-    border-top: 3px solid red;
+.row-before-full-hour {
+    border-bottom: 2px solid gray !important;
+}
+
+tbody tr th {
+    text-align: end;
+}
+
+td {
+    word-break: break-word;
+    /* TODO: word-break or table-responsive */
+}
+
+table {
+    font-size: small;
 }
