@@ -1,3 +1,7 @@
 h1 {
     font-family: 'Comic Sans MS';
 }
+
+.row-full-hour {
+    border-top: 3px solid red;
+}
