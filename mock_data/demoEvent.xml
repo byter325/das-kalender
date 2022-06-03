@@ -16,7 +16,7 @@
         <start>2022-05-16T09:00:00</start>
         <end>2022-05-30T10:30:00</end>
         <location>A268 Hörsaal</location>
-        <modified>2001-05-30T09:00:00</modified>
+        <modified>2001-05-30T09:00:00</modified> <!-- Gilt nur für alle Vorlesungen -> sinnvoll? -->
         <modifiedBy>
             <firstName>Test</firstName>
             <lastName>Ersteller</lastName>
@@ -53,35 +53,6 @@
             <mail>test@ersteller.example</mail>
         </modifiedBy>
     </event>
-    <event uid="UID2">
-        <title>Intercultural Comm Gruppe 1</title>
-        <description>Beschreibung</description>
-        <presenter>
-            <firstName>Mila</firstName>
-            <lastName>Koretnikov</lastName>
-            <initials>MK</initials>
-            <mail>mk@test.example</mail>
-        </presenter>
-        <category>Lecture</category>
-        <participant>
-            <uid>123456</uid>
-            <name>TINF21B1 (AI)</name>
-        </participant>
-        <participant>
-            <uid>654321</uid>
-            <name>TINF21B1 (MI)</name>
-        </participant>
-        <start>2022-05-16T11:15:00</start>
-        <end>2022-05-16T12:45:00</end>
-        <location>A268 Hörsaal</location>
-        <modified>2001-05-30T09:00:00</modified>
-        <modifiedBy>
-            <firstName>Test</firstName>
-            <lastName>Ersteller</lastName>
-            <initials>TE</initials>
-            <mail>test@ersteller.example</mail>
-        </modifiedBy>
-    </event>
     <event uid="UID3">
         <title>Marketing (nur AI/INF)</title>
         <description>Beschreibung</description>
@@ -99,6 +70,64 @@
         <start>2022-05-16T15:00:00</start>
         <end>2022-05-16T18:15:00</end>
         <location>XOnline-Verantstaltung Virtueller Raum</location>
+        <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID4">
+        <title>Programmieren</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Wolfgang</firstName>
+            <lastName>Süß</lastName>
+            <initials>WS</initials>
+            <mail>ws@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>123456</uid>
+            <name>TINF21B1 (AI)</name>
+        </participant>
+        <participant>
+            <uid>654321</uid>
+            <name>TINF21B1 (MI)</name>
+        </participant>
+        <start>2022-05-17T08:00:00</start>
+        <end>2022-05-17T12:15:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID5">
+        <title>Projektmanagement 2</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Michael</firstName>
+            <lastName>Vetter</lastName>
+            <initials>MV</initials>
+            <mail>mv@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>123456</uid>
+            <name>TINF21B1 (AI)</name>
+        </participant>
+        <participant>
+            <uid>654321</uid>
+            <name>TINF21B1 (MI)</name>
+        </participant>
+        <start>2022-05-17T12:30:00</start>
+        <end>2022-05-17T14:00:00</end>
+        <location>A268 Hörsaal</location>
         <modified>2001-05-30T09:00:00</modified>
         <modifiedBy>
             <firstName>Test</firstName>
@@ -125,6 +154,210 @@
         <end>2022-05-17T18:15:00</end>
         <location>XOnline-Verantstaltung Virtueller Raum</location>
         <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID7">
+        <title>Medizinisches Grundwissen II (MI)</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Anna</firstName>
+            <lastName>Matlacz</lastName>
+            <initials>AM</initials>
+            <mail>am@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>654321</uid>
+            <name>TINF21B1 (MI)</name>
+        </participant>
+        <start>2022-05-17T16:30:00</start>
+        <end>2022-05-17T18:00:00</end>
+        <location>XOnline-Verantstaltung Virtueller Raum</location>
+        <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID8">
+        <title>Theoretische Informatik II</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Johannes</firstName>
+            <lastName>Freudenmann</lastName>
+            <initials>JF</initials>
+            <mail>jf@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>654321</uid>
+            <name>TINF21B1 (MI)</name>
+        </participant>
+        <participant>
+            <uid>123456</uid>
+            <name>TINF21B1 (AI)</name>
+        </participant>
+        <start>2022-05-18T8:30:00</start>
+        <end>2022-05-18T11:45:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID9">
+        <title>Medizinisches Grundwissen II (MI)</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Anna</firstName>
+            <lastName>Matlacz</lastName>
+            <initials>AM</initials>
+            <mail>am@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>654321</uid>
+            <name>TINF21B1 (MI)</name>
+        </participant>
+        <start>2022-05-18T16:30:00</start>
+        <end>2022-05-18T18:00:00</end>
+        <location>XOnline-Verantstaltung Virtueller Raum</location>
+        <modified>2001-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID10">
+        <title>Nachklausur Techn. Info I/Digitaltechnik</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Senger</firstName>
+            <lastName>Markus</lastName>
+            <initials>SM</initials>
+            <mail>MS@test.example</mail>
+        </presenter>
+        <category><Post-exam></Post-exam></category>
+        <participant>
+            <uid>12345</uid>
+            <name>TINF21B1</name>
+        </participant>
+        <start>2022-05-19T10:00:00</start>
+        <end>2022-05-19T11:30:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2022-05-04T10:50:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID11">
+        <title>Medizinische Physik I (MI)</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Medizinicher</firstName>
+            <lastName>Physiker</lastName>
+            <initials>MP</initials>
+            <mail>MP@test.example</mail>
+        </presenter>
+        <category><Post-exam></Post-exam></category>
+        <participant>
+            <uid>12345MI</uid>
+            <name>TINF21B1 (MI)</name>
+        </participant>
+        <start>2022-05-19T14:15:00</start>
+        <end>2022-05-19T15:45:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2022-05-19T13:13:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID12">
+        <title>Mathematik-Anaalysis</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Gröll</firstName>
+            <lastName>Lutz</lastName>
+            <initials>GL</initials>
+            <mail>GL@test.example</mail>
+        </presenter>
+        <category><Post-exam></Post-exam></category>
+        <participant>
+            <uid>12345</uid>
+            <name>TINF21B1</name>
+        </participant>
+        <start>2022-05-20T08:00:00</start>
+        <end>2022-05-20T12:15:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2022-05-23T16:55</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID13">
+        <title>Medizinische Physik I (MI)</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Medizinicher</firstName>
+            <lastName>Physiker</lastName>
+            <initials>MP</initials>
+            <mail>MP@test.example</mail>
+        </presenter>
+        <category><Post-exam></Post-exam></category>
+        <participant>
+            <uid>12345MI</uid>
+            <name>TINF21B1 (MI)</name>
+        </participant>
+        <start>2022-05-19T14:15:00</start>
+        <end>2022-05-19T15:45:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2022-05-19T13:13:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event uid="UID14">
+        <title>Routing and Switching (CCNA-2, Z</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Brune</firstName>
+            <lastName>Ralf</lastName>
+            <initials>BR</initials>
+            <mail>GL@test.example</mail>
+        </presenter>
+        <category><Post-exam></Post-exam></category>
+        <participant>
+            <uid>12345</uid>
+            <name>Technik/Informatik/TINF21B1</name>
+        </participant>
+        <start>2022-05-20T13:00:00</start>
+        <end>2022-05-20T15:30:00</end>
+        <location>A268 Hörsaal</location>
+        <modified>2022-05-13T16:523</modified>
         <modifiedBy>
             <firstName>Test</firstName>
             <lastName>Ersteller</lastName>
