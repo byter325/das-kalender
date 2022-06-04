@@ -2,10 +2,12 @@ import { ParsedPath } from "path";
 import { application, request, Request, response, Response } from "express";
 import { json2xml, xml2json } from "xml-js";
 import { CalendarComponent, FullCalendar, parseICS } from "ical";
-import { readFileSync, existsSync, writeFileSync, appendFile, fstat } from "fs";
+import * as fs from "fs";
 import { Application, Express } from "express";
 import * as CryptoJs from "crypto-js";
 import download from "download";
+import * as tmp from "tmp";
+import * as SaxonJs from "saxon-js";
 
 export module Handlers {
 	const pathUtils = require('path');
@@ -24,7 +26,7 @@ export module Handlers {
 		console.log(req.path);
 		const fileName = `${dataDir}/${course}.xml`;
 		// Maybe use fs/promise to read File async
-		if (!existsSync(fileName)) {
+		if (!fs.existsSync(fileName)) {
 			res.status(500);
 		} else {
 			let from: string, to: string;
@@ -34,23 +36,35 @@ export module Handlers {
 			if (typeof req.query.to != 'undefined' && req.query.to) {
 				to = req.query.to.toString();
 			}
-			let eventData = readFileSync(fileName, "utf-8");
-			let jsdata = JSON.parse(xml2json(eventData, { compact: true }));
-			let eventResults = new Array();
-			let elements = jsdata.events.event;
-			elements.forEach(element => {
-				let add = true;
-				if (typeof from != 'undefined' && from && element.start._text < from) {
-					add = false;
-				}
-				if (typeof to != 'undefined' && to && element.end._text > to) {
-					add = false;
-				}
-				if (add) {
-					eventResults.push(element);
-				}
+			fs.readFile(fileName, "utf-8", (err, eventData) => {
+				let jsdata = JSON.parse(xml2json(eventData, { compact: true }));
+				let eventResults = new Array();
+				let elements = jsdata.events.event;
+				elements.forEach(element => {
+					let add = true;
+					if (typeof from != 'undefined' && from && element.start._text < from) {
+						add = false;
+					}
+					if (typeof to != 'undefined' && to && element.end._text > to) {
+						add = false;
+					}
+					if (add) {
+						eventResults.push(element);
+					}
+				});
+				const tmpobj = tmp.fileSync();
+				fs.writeFile(tmpobj.fd, toXml(eventResults), () => {
+					SaxonJs.transform({
+						stylesheetFileName: "transformations/rapla2kalender.sef.json",
+						sourceFileName: tmpobj.name,
+						destination: "serialized"
+					}, "async")
+						.then(output => {
+							res.contentType('application/xml');
+							res.send(output.principalResult);
+						});
+				})
 			});
-			res.send(toXml(eventResults));
 		}
 
 	}
@@ -61,7 +75,7 @@ export module Handlers {
 		const icsUrl: string = raplaUrl.replace('@@page@@', 'ical').replace('@@lecturer@@', lecturer).replace('@@course@@', course);
 		download(icsUrl, icsOutfile).then(() => {
 			// Again try reading it with fs/promise in asnyc mode
-			let caldata: string = readFileSync(icsOutfile, "utf-8");
+			let caldata: string = fs.readFileSync(icsOutfile, "utf-8");
 			let jsdata: FullCalendar = parseICS(caldata);
 			let eventResults: CalendarComponent[] = new Array();
 			for (const key in jsdata) {
@@ -70,7 +84,7 @@ export module Handlers {
 				}
 			}
 			let xmldata: string = toXml(eventResults);
-			writeFileSync(outfile, xmldata)
+			fs.writeFileSync(outfile, xmldata)
 		});
 	}
 
@@ -81,7 +95,7 @@ export module Handlers {
 			const creds64: string = req.headers.authorization.split(' ')[1];
 			const credentials: string = CryptoJs.enc.Utf8.stringify(CryptoJs.enc.Base64.parse(creds64));
 			const hash: string = CryptoJs.SHA256(credentials).toString();
-			const hashs: string[] = readFileSync(hashsFile, "utf-8").split("\n");
+			const hashs: string[] = fs.readFileSync(hashsFile, "utf-8").split("\n");
 			if (!hashs.includes(hash)) {
 				res.status(401).send("Forbidden");
 				return false;
