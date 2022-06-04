@@ -94,5 +94,4 @@ export module Handlers {
 		return json2xml(JSON.stringify({ "events": { "event": jsObj } }), { compact: true })
 	}
 
-
 }
