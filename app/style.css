@@ -28,6 +28,10 @@ table {
 
 .ki-heading {
     text-align: center;
+    background-color: #ffffff;
+    font-weight: bold;
+    font-size: 12pt;
+    padding: 0.2em;
 }
 
 .border-left {
@@ -36,8 +40,8 @@ table {
 
 .kalendergrid {
     display: grid;
-    grid-template-rows: repeat(49, 1fr);
-    grid-template-columns: 4em repeat(6, 1fr);
+    grid-template-rows: 4em repeat(48, 1em);
+    grid-template-columns: 4em repeat(7, auto);
     grid-gap: 0px;
     border: 1px solid #000000;
     margin-bottom: 1rem;
@@ -45,7 +49,8 @@ table {
 
 .kalenderitem {
     border: 1px solid #000000;
-    background-color: #ffffff;
+    background-color: #f8f9fa;
+    font-size: 9pt;
 }
 
 .ki-heading {
@@ -53,7 +58,7 @@ table {
 }
 
 .ki-wrow {
-    border-top: 1px dashed #000000;
+    border-top: 1px solid #c0c0c0;
 }
 
 .ki-wcolumn {
@@ -81,7 +86,7 @@ table {
 }
 
 .ki-col-2,
-.ki-day-montag {
+.ki-day-monday {
     grid-column-start: 2;
 }
 
@@ -98,7 +103,7 @@ table {
 }
 
 .ki-col-6,
-.ki-day-dienstag {
+.ki-day-tuesday {
     grid-column-start: 6;
 }
 
@@ -115,7 +120,7 @@ table {
 }
 
 .ki-col-10,
-.ki-day-mittwoch {
+.ki-day-wednesday {
     grid-column-start: 10;
 }
 
@@ -132,7 +137,7 @@ table {
 }
 
 .ki-col-14,
-.ki-day-donnerstag {
+.ki-day-thursday {
     grid-column-start: 14;
 }
 
@@ -149,7 +154,7 @@ table {
 }
 
 .ki-col-18,
-.ki-day-freitag {
+.ki-day-friday {
     grid-column-start: 18;
 }
 
@@ -166,7 +171,7 @@ table {
 }
 
 .ki-col-22,
-.ki-day-samstag {
+.ki-day-saturday {
     grid-column-start: 22;
 }
 
@@ -180,6 +185,23 @@ table {
 
 .ki-col-25 {
     grid-column-start: 25;
+}
+
+.ki-col-26,
+.ki-day-sunday {
+    grid-column-start: 26;
+}
+
+.ki-col-27 {
+    grid-column-start: 27;
+}
+
+.ki-col-28 {
+    grid-column-start: 28;
+}
+
+.ki-col-29 {
+    grid-column-start: 29;
 }
 
 
@@ -773,3 +795,8 @@ table {
 
 .ki-colspan-28 {
     grid-column-end: span 28;
+}
+
+.ki-colspan-29 {
+    grid-column-end: span 29;
+}
