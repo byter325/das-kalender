@@ -9,7 +9,8 @@ function initTooltips() {
 
 function insertEvents(course, from, to) {
     $.ajax({
-        url: `/api/getRaplaEvents/${course}?from=${from}&to=${to}`
+        url: `/api/getRaplaEvents/${course}?from=${from}&to=${to}`,
+        xhrFields: { withCredentials: true }
     }).done(function () {
         $('#eventInsert').append(data);
     });;
