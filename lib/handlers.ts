@@ -68,10 +68,7 @@ export module Handlers {
 		const outfile: string = `${dataDir}/${course}.xml`;
 		const icsOutfile: string = `${dataDir}/${course}.ics`;
 		const icsUrl: string = raplaUrl.replace('@@page@@', 'ical').replace('@@lecturer@@', lecturer).replace('@@course@@', course);
-		console.log("LOL");
-		
 		fetch(icsUrl).then(async (response:globalThis.Response) => {
-			console.log("LOL2");
 			fs.writeFileSync(icsOutfile, await response.text());
 		});
 
