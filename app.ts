@@ -1,14 +1,15 @@
 import { Request, Response, Application } from "express";
-import { Handlers } from "./lib/handlers"
-
-const express = require('express');
-const path = require('path');
-const cron = require("node-cron");
+import { Handlers } from "./lib/handlers";
+import { Utils } from "./lib/utils";
+import * as path from "path";
+import * as cron from "node-cron";
+import express from "express";
+import { Server } from "http";
 
 const app: Application = express();
 
 // user: public | pw: public
-app.get("/api/getRaplaEvents/:course", (req, res) => {
+app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
     if (Handlers.authenticate(req, res)) Handlers.getRaplaEvents(req, res)
 });
 
@@ -21,18 +22,16 @@ app.use((req: Request, res: Response) => {
     res.send('404')
 });
 
-app.use((err: Error, req: Request, res: Response, next) => {
+app.use((err: Error, req: Request, res: Response) => {
     console.error(err.message)
     res.status(500)
     res.send('500')
 });
 
-cron.schedule("0 */15 * * * *", () => {
+cron.schedule("0 */1 * * * *", () => {
     Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
 });
 
-const server = app.listen(8080, () => {
+const server:Server = app.listen(80, () => {
     console.log(server.address());
-    const host = server.address()["address"];
-    const port = server.address()["port"];
 });
