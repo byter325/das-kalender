@@ -2,12 +2,12 @@
   "name": "pm_project_rapla",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run compile-xslt; npm run compile && node app.js",
-    "compile": "tsc app.ts && tsc lib/handlers.ts",
-    "compile-xslt": "xslt3 -xsl:transformations/rapla2kalender.xslt -export:transformations/rapla2kalender.sef.json"
+    "start": "npm run compile && node app.js",
+    "compile": "npm run compile-xslt ; tsc app.ts && tsc lib/handlers.ts",
+    "compile-xslt": "xslt3 -xsl:transformations/rapla2kalender.xslt -export:transformations/rapla2kalender.sef.json ; xslt3 -xsl:transformations/b2f-events.xslt -export:transformations/b2f-events.sef.json"
   },
   "repository": {
     "type": "git",
@@ -21,10 +21,9 @@
   "homepage": "https://github.com/maxomnia/pm_project_rapla#readme",
   "dependencies": {
     "crypto-js": "^4.1.1",
-    "download": "^8.0.0",
     "express": "^4.18.1",
-    "ical": "^0.8.0",
     "node-cron": "^3.0.0",
+    "node-ical": "^0.15.1",
     "saxon-js": "^2.4.0",
     "tmp": "^0.2.1",
     "xml-js": "^1.6.11"

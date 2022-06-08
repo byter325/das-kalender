@@ -7,13 +7,15 @@ const cron = require("node-cron");
 
 const app: Application = express();
 
+app.use(express.static(path.join(__dirname, "frontend", "app")));
+
 // user: public | pw: public
 app.get("/api/getRaplaEvents/:course", (req, res) => {
     if (Handlers.authenticate(req, res)) Handlers.getRaplaEvents(req, res)
 });
 
 app.get("/", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, "static", "index.html"));
+    res.sendFile(path.join(__dirname, "frontend", "app", "index.html"));
 });
 
 app.use((req: Request, res: Response) => {
@@ -21,7 +23,7 @@ app.use((req: Request, res: Response) => {
     res.send('404')
 });
 
-app.use((err: Error, req: Request, res: Response, next) => {
+app.use((err: Error, req: Request, res: Response, next: any) => {
     console.error(err.message)
     res.status(500)
     res.send('500')
@@ -33,6 +35,5 @@ cron.schedule("0 */15 * * * *", () => {
 
 const server = app.listen(8080, () => {
     console.log(server.address());
-    const host = server.address()["address"];
-    const port = server.address()["port"];
+    Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
 });
