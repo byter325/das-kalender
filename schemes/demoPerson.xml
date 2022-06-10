@@ -1,4 +1,5 @@
-<person uid="UID">
+<person>
+    <uid>UID</uid>
     <firstName>Vorname</firstName>
     <lastName>Nachname</lastName>
     <initials>VN</initials>

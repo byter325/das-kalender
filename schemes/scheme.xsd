@@ -21,6 +21,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="uid" type="xs:string"/>
                 <xs:element name="title" type="xs:string"/>
                 <xs:element name="description" type="xs:string"/>
                 <xs:element name="presenter" type="personInfo" maxOccurs="unbounded"/>
@@ -32,7 +33,6 @@
                 <xs:element name="modified" type="xs:dateTime"/>
                 <xs:element name="modifiedBy" type="personInfo"/>
             </xs:sequence>
-            <xs:attribute name="uid" type="xs:string" use="required"/>
         </xs:complexType>
     </xs:element>
 
@@ -58,6 +58,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="uid" type="xs:string"/>
                 <xs:element name="firstName" type="xs:string"/>
                 <xs:element name="lastName" type="xs:string"/>
                 <xs:element name="initials">
@@ -82,7 +83,6 @@
                 <xs:element name="darkMode" type="xs:boolean"/>
                 <xs:element name="isAdministrator" type="xs:boolean"/>
             </xs:sequence>
-            <xs:attribute name="uid" type="xs:string" use="required"/>
         </xs:complexType>
     </xs:element>
 
