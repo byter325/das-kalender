@@ -1,0 +1,55 @@
+<events>
+    <event>
+        <uid>123</uid>
+        <title>Testevent</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Vorname</firstName>
+            <lastName>Nachname</lastName>
+            <initials>VN</initials>
+            <mail>vn@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant> <!--remove or change this, ignore for now-->
+            <uid>testUser</uid>
+            <name>TestGruppe</name>
+        </participant>
+        <start>2002-05-30T09:00:00</start>
+        <end>2022-05-30T09:00:00</end>
+        <location>Testraum</location>
+        <modified>2022-05-30T09:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+
+    <event>
+        <uid>1234</uid>
+        <title>Testevent</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Vorname</firstName>
+            <lastName>Nachname</lastName>
+            <initials>VN</initials>
+            <mail>vn@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant> <!--remove or change this, ignore for now-->
+            <uid>testUser</uid>
+            <name>TestGruppe</name>
+        </participant>
+        <start>2002-06-10T18:00:00</start>
+        <end>2022-06-10T19:00:00</end>
+        <location>Testraum</location>
+        <modified>2022-06-08T01:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+</events>
