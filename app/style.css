@@ -50,8 +50,22 @@ table {
 
 .kalenderitem {
     border: 1px solid #000000;
-    background-color: #f8f9fa;
+    background-color: var(--kalenderitem-bg);
     font-size: 9pt;
+}
+
+.kalenderitem:hover {
+    background-color: var(--kalenderitem-hover-bg);
+}
+
+.kalenderitem-vorlesung {
+    --kalenderitem-bg: #cfe2ff;
+    --kalenderitem-hover-bg: #bfd1ec;
+}
+
+.kalenderitem-klausur {
+    --kalenderitem-bg: #f8d7da;
+    --kalenderitem-hover-bg: #e5c7ca
 }
 
 .ki-heading {
@@ -800,6 +814,7 @@ table {
 
 .ki-colspan-29 {
     grid-column-end: span 29;
+}
 
 /* timeline */
 .timeline-with-icons {

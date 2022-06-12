@@ -65,4 +65,5 @@ function adjustDays() {
 
 $(() => {
     insertEvents("TINF21B1", "2022-06-06", "2022-06-12");
+    initTooltips();
 });
