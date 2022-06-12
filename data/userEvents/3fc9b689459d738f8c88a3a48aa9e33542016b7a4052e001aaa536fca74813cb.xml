@@ -1,0 +1,48 @@
+<events>
+    <event>
+        <uid>1234</uid>
+        <title>Testevent</title>
+        <description>Beschreibung</description>
+        <presenter>
+            <firstName>Vorname</firstName>
+            <lastName>Nachname</lastName>
+            <initials>VN</initials>
+            <mail>vn@test.example</mail>
+        </presenter>
+        <category>Lecture</category>
+        <participant>
+            <uid>testUser</uid>
+            <name>TestGruppe</name>
+        </participant>
+        <start>2002-06-10T18:00:00</start>
+        <end>2022-06-10T19:00:00</end>
+        <location>Testraum</location>
+        <modified>2022-06-08T01:00:00</modified>
+        <modifiedBy>
+            <firstName>Test</firstName>
+            <lastName>Ersteller</lastName>
+            <initials>TE</initials>
+            <mail>test@ersteller.example</mail>
+        </modifiedBy>
+    </event>
+    <event>
+        <uid>uidStuff</uid>
+        <title>A title</title>
+        <description>A description</description>
+        <presenter>
+            <presenter>
+                <name>A presenter</name>
+            </presenter>
+        </presenter>
+        <category>lecture</category>
+        <start>Sun Jun 12 2022 10:46:46 GMT+0200 (Mitteleuropäische Sommerzeit)</start>
+        <end>Sun Jun 12 2022 10:46:46 GMT+0200 (Mitteleuropäische Sommerzeit)</end>
+        <location>A268</location>
+        <modified>Sun Jun 12 2022 10:46:46 GMT+0200 (Mitteleuropäische Sommerzeit)</modified>
+        <modifiedBy>
+            <modifiedBy>
+                <name>kollege roethig</name>
+            </modifiedBy>
+        </modifiedBy>
+    </event>
+</events>

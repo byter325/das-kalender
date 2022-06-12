@@ -1,0 +1,22 @@
+<events>
+    <event>
+        <uid>groupEventUID2</uid>
+        <title>A group event</title>
+        <description>A description</description>
+        <presenter>
+            <presenter>
+                <name>kollege roethig</name>
+            </presenter>
+        </presenter>
+        <category>lecture</category>
+        <start>Sun Jun 12 2022 11:20:49 GMT+0200 (Mitteleuropäische Sommerzeit)</start>
+        <end>Sun Jun 12 2022 11:20:49 GMT+0200 (Mitteleuropäische Sommerzeit)</end>
+        <location>Roethigs Buero</location>
+        <modified>Sun Jun 12 2022 11:20:49 GMT+0200 (Mitteleuropäische Sommerzeit)</modified>
+        <modifiedBy>
+            <modifiedBy>
+                <name>kollege roethig</name>
+            </modifiedBy>
+        </modifiedBy>
+    </event>
+</events>
