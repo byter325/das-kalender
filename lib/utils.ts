@@ -18,6 +18,4 @@ export module Utils{
         return crypto.enc.Utf8.stringify(words);
     }
 
-
-
 }
