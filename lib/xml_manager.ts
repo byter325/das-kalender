@@ -213,8 +213,8 @@ export module XMLManager{
 }
 
 
-/* XMLManager.insertUserEvent("something", 
-    new DataUserEvent("uidStuff", "A title", "A description",  {presenter:{name:"A presenter"}}, "lecture", new Date(), new Date(), "A268", new Date(), {modifiedBy:{name:"kollege roethig"}})) */
+XMLManager.insertUserEvent("something", 
+    new CalendarEvent("uidStuff", "A title", "A description",  {presenter:{name:"A presenter"}}, "lecture", new Date().toISOString(), new Date().toISOString(), "A268", new Date().toISOString(), {modifiedBy:{name:"kollege roethig"}}))
 /* XMLManager.insertGroupEvent("uid", new CalendarEvent("groupEventUID", "A group event", "A description", {presenter:{name:"kollege roethig"}},
     "lecture", new Date(), new Date(), "Roethigs Buero", new Date(), {modifiedBy:{name:"kollege roethig"}})) */
 /* console.log(XMLManager.insertGroupEvent("anotherGroup", new CalendarEvent("2ndEvent", "The second event", "The second group event", {presenter:{firstName:"roethig"}}, "lecture",
