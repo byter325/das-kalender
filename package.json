@@ -28,6 +28,7 @@
     "node-cron": "^3.0.0",
     "saxon-js": "^2.4.0",
     "tmp": "^0.2.1",
+    "ts-node": "^10.8.1",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
