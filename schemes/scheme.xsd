@@ -99,6 +99,7 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
+            <xs:element name="uid" type="xs:string"/>
             <xs:element name="firstName" type="xs:string"/>
             <xs:element name="lastName" type="xs:string"/>
             <xs:element name="initials">
@@ -147,6 +148,7 @@
         <xs:sequence>
             <xs:element name="uid" type="xs:string"/>
             <xs:element name="name" type="xs:string"/>
+            <xs:element name="url" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
 </xs:schema>
