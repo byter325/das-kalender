@@ -1,0 +1,19 @@
+<persons>
+    <person uid="UIDRZ">
+        <firstName>Reiner</firstName>
+        <lastName>Zufall</lastName>
+        <initials>UA</initials>
+        <mail>zufall@test.com</mail>
+        <passwordHash>zufälliges Passowrt</passwordHash>
+        <group>
+            <uid>12345</uid>
+            <name>TINFB1</name>
+        </group>
+        <editableGroup>
+            <uid>gehashtes TNFB1MI</uid>
+            <name>TINFB1MI</name>
+        </editableGroup>
+        <darkMode>true</darkMode>
+        <isAdministrator>false</isAdministrator>
+    </person>
+</persons>

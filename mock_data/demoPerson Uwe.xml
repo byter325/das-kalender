@@ -1,0 +1,19 @@
+<persons>
+    <person uid="UIDUA">
+        <firstName>Uwe</firstName>
+        <lastName>Altman</lastName>
+        <initials>UA</initials>
+        <mail>UA@mehrtest.example</mail>
+        <passwordHash>starkes Passwort</passwordHash>
+        <group>
+            <uid>12345</uid>
+            <name>TINFB1</name>
+        </group>
+        <editableGroup>
+            <uid>gehashtes TNFB1AI</uid>
+            <name>TINFB1AI</name>
+        </editableGroup>
+        <darkMode>true</darkMode>
+        <isAdministrator>false</isAdministrator>
+    </person>
+</persons>
