@@ -16,6 +16,7 @@ app.use(xmlparser());
 
 app.listen(port, () => {
     console.log(`Success! Your application is running on port ${port}.`);
+    console.log(`You can open Swagger-UI here:  http://localhost:${port}/docs`);
 });
 
 app.get("/", (req: Request, res: Response) => {
@@ -25,15 +26,21 @@ app.get("/", (req: Request, res: Response) => {
 const swaggerDocument = YAML.load('./openapi.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+// user: public | pw: public
+// legacy, will be removed soon
+app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
+    if (Handlers.authenticate(req, res)) Handlers.getRaplaEvents(req, res)
+});
+
 app.use((req: Request, res: Response) => {
     res.status(404)
-    res.send('404')
+    res.send('404 - Not found')
 });
 
 app.use((err: Error, req: Request, res: Response) => {
     console.error(err.message)
     res.status(500)
-    res.send('500')
+    res.send('500 - Internal Error')
 });
 
 cron.schedule("0 */1 * * * *", () => {
