@@ -102,15 +102,21 @@ export module Handlers {
 					}
 				}
 				let xmldata: string = toXml(eventResults);
-				fs.writeFile(outfile, xmldata, () => {
-					SaxonJs.transform({
-						stylesheetFileName: "transformations/rapla2kalender.sef.json",
-						sourceFileName: outfile,
-						destination: "serialized"
-					}, "async").then( (output: { principalResult: string; } ) => {
-						fs.writeFileSync(outkalfile, output.principalResult);
+				if (checkCache(outfile, xmldata) == false) {
+					fs.writeFile(outfile, xmldata, () => {
+						SaxonJs.transform({
+							stylesheetFileName: "transformations/rapla2kalender.sef.json",
+							sourceFileName: outfile,
+							destination: "serialized"
+						}, "async").then( (output: { principalResult: string; } ) => {
+							fs.writeFileSync(outkalfile, output.principalResult);
+						});
 					});
-				});
+				}
+				else{
+					console.log(`No new data for course ${lecturer}/${course}...`);
+				}
+
 			});
 		});
 		// fetch(icsUrl).then(async (response:globalThis.Response) => {
@@ -143,6 +149,24 @@ export module Handlers {
 			}
 			return true;
 		}
+	}
+
+	/**
+	 * 
+	 * @param outfile File with the old data
+	 * @param newData The new data
+	 * @returns Whether or not the cached data are equal
+	 */
+	function checkCache(outfile: string | fs.PathLike, newData: string) : boolean {
+		let oldData: string = fs.readFileSync(outfile, null).toString();
+
+		let oldDataHash = Utils.GenSHA512Hash(oldData);
+		let newDataHash = Utils.GenSHA512Hash(newData);
+		console.log(`${oldDataHash}==${newDataHash}`);
+		if(oldDataHash == newDataHash){
+			return true;
+		}
+		return false;
 	}
 
 	function toXml(jsObj: Object): string {

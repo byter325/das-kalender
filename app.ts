@@ -30,7 +30,7 @@ app.use((err: Error, req: Request, res: Response, next: any) => {
     res.send('500')
 });
 
-cron.schedule("0 */1 * * * *", () => {
+cron.schedule("0 */15 * * * *", () => {
     Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
 });
 
