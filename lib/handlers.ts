@@ -160,8 +160,8 @@ export module Handlers {
 	function checkCache(outfile: string | fs.PathLike, newData: string) : boolean {
 		let oldData: string = fs.readFileSync(outfile, null).toString();
 
-		let oldDataHash = Utils.GenSHA512Hash(oldData);
-		let newDataHash = Utils.GenSHA512Hash(newData);
+		let oldDataHash = Utils.GenSHA256Hash(oldData);
+		let newDataHash = Utils.GenSHA256Hash(newData);
 		console.log(`${oldDataHash}==${newDataHash}`);
 		if(oldDataHash == newDataHash){
 			return true;
