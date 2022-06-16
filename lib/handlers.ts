@@ -1,26 +1,37 @@
 import * as path from "path";
 import { application, request, Request, response, Response } from "express";
 import { json2xml, xml2json } from "xml-js";
-import { CalendarComponent, FullCalendar, parseICS } from "ical";
+import * as ical from "node-ical";
 import * as fs from "fs";
+<<<<<<< HEAD
+import { Application, Express } from "express";
+import * as CryptoJs from "crypto-js";
+=======
 import download from "download";
+>>>>>>> origin/dev
 import * as tmp from "tmp";
 import { Utils } from "./utils"
 
 
+<<<<<<< HEAD
+const https = require('https');
+const pathUtils = require('path');
+
+export module Handlers {
+	const dataDir: ParsedPath = pathUtils.resolve(__dirname, '..', 'data');
+=======
 export module Handlers {
 	const SaxonJs = require("saxon-js");
 
 	const dataDir: string = path.resolve(__dirname, '..', 'data');
+>>>>>>> origin/dev
 	const raplaUrl: string = "https://rapla.dhbw-karlsruhe.de/rapla?page=@@page@@&user=@@lecturer@@&file=@@course@@";
-	const guidRegex: RegExp = /[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?/;
 	const hashsFile: string = `${dataDir}/hashs.dat`;
 
 	export function getRaplaEvents(req: Request, res: Response) {
 		const course: string = req.params.course;
 		console.log(req.path);
-		const fileName = `${dataDir}/${course}.xml`;
-		// Maybe use fs/promise to read File async
+		const fileName = `${dataDir}/${course}-kalender.xml`;
 		if (!fs.existsSync(fileName)) {
 			res.status(500);
 		} else {
@@ -34,8 +45,13 @@ export module Handlers {
 			fs.readFile(fileName, "utf-8", (err, eventData) => {
 				let jsdata = JSON.parse(xml2json(eventData, { compact: true }));
 				let eventResults = new Array();
+<<<<<<< HEAD
+				let elements = jsdata.events.event;
+				elements.forEach((element: { start: { _text: string; }; end: { _text: string; }; }) => {
+=======
 				let elements:any[] = jsdata.events.event;
 				elements.forEach(element => {
+>>>>>>> origin/dev
 					let add = true;
 					if (typeof from != 'undefined' && from && element.start._text < from) {
 						add = false;
@@ -50,9 +66,17 @@ export module Handlers {
 				const tmpobj = tmp.fileSync();
 				fs.writeFile(tmpobj.fd, toXml(eventResults), () => {
 					SaxonJs.transform({
-						stylesheetFileName: "transformations/rapla2kalender.sef.json",
+						stylesheetFileName: "transformations/b2f-events.sef.json",
 						sourceFileName: tmpobj.name,
 						destination: "serialized"
+<<<<<<< HEAD
+					}, "async").then((outHtml: { principalResult: string; }) => {
+						res.contentType('text/html');
+						res.send(outHtml.principalResult);
+					});
+				});
+			})
+=======
 					}, "async")
 						.then((output:any) => {
 							res.contentType('application/xml');
@@ -60,16 +84,46 @@ export module Handlers {
 						});
 				})
 			});
+>>>>>>> origin/dev
 		}
-
 	}
+
 	export function fetchRaplaEvents(lecturer: string, course: string) {
 		console.log(`Fetching events from Rapla for ${lecturer}/${course}`);
 		const outfile: string = `${dataDir}/${course}.xml`;
-		const icsOutfile: string = `${dataDir}/${course}.ics`;
+		const outkalfile: string = `${dataDir}/${course}-kalender.xml`;
 		const icsUrl: string = raplaUrl.replace('@@page@@', 'ical').replace('@@lecturer@@', lecturer).replace('@@course@@', course);
+<<<<<<< HEAD
+
+		https.get(icsUrl, (res: any) => {
+			res.setEncoding('utf8');
+			let caldata: any;
+			res.on('data', (chunk: any) => {
+				caldata += chunk;
+			});
+			res.on('end', () => {
+				let jsdata = ical.sync.parseICS(caldata.toString());
+				let eventResults = new Array();
+				for (const key in jsdata) {
+					if (jsdata[key].type == "VEVENT") {
+						eventResults.push(jsdata[key]);
+					}
+				}
+				let xmldata: string = toXml(eventResults);
+				fs.writeFile(outfile, xmldata, () => {
+					SaxonJs.transform({
+						stylesheetFileName: "transformations/rapla2kalender.sef.json",
+						sourceFileName: outfile,
+						destination: "serialized"
+					}, "async").then((output: { principalResult: string; }) => {
+						fs.writeFileSync(outkalfile, output.principalResult);
+					});
+				});
+			});
+=======
 		fetch(icsUrl).then(async (response:globalThis.Response) => {
 			fs.writeFileSync(icsOutfile, await response.text());
+>>>>>>> origin/dev
 		});
 
 		let caldata: string = fs.readFileSync(icsOutfile, "utf-8");
@@ -83,7 +137,6 @@ export module Handlers {
 		let xmldata: string = toXml(eventResults);
 		fs.writeFileSync(outfile, xmldata)
 	}
-
 	export function authenticate(req: Request, res: Response) {
 		if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
 			res.status(401).setHeader("WWW-Authenticate", "Basic realm=\"Geschuetzter Bereich\", charset=\"UTF-8\"").send();

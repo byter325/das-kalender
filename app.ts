@@ -8,13 +8,15 @@ import { Server } from "http";
 
 const app: Application = express();
 
+app.use(express.static(path.join(__dirname, "frontend", "app")));
+
 // user: public | pw: public
 app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
     if (Handlers.authenticate(req, res)) Handlers.getRaplaEvents(req, res)
 });
 
 app.get("/", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, "static", "index.html"));
+    res.sendFile(path.join(__dirname, "frontend", "app", "index.html"));
 });
 
 app.use((req: Request, res: Response) => {
@@ -22,7 +24,11 @@ app.use((req: Request, res: Response) => {
     res.send('404')
 });
 
+<<<<<<< HEAD
+app.use((err: Error, req: Request, res: Response, next: any) => {
+=======
 app.use((err: Error, req: Request, res: Response) => {
+>>>>>>> origin/dev
     console.error(err.message)
     res.status(500)
     res.send('500')
@@ -34,4 +40,8 @@ cron.schedule("0 */1 * * * *", () => {
 
 const server:Server = app.listen(80, () => {
     console.log(server.address());
+<<<<<<< HEAD
+    Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
+=======
+>>>>>>> origin/dev
 });
