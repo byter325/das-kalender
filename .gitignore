@@ -9,6 +9,9 @@ lerna-debug.log*
 # No js files because we use typescript
 *.js
 
+# Don't include data, because of their immense size
+data/
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # We don't need js files, because we use Typescript and compile it to JavaScript
