@@ -9,8 +9,16 @@
         <uid>GruppenID</uid>
         <name>TestGruppe</name>
     </group>
-    <editableGroup>
+    <group>
         <uid>GruppenID2</uid>
+        <name>TestGruppe2</name>
+    </group>
+    <editableGroup>
+        <uid>GruppenID3</uid>
+        <name>bearbeitbare TestGruppe</name>
+    </editableGroup>
+    <editableGroup>
+        <uid>GruppenID4</uid>
         <name>bearbeitbare TestGruppe</name>
     </editableGroup>
     <darkMode>true</darkMode>

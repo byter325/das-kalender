@@ -1,4 +1,5 @@
-<event uid="UID">
+<event>
+    <uid>UID</uid>
     <title>Title</title>
     <description>Beschreibung</description>
     <presenter>
