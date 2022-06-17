@@ -5,7 +5,6 @@ import * as ical from "node-ical";
 import * as fs from "fs";
 import { Application, Express } from "express";
 import * as CryptoJs from "crypto-js";
-import download from "download";
 import * as tmp from "tmp";
 import { Utils } from "./utils"
 import * as https from "https";
@@ -19,7 +18,7 @@ export module Handlers {
 	const dataDir: string = path.resolve(__dirname, '..', 'data');
 	const raplaUrl: string = "https://rapla.dhbw-karlsruhe.de/rapla?page=@@page@@&user=@@lecturer@@&file=@@course@@";
 	const hashsFile: string = `${dataDir}/hashs.dat`;
-	
+
 	export function getRaplaEvents(req: Request, res: Response) {
 		const course: string = req.params.course;
 		console.log(req.path);
@@ -37,7 +36,7 @@ export module Handlers {
 			fs.readFile(fileName, "utf-8", (err, eventData) => {
 				let jsdata = JSON.parse(xml2json(eventData, { compact: true }));
 				let eventResults = new Array();
-				let elements:any[] = jsdata.events.event;
+				let elements: any[] = jsdata.events.event;
 				elements.forEach(element => {
 					let add = true;
 					if (typeof from != 'undefined' && from && element.start._text < from) {
@@ -62,7 +61,7 @@ export module Handlers {
 						res.send(outHtml.principalResult);
 					});
 				});
-				
+
 			});
 		}
 	}
@@ -76,12 +75,12 @@ export module Handlers {
 			if (err) {
 				dir.close();
 				fs.mkdir(`${dataDir}`, (err: NodeJS.ErrnoException | null) => {
-					if(err){
+					if (err) {
 						throw err;
 					}
 				});
 			}
-			else{
+			else {
 				dir.close();
 			}
 		});
@@ -108,12 +107,12 @@ export module Handlers {
 							stylesheetFileName: "transformations/rapla2kalender.sef.json",
 							sourceFileName: outfile,
 							destination: "serialized"
-						}, "async").then( (output: { principalResult: string; } ) => {
+						}, "async").then((output: { principalResult: string; }) => {
 							fs.writeFileSync(outkalfile, output.principalResult);
 						});
 					});
 				}
-				else{
+				else {
 					console.log(`No new data for course ${lecturer}/${course}...`);
 				}
 
@@ -140,14 +139,18 @@ export module Handlers {
 			res.status(401).setHeader("WWW-Authenticate", "Basic realm=\"Geschuetzter Bereich\", charset=\"UTF-8\"").send();
 		} else {
 			const creds64: string = req.headers.authorization.split(' ')[1];
-			const credentials: string = Utils.Word2Hex(Utils.Hex2Word(creds64)); 
-			const hash: string = Utils.GenSHA256Hash(credentials);
-			const hashs: string[] = fs.readFileSync(hashsFile, "utf-8").split("\n");
-			if (!hashs.includes(hash)) {
-				res.status(401).send("Forbidden");
-				return false;
+			const credentials: string = Utils.Word2Hex(Utils.Hex2Word(creds64));
+			if (credentials == 'public:public') {
+				return true;
+			} else {
+				const hash: string = Utils.GenSHA256Hash(credentials);
+				const hashs: string[] = fs.readFileSync(hashsFile, "utf-8").split("\n");
+				if (!hashs.includes(hash)) {
+					res.status(401).send("Forbidden");
+					return false;
+				}
+				return true;
 			}
-			return true;
 		}
 	}
 
@@ -157,16 +160,21 @@ export module Handlers {
 	 * @param newData The new data
 	 * @returns Whether or not the cached data are equal
 	 */
-	function checkCache(outfile: string | fs.PathLike, newData: string) : boolean {
-		let oldData: string = fs.readFileSync(outfile, null).toString();
+	function checkCache(outfile: string | fs.PathLike, newData: string): boolean {
+		if (fs.existsSync(outfile)) {
+			let oldData: string = fs.readFileSync(outfile, null).toString();
 
-		let oldDataHash = Utils.GenSHA256Hash(oldData);
-		let newDataHash = Utils.GenSHA256Hash(newData);
-		console.log(`${oldDataHash}==${newDataHash}`);
-		if(oldDataHash == newDataHash){
-			return true;
+			let oldDataHash = Utils.GenSHA256Hash(oldData);
+			let newDataHash = Utils.GenSHA256Hash(newData);
+			console.log(`${oldDataHash}==${newDataHash}`);
+			if (oldDataHash == newDataHash) {
+				return true;
+			}
+			return false;
 		}
-		return false;
+		else {
+			return false;
+		}
 	}
 
 	function toXml(jsObj: Object): string {

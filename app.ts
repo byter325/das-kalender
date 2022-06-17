@@ -8,7 +8,7 @@ import { Server } from "http";
 
 const app: Application = express();
 
-app.use(express.static(path.join(__dirname, "frontend", "app")));
+app.use(express.static(path.join(__dirname, "app")));
 
 // user: public | pw: public
 app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
@@ -16,7 +16,7 @@ app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, "frontend", "app", "index.html"));
+    res.sendFile(path.join(__dirname, "app", "index.html"));
 });
 
 app.use((req: Request, res: Response) => {
@@ -34,7 +34,7 @@ cron.schedule("0 */15 * * * *", () => {
     Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
 });
 
-const server:Server = app.listen(80, () => {
+const server: Server = app.listen(8080, () => {
     console.log(server.address());
     Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
 });
