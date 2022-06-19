@@ -5,8 +5,14 @@ body {
     hyphens: auto;
 }
 
+@font-face {
+    font-family: 'Montserrat-Bold';
+    src: url('/fonts/Montserrat-Bold.ttf');
+}
+
 h1 {
-    font-family: 'Comic Sans MS';
+    font-family: 'Montserrat-Bold';
+    font-size: 2.4rem;
 }
 
 .row-before-full-hour {
