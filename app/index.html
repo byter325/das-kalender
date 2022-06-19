@@ -198,7 +198,7 @@
 			<i class="bi bi-funnel-fill me-1"></i>
 			Gruppen auswählen
 		</button>
-		<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newAppointment">
+		<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newEvent" onclick="newEvent()">
 			<i class="bi bi-plus-circle me-1"></i>
 			Neuer Termin
 		</button>
@@ -214,7 +214,13 @@
 					<i class="bi bi-book"></i>
 				</span>
 
-				<h6 class="fw-bold">Web-Engineering I (nur AI/INF)</h6>
+				<h6 class="fw-bold d-inline">Web-Engineering I (nur AI/INF)</h6>
+				<div class="btn-group float-end"> <!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
+					<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
+						data-bs-target="#editEvent" onclick="editEvent('123')"><i class="bi bi-pencil-fill"></i></button>
+					<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
+						data-bs-target="#deleteEvent" onclick="deleteEvent('456')"><i class="bi bi-trash-fill"></i></button>
+				</div>
 				<p class="text-muted mb-1 fw-bold">9:00-10:30<span class="ms-2">(1:30 h)</span></p>
 				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="A268 Hörsaal">
 					<i class="bi bi-geo-alt-fill me-1"></i>A268 Hörsaal
@@ -237,7 +243,13 @@
 					<i class="bi bi-book"></i>
 				</span>
 
-				<h6 class="fw-bold">Intercultural Comm Gruppe 1</h6>
+				<h6 class="fw-bold d-inline">Intercultural Comm Gruppe 1</h6>
+				<div class="btn-group float-end"> <!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
+					<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
+						data-bs-target="#editEvent" onclick="editEvent('123')"><i class="bi bi-pencil-fill"></i></button>
+					<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
+						data-bs-target="#deleteEvent" onclick="deleteEvent('456')"><i class="bi bi-trash-fill"></i></button>
+				</div>
 				<p class="text-muted mb-1 fw-bold">11:15-12:45<span class="ms-2">(1:30 h)</span></p>
 				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="A268 Hörsaal">
 					<i class="bi bi-geo-alt-fill me-1"></i>A268
@@ -260,7 +272,13 @@
 					<i class="bi bi-book"></i>
 				</span>
 
-				<h6 class="fw-bold">Marketing (nur AI/INF)</h6>
+				<h6 class="fw-bold d-inline">Marketing (nur AI/INF)</h6>
+				<div class="btn-group float-end"> <!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
+					<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
+						data-bs-target="#editEvent" onclick="editEvent('123')"><i class="bi bi-pencil-fill"></i></button>
+					<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
+						data-bs-target="#deleteEvent" onclick="deleteEvent('456')"><i class="bi bi-trash-fill"></i></button>
+				</div>
 				<p class="text-muted mb-1 fw-bold">15:00-18:15<span class="ms-2">(3:15 h)</span></p>
 				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
 					title="XOnline-Veranstaltung Virtueller Raum">
@@ -353,7 +371,7 @@
 	<hr>
 
 
-	<!-- Modal -->
+	<!-- Modal: selectGroup -->
 	<div class="modal fade" id="selectGroupModal" tabindex="-1" aria-labelledby="selectGroupModalLabel"
 		aria-hidden="true">
 		<div class="modal-dialog">
@@ -382,29 +400,27 @@
 		</div>
 	</div>
 
-	<!-- Modal: newAppointment -->
-	<div class="modal fade" id="newAppointment" tabindex="-1" aria-labelledby="newAppointmentModalLabel"
-		aria-hidden="true">
+	<!-- Modal: newEvent -->
+	<div class="modal fade" id="newEvent" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form>
+				<form id="newEventForm">
 					<div class="modal-header">
-						<h5 class="modal-title" id="newAppointmentModalLabel">Neuen Termin hinzufügen</h5>
+						<h5 class="modal-title" id="newEventModalLabel">Neuen Termin hinzufügen</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 						<div class="mb-2">
-							<label for="newAppointmentTitle" class="form-label">Titel</label>
-							<input type="text" class="form-control" id="newAppointmentTitle">
+							<label for="newEventTitle" class="form-label">Titel</label>
+							<input type="text" class="form-control" id="newEventTitle">
 						</div>
 						<div class="mb-2">
-							<label for="newAppointmentDescription" class="form-label">Beschreibung</label>
-							<textarea type="text" class="form-control" id="newAppointmentDescription"
-								rows="2"></textarea>
+							<label for="newEventDescription" class="form-label">Beschreibung</label>
+							<textarea type="text" class="form-control" id="newEventDescription" rows="2"></textarea>
 						</div>
 						<div class="row">
 							<div class="mb-2 col-sm-6">
-								<label for="newAppointmentCategory" class="form-label">
+								<label for="newEventCategory" class="form-label">
 									<i class="bi bi-list me-1"></i> Kategorie</label>
 								<select class="form-select" aria-label="Select a category">
 									<option selected value="Lecture">Vorlesung</option>
@@ -415,29 +431,152 @@
 								</select>
 							</div>
 							<div class="mb-2 col-sm-6">
-								<label for="newAppointmentOrt" class="form-label">
+								<label for="newEventLocation" class="form-label">
 									<i class="bi bi-geo-alt me-1"></i> Ort</label>
-								<input type="text" class="form-control" id="newAppointmentOrt" required="required">
+								<input type="text" class="form-control" id="newEventLocation" required="required">
 							</div>
 						</div>
 						<div class="row">
 							<div class="mb-2 col-sm-6">
-								<label for="newAppointmentStart" class="form-label">
+								<label for="newEventStart" class="form-label">
 									<i class="bi bi-clock me-1"></i> Start</label>
-								<input type="datetime-local" class="form-control" id="newAppointmentStart"
+								<input type="datetime-local" class="form-control" id="newEventStart"
 									required="required">
 							</div>
 							<div class="mb-2 col-sm-6">
-								<label for="newAppointmentEnd" class="form-label">
+								<label for="newEventEnd" class="form-label">
 									<i class="bi bi-clock me-1"></i> Ende</label>
-								<input type="datetime-local" class="form-control" id="newAppointmentEnd"
-									required="required">
+								<input type="datetime-local" class="form-control" id="newEventEnd" required="required">
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
 						<button type="submit" class="btn btn-primary">Termin hinzufügen</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	
+	<!-- Modal: editEvent -->
+	<div class="modal fade" id="editEvent" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form id="editEventForm">
+					<div class="modal-header">
+						<h5 class="modal-title" id="editEventModalLabel">Termin bearbeiten</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="mb-2">
+							<label for="editEventTitle" class="form-label">Titel</label>
+							<input type="text" class="form-control" id="editEventTitle">
+						</div>
+						<div class="mb-2">
+							<label for="editEventDescription" class="form-label">Beschreibung</label>
+							<textarea type="text" class="form-control" id="editEventDescription" rows="2"></textarea>
+						</div>
+						<div class="row">
+							<div class="mb-2 col-sm-6">
+								<label for="editEventCategory" class="form-label">
+									<i class="bi bi-list me-1"></i> Kategorie</label>
+								<select class="form-select" aria-label="Select a category" id="editEventCategory">
+									<option selected value="Lecture">Vorlesung</option>
+									<option value="Exam">Klausur</option>
+									<option value="Post-exam">Nachklausur</option> <!-- TODO: gibt es das? -->
+									<option value="Meeting">Meeting</option>
+									<option value="Other">Sonstiges</option>
+								</select>
+							</div>
+							<div class="mb-2 col-sm-6">
+								<label for="editEventLocation" class="form-label">
+									<i class="bi bi-geo-alt me-1"></i> Ort</label>
+								<input type="text" class="form-control" id="editEventLocation" required="required">
+							</div>
+						</div>
+						<div class="row">
+							<div class="mb-2 col-sm-6">
+								<label for="editEventStart" class="form-label">
+									<i class="bi bi-clock me-1"></i> Start</label>
+								<input type="datetime-local" class="form-control" id="editEventStart"
+									required="required">
+							</div>
+							<div class="mb-2 col-sm-6">
+								<label for="editEventEnd" class="form-label">
+									<i class="bi bi-clock me-1"></i> Ende</label>
+								<input type="datetime-local" class="form-control" id="editEventEnd" required="required">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+						<button type="submit" class="btn btn-primary">Änderungen übernehmen</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Modal: deleteEvent -->
+	<div class="modal fade" id="deleteEvent" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form id="deleteEventForm">
+					<div class="modal-header">
+						<h5 class="modal-title" id="deleteEventModalLabel">Termin löschen</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>Möchten Sie folgenden Termin wirklich löschen?</p>
+						<div class="mb-2">
+							<label for="deleteEventTitle" class="form-label">Titel</label>
+							<input type="text" class="form-control" id="deleteEventTitle" disabled="disabled">
+						</div>
+						<div class="mb-2">
+							<label for="deleteEventDescription" class="form-label">Beschreibung</label>
+							<textarea type="text" class="form-control" id="deleteEventDescription" rows="2"
+								disabled="disabled"></textarea>
+						</div>
+						<div class="row">
+							<div class="mb-2 col-sm-6">
+								<label for="deleteEventCategory" class="form-label">
+									<i class="bi bi-list me-1"></i> Kategorie</label>
+								<select class="form-select" aria-label="Select a category" id="deleteEventCategory" disabled="disabled">
+									<option selected value="Lecture">Vorlesung</option>
+									<option value="Exam">Klausur</option>
+									<option value="Post-exam">Nachklausur</option>
+									<option value="Meeting">Meeting</option>
+									<option value="Other">Sonstiges</option>
+								</select>
+							</div>
+							<div class="mb-2 col-sm-6">
+								<label for="deleteEventLocation" class="form-label">
+									<i class="bi bi-geo-alt me-1"></i> Ort</label>
+								<input type="text" class="form-control" id="deleteEventLocation" required="required"
+									disabled="disabled">
+							</div>
+						</div>
+						<div class="row">
+							<div class="mb-2 col-sm-6">
+								<label for="deleteEventStart" class="form-label">
+									<i class="bi bi-clock me-1"></i> Start</label>
+								<input type="datetime-local" class="form-control" id="deleteEventStart"
+									disabled="disabled">
+							</div>
+							<div class="mb-2 col-sm-6">
+								<label for="deleteEventEnd" class="form-label">
+									<i class="bi bi-clock me-1"></i> Ende</label>
+								<input type="datetime-local" class="form-control" id="deleteEventEnd"
+									disabled="disabled">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+						<button type="submit" class="btn btn-danger">Termin löschen</button>
 					</div>
 				</form>
 			</div>

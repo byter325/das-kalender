@@ -133,3 +133,28 @@ $(() => {
     insertEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
     initTooltips();
 });
+
+/* UI events */
+function editEvent(eventID) {
+    const editEventForm = document.forms["editEventForm"];
+    editEventForm["editEventTitle"].value = "Ein zufälliger Titel";
+    editEventForm["editEventDescription"].value = "Lorem ipsum";
+    editEventForm["editEventCategory"].value = "Other";
+    editEventForm["editEventLocation"].value = "Mond 🌛";
+    editEventForm["editEventStart"].value = "2020-02-02T22:22";
+    editEventForm["editEventEnd"].value = "2022-02-22T20:20";
+}
+
+function deleteEvent(eventID) {
+    const deleteEventForm = document.forms["deleteEventForm"];
+    deleteEventForm["deleteEventTitle"].value = "Etwas zum Löschen";
+    deleteEventForm["deleteEventDescription"].value = "Das ist definitiv löschbar";
+    deleteEventForm["deleteEventCategory"].value = "Lecture";
+    deleteEventForm["deleteEventLocation"].value = "An der DHBW";
+    deleteEventForm["deleteEventStart"].value = "1970-01-01T08:00";
+    deleteEventForm["deleteEventEnd"].value = "1970-01-01T09:30";
+}
+
+function newEvent() {
+    const newEventForm = document.forms["newEventForm"];
+}
