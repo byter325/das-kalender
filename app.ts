@@ -3,17 +3,26 @@ import {Handlers} from "./lib/handlers";
 import * as cron from "node-cron";
 
 const path = require('path');
-const express = require('express');
+import express from 'express';
+import { XMLManager } from "./lib/xml_manager";
+import usersRouter from "./end_points/user_router";
+import groupRouter from "./end_points/group_router";
+import calendarRouter from "./end_points/calendar_router";
 const bodyParser = require('body-parser');
 const xmlparser = require('express-xml-bodyparser');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const apiRouter = require('./controllers/apiRouter.js')
 const app: Application = express();
 const port = 8080;
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(xmlparser());
+
+const routes = express.Router()
+routes.use('/users', usersRouter);
+routes.use('/groups', groupRouter);
+routes.use('/calendar', calendarRouter);
+app.use(routes)
 
 app.listen(port, () => {
     console.log(`Success! Your application is running on port ${port}.`);
@@ -27,13 +36,14 @@ app.get("/", (req: Request, res: Response) => {
 const swaggerDocument = YAML.load('./openapi.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.use('/api', apiRouter)
+//app.use('/api', new ApiRouter().router)
 
 // user: public | pw: public
 // legacy, will be removed soon
 app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
     if (Handlers.authenticate(req, res)) Handlers.getRaplaEvents(req, res)
 });
+
 
 app.use((req: Request, res: Response) => {
     res.status(404)
@@ -49,3 +59,5 @@ app.use((err: Error, req: Request, res: Response) => {
 cron.schedule("0 */1 * * * *", () => {
     Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
 });
+
+

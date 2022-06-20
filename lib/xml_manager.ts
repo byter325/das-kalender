@@ -55,7 +55,13 @@ export module XMLManager {
             var fullPath = "./data/" + subPath
             var data = fs.readFileSync(fullPath + "/" + Utils.GenSHA256Hash(uid) + ".xml")
             var events = parser.parse(data)["events"]
-            return events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)[0]
+            if(events['event'] instanceof Object){
+                console.log(events['event']);
+                
+                return events['event']
+            } else {
+                return events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)[0]
+            }
         } catch (error) {
             console.log(error);
             return null
@@ -211,18 +217,3 @@ export module XMLManager {
         }
     }
 }
-
-
-/* XMLManager.insertUserEvent("something", 
-    new DataUserEvent("uidStuff", "A title", "A description",  {presenter:{name:"A presenter"}}, "lecture", new Date(), new Date(), "A268", new Date(), {modifiedBy:{name:"kollege roethig"}})) */
-/* XMLManager.insertGroupEvent("uid", new CalendarEvent("groupEventUID", "A group event", "A description", {presenter:{name:"kollege roethig"}},
-    "lecture", new Date(), new Date(), "Roethigs Buero", new Date(), {modifiedBy:{name:"kollege roethig"}})) */
-/* console.log(XMLManager.insertGroupEvent("anotherGroup", new CalendarEvent("2ndEvent", "The second event", "The second group event", {presenter:{firstName:"roethig"}}, "lecture",
-new Date(), new Date(), "A999", new Date(), {modifiedBy:{firstName:"roehtig"}}))); */
-//console.log(XMLManager.deleteGroupEvent("uid", "groupEventUID"))
-//console.log(getUserEventByUserHashAndEventUID("testUser", "1234"))
-/* console.log(XMLManager.insertUser(new User("alexopoulos","Deine Mudda","Alexopoulos","alex@opoul.os", "AA", "passwort123",  
-[{uid:"UID1",name:"Group1"},{uid:"UID2",name:"Group2"}], [{uid:"E-UID1",name:"EditableGroup1"},{uid:"E-UID2",name:"EditableGroup2"}], true, true))) */
-/* console.log(XMLManager.insertUserEvent("alexopoulos", new CalendarEvent("alexEvent", "The Alex event", "The Alex group event", {presenter:{firstName:"Alex"}}, "lecture",
-new Date(), new Date(), "A999", new Date(), {modifiedBy:{firstName:"Alex"}}))); */
-//insertGroup("uid","group1")
