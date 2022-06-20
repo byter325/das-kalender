@@ -13,10 +13,13 @@ router.post('/:uid', (req, res, next) => {
 })
 
 router.get('/:uid', (req, res, next) => {
-    if(req.params.eventID != null) {
-        Calendar.getEvent(req.params.uid, req.params.eventID)
+    console.log(req.params.uid + req.query.eventID);
+    if(req.query.eventID != null) {
+        Calendar.getEvent(req.params.uid, req.query.eventID)
             .then(function (response) {
                 //TODO: successful return
+                console.log(response);
+                res.send(response)
             })
             .catch(function (response) {
                 // utils.writeJson(res, response);
