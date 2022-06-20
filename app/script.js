@@ -158,3 +158,8 @@ function deleteEvent(eventID) {
 function newEvent() {
     const newEventForm = document.forms["newEventForm"];
 }
+
+function registration() {
+    const registrationForm = document.forms["registrationForm"];
+    
+}

@@ -23,9 +23,12 @@
 </head>
 
 <body class="container pt-3">
-	<h1>
+	<h1 class="d-inline">
 		<img src="./favicon.svg" width="50rem" height="50rem"> das kalender
 	</h1>
+	<button class="btn btn-outline-primary float-end">
+		<i class="bi bi-person-circle"></i> Anmelden
+	</button>
 	<div>
 		<div class="position-relative" style="height: 2em; font-size: 2em;">
 			<div class="position-absolute top-0 start-0" id="prevweek"><i class="bi bi-arrow-left-circle"></i></div>
@@ -570,6 +573,69 @@
 								<label for="deleteEventEnd" class="form-label">
 									<i class="bi bi-clock me-1"></i> Ende</label>
 								<input type="datetime-local" class="form-control" id="deleteEventEnd"
+									disabled="disabled">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+						<button type="submit" class="btn btn-danger">Termin löschen</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal: loginModal -->
+	<div class="modal fade" id="login" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form id="loginForm">
+					<div class="modal-header">
+						<h5 class="modal-title" id="loginModalLabel">Termin löschen</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>Möchten Sie folgenden Termin wirklich löschen?</p>
+						<div class="mb-2">
+							<label for="loginTitle" class="form-label">Titel</label>
+							<input type="text" class="form-control" id="loginTitle" disabled="disabled">
+						</div>
+						<div class="mb-2">
+							<label for="loginDescription" class="form-label">Beschreibung</label>
+							<textarea type="text" class="form-control" id="loginDescription" rows="2"
+								disabled="disabled"></textarea>
+						</div>
+						<div class="row">
+							<div class="mb-2 col-sm-6">
+								<label for="loginCategory" class="form-label">
+									<i class="bi bi-list me-1"></i> Kategorie</label>
+								<select class="form-select" aria-label="Select a category" id="loginCategory" disabled="disabled">
+									<option selected value="Lecture">Vorlesung</option>
+									<option value="Exam">Klausur</option>
+									<option value="Post-exam">Nachklausur</option>
+									<option value="Meeting">Meeting</option>
+									<option value="Other">Sonstiges</option>
+								</select>
+							</div>
+							<div class="mb-2 col-sm-6">
+								<label for="loginLocation" class="form-label">
+									<i class="bi bi-geo-alt me-1"></i> Ort</label>
+								<input type="text" class="form-control" id="loginLocation" required="required"
+									disabled="disabled">
+							</div>
+						</div>
+						<div class="row">
+							<div class="mb-2 col-sm-6">
+								<label for="loginStart" class="form-label">
+									<i class="bi bi-clock me-1"></i> Start</label>
+								<input type="datetime-local" class="form-control" id="loginStart"
+									disabled="disabled">
+							</div>
+							<div class="mb-2 col-sm-6">
+								<label for="loginEnd" class="form-label">
+									<i class="bi bi-clock me-1"></i> Ende</label>
+								<input type="datetime-local" class="form-control" id="loginEnd"
 									disabled="disabled">
 							</div>
 						</div>
