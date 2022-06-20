@@ -23,10 +23,11 @@
 </head>
 
 <body class="container pt-3">
+	<header>
 	<h1 class="d-inline">
 		<img src="./favicon.svg" width="50rem" height="50rem"> das kalender
 	</h1>
-	<div class="btn-group float-end">
+	<div class="btn-group float-end mb-3">
 		<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
 			<i class="bi bi-person-circle"></i> Anmelden
 		</button>
@@ -34,7 +35,8 @@
 			Registrieren
 		</button>
 	</div>
-	<div>
+</header>
+	<div class="d-none d-sm-none d-md-block">
 		<div class="position-relative" style="height: 2em; font-size: 2em;">
 			<div class="position-absolute top-0 start-0" id="prevweek"><i class="bi bi-arrow-left-circle"></i></div>
 			<div class="position-absolute top-0 start-50 translate-middle" id="calweek"></div>
@@ -323,10 +325,6 @@
 			<i class="bi bi-cup-fill ms-3 me-1"></i> Pause (0:15 h)
 		</div>
 
-		<!-- <vorlesung name="Marketing (nur AI/INF)" ort="XOnline-Veranstaltung" start="15:00" ende="18:15" dauer="3:15 h"
-            presenterName="Sabine Rudolf" presenterEmail="sr@test.example.com"></vorlesung> -->
-		<!-- TODO: So viel kürzer sieht eine Vorlesung in Angular aus. -->
-
 		<div class="card mb-2">
 			<h5 class="card-header" style="background-color: lightcyan">
 				Projektmanagement 2
@@ -433,7 +431,7 @@
 								<select class="form-select" aria-label="Select a category">
 									<option selected value="Lecture">Vorlesung</option>
 									<option value="Exam">Klausur</option>
-									<option value="Post-exam">Nachklausur</option> <!-- TODO: gibt es das? -->
+									<option value="Post-exam">Nachklausur</option>
 									<option value="Meeting">Meeting</option>
 									<option value="Other">Sonstiges</option>
 								</select>
@@ -493,7 +491,7 @@
 								<select class="form-select" aria-label="Select a category" id="editEventCategory">
 									<option selected value="Lecture">Vorlesung</option>
 									<option value="Exam">Klausur</option>
-									<option value="Post-exam">Nachklausur</option> <!-- TODO: gibt es das? -->
+									<option value="Post-exam">Nachklausur</option>
 									<option value="Meeting">Meeting</option>
 									<option value="Other">Sonstiges</option>
 								</select>
