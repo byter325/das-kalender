@@ -16,7 +16,7 @@ tags:
   - name: Groups
     description: Operations about groups
 paths:
-  /calendar/{uid}:
+  /api/calendar/{uid}:
     post:
       tags:
         - Calendar
@@ -45,9 +45,7 @@ paths:
         "400":
           description: Invalid input
       security:
-        - api_key:
-            - write:calendar
-            - read:calendar
+        - api_key: []
       x-swagger-router-controller: Calendar
     get:
       tags:
@@ -169,7 +167,7 @@ paths:
             - read:calendar
       x-swagger-router-controller: Calendar
 
-  /user:
+  /api/users:
     post:
       tags:
         - Users
@@ -216,7 +214,7 @@ paths:
             - read:user
       x-swagger-router-controller: Users
 
-  /user/{uid}:
+  /api/users/{uid}:
     get:
       tags:
         - Users
@@ -310,7 +308,7 @@ paths:
             - read:user
       x-swagger-router-controller: Users
 
-  /groups:
+  /api/groups:
     post:
       tags:
         - Groups
@@ -357,7 +355,7 @@ paths:
             - read:group
       x-swagger-router-controller: Groups
 
-  /group/{uid}:
+  /api/groups/{uid}:
     put:
       tags:
         - Groups
@@ -421,6 +419,11 @@ paths:
       x-swagger-router-controller: Groups
 
 components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-Key
   schemas:
     PersonInfo:
       required:

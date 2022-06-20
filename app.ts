@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const xmlparser = require('express-xml-bodyparser');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
+const apiRouter = require('./controllers/apiRouter.js')
 const app: Application = express();
 const port = 8080;
 
@@ -25,6 +26,8 @@ app.get("/", (req: Request, res: Response) => {
 
 const swaggerDocument = YAML.load('./openapi.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.use('/api', apiRouter)
 
 // user: public | pw: public
 // legacy, will be removed soon

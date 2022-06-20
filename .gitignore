@@ -7,7 +7,7 @@ yarn-error.log*
 lerna-debug.log*
 
 # No js files because we use typescript
-*.js
+#*.js
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
