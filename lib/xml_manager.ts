@@ -15,7 +15,7 @@ export module XMLManager{
      * @return {User} Returns an object of the User class if the user exists
      * @return {null} Returns null if the user is not found
      */
-    export function getUserByUid(uid:string):any{
+    export function getUserByUid(uid:string): User | null{
         try{
             const parser = new XMLParser({
                 ignoreAttributes:false,
@@ -42,7 +42,7 @@ export module XMLManager{
      * @return {any}  Returns an object if the group exists
      * @return {null} Returns null if the group is not found
      */
-    export function getGroupByUid(uid:string):any{
+    export function getGroupByUid(uid:string): any | null{
         try {
             const parser = new XMLParser({
                 ignoreAttributes:false,
