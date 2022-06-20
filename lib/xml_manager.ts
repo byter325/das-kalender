@@ -12,7 +12,7 @@ export module XMLManager{
      * 
      * @export
      * @param {string} uid unique user id
-     * @return {any} Returns an object of the User class if the user exists
+     * @return {User} Returns an object of the User class if the user exists
      * @return {null} Returns null if the user is not found
      */
     export function getUserByUid(uid:string):any{
