@@ -5,7 +5,16 @@ import { Utils } from "./utils"
 import { XMLParser, XMLBuilder } from 'fast-xml-parser'
 
 export module XMLManager{
+    
 
+    /**
+     * Tries to find a user by its uid
+     * 
+     * @export
+     * @param {string} uid unique user id
+     * @return {any} Returns an object of the User class if the user exists
+     * @return {null} Returns null if the user is not found
+     */
     export function getUserByUid(uid:string):any{
         try{
             const parser = new XMLParser({
@@ -25,6 +34,14 @@ export module XMLManager{
         }
     }
     
+    /**
+     * Tries to find a group by its uid
+     * 
+     * @export
+     * @param {string} uid The unique group id
+     * @return {any}  Returns an object if the group exists
+     * @return {null} Returns null if the group is not found
+     */
     export function getGroupByUid(uid:string):any{
         try {
             const parser = new XMLParser({
@@ -41,14 +58,44 @@ export module XMLManager{
         }
     }
 
+    /**
+     * Tries to find an event by the uids of the event and the user it belongs to
+     * 
+     * @export
+     * @param {string} userUid The unique user id
+     * @param {string} eventUid The unique event id
+     * @return {any}  Returns the event if it is found
+     * @return {null} Returns null if the event is not found
+     */
     export function getUserEventByUserUIDAndEventUID(userUid:string, eventUid:string):any{
         return getEventByHashAndEventUID(userUid, eventUid,"userEvents")
     }
 
+
+    /**
+     * Tries to find an event by the uids of the event and the group it belongs to
+     * 
+     * @export
+     * @param {string} groupUid The unique group id
+     * @param {string} eventUid The unique event id
+     * @return {any}  Returns the event if it is found
+     * @return {null} Returns null if the event is not found
+     */
     export function getGroupEventByUserHashAndEventUID(groupUid:string, eventUid:string):any{
         return getEventByHashAndEventUID(groupUid, eventUid,"groupEvents")
     }
 
+    /**
+     * Generic version of getUserEvent... and getGroupEvent
+     * Tries to return an event according to its uid
+     *
+     * @export
+     * @param {string} uid The unique (group or user) id
+     * @param {string} eventUid The unique event id
+     * @param {string} subPath Either "groupEvents" or "userEvents"
+     * @return {any}  Returns the event if it is found
+     * @return {null} Returns null if the event is not found
+     */
     export function getEventByHashAndEventUID(uid:string, eventUid:string, subPath:string):any{
         try {
             const parser = new XMLParser()
@@ -63,6 +110,14 @@ export module XMLManager{
     }
 
 
+    /**
+     * Inserts a user into the /users/ folder
+     * Also creates an empty entry into /userEvents/
+     *
+     * @export
+     * @param {User} user The user to be added
+     * @return {*}  Returns if the operation was successful or not
+     */
     export function insertUser(
         user:User):boolean {
         try{
@@ -97,6 +152,15 @@ export module XMLManager{
     }
 
     
+    /**
+     * Inserts a group into the /group/ folder
+     * Also creates an empty entry into /groupEvents/
+     *
+     * @export
+     * @param {string} uid The id which is to  be given to the group
+     * @param {string} name The name which is to be given to the group
+     * @return {*} Returns if the operation was successful or not
+     */
     export function insertGroup(uid:string,name:string):boolean{
         try{
             const builder = new XMLBuilder({})
@@ -110,14 +174,39 @@ export module XMLManager{
         }
     }
 
+    /**
+     * Adds an event to a user's events
+     *
+     * @export
+     * @param {string} userUid The unique user id
+     * @param {CalendarEvent} event The event to be added
+     * @return {*}  {boolean}
+     */
     export function insertUserEvent(userUid:string, event:CalendarEvent):boolean{
         return insertEvent(userUid, "userEvents", event)
     }
 
+    /**
+     * Adds an event to a group's events
+     *
+     * @export
+     * @param {string} groupUid
+     * @param {CalendarEvent} event
+     * @return {*}  {boolean}
+     */
     export function insertGroupEvent(groupUid:string, event:CalendarEvent):boolean{
         return insertEvent(groupUid, "groupEvents", event)
     }
 
+    /**
+     * Generic version of insertUserEvent and inserGroupEvent
+     * Adds an event to a user's or a group's events
+     * 
+     * @param {string} uid The unique (user or group) id
+     * @param {string} subPath Either "userEvents" or "groupEvents"
+     * @param {CalendarEvent} event The event to be added
+     * @return {*} Returns if the operation was successful or not
+     */
     function insertEvent(uid:string, subPath:string, event:CalendarEvent):boolean{
         try{
             var d = getAllEvents(uid, subPath)
@@ -144,6 +233,16 @@ export module XMLManager{
         }
     }
 
+    /**
+     * Returns all events of a user or a group by its uid
+     *
+     * @export
+     * @param {string} uid The unique (user or group) id
+     * @param {string} subPath Either "userEvents" or "groupEvents"
+     * @return {any[]} Returns an empty array if no event entries exist or an array of events if multiple events exist 
+     * @return {any} an object (if user has one event entry)
+     * @return {null} Returns null if the operation failed
+     */
     export function getAllEvents(uid:string, subPath:string):any{
         try {
             const parser = new XMLParser()
@@ -158,6 +257,13 @@ export module XMLManager{
     }
 
     
+    /**
+     * Deletes a user and their entries by their uid
+     *
+     * @export
+     * @param {string} uid The unique user id
+     * @return {*}  Returns if the operation was successful or not
+     */
     export function deleteUser(uid:string):boolean{
         try{
             fs.rmSync("./data/users/" + Utils.GenSHA256Hash(uid) + ".xml")
@@ -169,7 +275,13 @@ export module XMLManager{
         }
     }
     
-    
+    /**
+     * Deletes a group and its entries by its uid
+     *
+     * @export
+     * @param {string} uid The unique group id
+     * @return {*}  Returns if the operation was successful or not
+     */
     export function deleteGroup(uid:string):boolean{
         try{
             fs.rmSync("./data/groups/" + Utils.GenSHA256Hash(uid) + ".xml")
@@ -189,6 +301,15 @@ export module XMLManager{
         return deleteEvent(groupUID, eventUID, "groupEvents")
     }
 
+    /**
+     * Generic version of deleteUserEvent and deleteGroupEvent
+     * Reads all events of a user and tries to remove the specified one using its eventUid
+     *
+     * @param {string} uid The group or user that the event belongs to
+     * @param {string} eventUid The unique event id
+     * @param {string} subPath Either "userEvents" or "groupEvents"
+     * @return {*}  Returns if the operation was successful or not
+     */
     function deleteEvent(uid:string, eventUid:string, subPath:string):boolean{
         try{
             var events:any[] = getAllEvents(uid, subPath)['event']
@@ -213,8 +334,8 @@ export module XMLManager{
 }
 
 
-XMLManager.insertUserEvent("something", 
-    new CalendarEvent("uidStuff", "A title", "A description",  {presenter:{name:"A presenter"}}, "lecture", new Date().toISOString(), new Date().toISOString(), "A268", new Date().toISOString(), {modifiedBy:{name:"kollege roethig"}}))
+/* XMLManager.insertUserEvent("something", 
+    new CalendarEvent("uidStuff", "A title", "A description",  {presenter:{name:"A presenter"}}, "lecture", new Date().toISOString(), new Date().toISOString(), "A268", new Date().toISOString(), {modifiedBy:{name:"kollege roethig"}})) */
 /* XMLManager.insertGroupEvent("uid", new CalendarEvent("groupEventUID", "A group event", "A description", {presenter:{name:"kollege roethig"}},
     "lecture", new Date(), new Date(), "Roethigs Buero", new Date(), {modifiedBy:{name:"kollege roethig"}})) */
 /* console.log(XMLManager.insertGroupEvent("anotherGroup", new CalendarEvent("2ndEvent", "The second event", "The second group event", {presenter:{firstName:"roethig"}}, "lecture",
