@@ -159,7 +159,18 @@ function newEvent() {
     const newEventForm = document.forms["newEventForm"];
 }
 
+function login() {
+    const loginForm = document.forms["loginForm"];
+    const email = loginForm["loginMail"].value;
+    const password = loginForm["loginPassword"].value;
+    // TODO: login process
+}
+
 function registration() {
     const registrationForm = document.forms["registrationForm"];
-    
+    const email = registrationForm["loginMail"].value;
+    const password = registrationForm["loginPassword"].value;
+    const firstName = registrationForm["firstName"].value;
+    const lastName = registrationForm["lastName"].value;
+    // TODO: registration process
 }

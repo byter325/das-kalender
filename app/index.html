@@ -26,9 +26,14 @@
 	<h1 class="d-inline">
 		<img src="./favicon.svg" width="50rem" height="50rem"> das kalender
 	</h1>
-	<button class="btn btn-outline-primary float-end">
-		<i class="bi bi-person-circle"></i> Anmelden
-	</button>
+	<div class="btn-group float-end">
+		<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+			<i class="bi bi-person-circle"></i> Anmelden
+		</button>
+		<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#registrationModal">
+			Registrieren
+		</button>
+	</div>
 	<div>
 		<div class="position-relative" style="height: 2em; font-size: 2em;">
 			<div class="position-absolute top-0 start-0" id="prevweek"><i class="bi bi-arrow-left-circle"></i></div>
@@ -381,7 +386,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title" id="selectGroupModalLabel">Vorlesungen filtern</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
 				</div>
 				<div class="modal-body">
 					<ul class="list-group">
@@ -410,7 +415,7 @@
 				<form id="newEventForm">
 					<div class="modal-header">
 						<h5 class="modal-title" id="newEventModalLabel">Neuen Termin hinzufügen</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
 					</div>
 					<div class="modal-body">
 						<div class="mb-2">
@@ -470,7 +475,7 @@
 				<form id="editEventForm">
 					<div class="modal-header">
 						<h5 class="modal-title" id="editEventModalLabel">Termin bearbeiten</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
 					</div>
 					<div class="modal-body">
 						<div class="mb-2">
@@ -530,7 +535,7 @@
 				<form id="deleteEventForm">
 					<div class="modal-header">
 						<h5 class="modal-title" id="deleteEventModalLabel">Termin löschen</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
 					</div>
 					<div class="modal-body">
 						<p>Möchten Sie folgenden Termin wirklich löschen?</p>
@@ -587,62 +592,65 @@
 	</div>
 
 	<!-- Modal: loginModal -->
-	<div class="modal fade" id="login" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+	<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<form id="loginForm">
 					<div class="modal-header">
-						<h5 class="modal-title" id="loginModalLabel">Termin löschen</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						<h5 class="modal-title" id="loginModalLabel">Anmeldung</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
 					</div>
 					<div class="modal-body">
-						<p>Möchten Sie folgenden Termin wirklich löschen?</p>
 						<div class="mb-2">
-							<label for="loginTitle" class="form-label">Titel</label>
-							<input type="text" class="form-control" id="loginTitle" disabled="disabled">
+							<label for="loginMail" class="form-label">E-Mail</label>
+							<input type="email" class="form-control" id="loginMail" required="required">
 						</div>
 						<div class="mb-2">
-							<label for="loginDescription" class="form-label">Beschreibung</label>
-							<textarea type="text" class="form-control" id="loginDescription" rows="2"
-								disabled="disabled"></textarea>
+							<label for="loginPassword" class="form-label">Passwort</label>
+							<input type="password" class="form-control" id="loginPassword" required="required">
 						</div>
-						<div class="row">
-							<div class="mb-2 col-sm-6">
-								<label for="loginCategory" class="form-label">
-									<i class="bi bi-list me-1"></i> Kategorie</label>
-								<select class="form-select" aria-label="Select a category" id="loginCategory" disabled="disabled">
-									<option selected value="Lecture">Vorlesung</option>
-									<option value="Exam">Klausur</option>
-									<option value="Post-exam">Nachklausur</option>
-									<option value="Meeting">Meeting</option>
-									<option value="Other">Sonstiges</option>
-								</select>
-							</div>
-							<div class="mb-2 col-sm-6">
-								<label for="loginLocation" class="form-label">
-									<i class="bi bi-geo-alt me-1"></i> Ort</label>
-								<input type="text" class="form-control" id="loginLocation" required="required"
-									disabled="disabled">
-							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+						<button type="submit" class="btn btn-primary">Anmelden</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal: registrationModal -->
+	<div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form id="registrationForm">
+					<div class="modal-header">
+						<h5 class="modal-title" id="registrationModalLabel">Registrierung</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+					</div>
+					<div class="modal-body">
+						<div class="mb-2">
+							<label for="registrationMail" class="form-label">E-Mail</label>
+							<input type="email" class="form-control" id="registrationMail" required="required">
 						</div>
-						<div class="row">
-							<div class="mb-2 col-sm-6">
-								<label for="loginStart" class="form-label">
-									<i class="bi bi-clock me-1"></i> Start</label>
-								<input type="datetime-local" class="form-control" id="loginStart"
-									disabled="disabled">
+						<div class="mb-2">
+							<label for="registrationPassword" class="form-label">Passwort</label>
+							<input type="password" class="form-control" id="registrationPassword" required="required">
+						</div>
+						<div class="row row-cols-sm-2 mb-2">
+							<div>
+								<label for="registrationFirstName" class="form-label">Vorname</label>
+								<input type="text" class="form-control" id="registrationFirstName" required="required">
 							</div>
-							<div class="mb-2 col-sm-6">
-								<label for="loginEnd" class="form-label">
-									<i class="bi bi-clock me-1"></i> Ende</label>
-								<input type="datetime-local" class="form-control" id="loginEnd"
-									disabled="disabled">
+							<div>
+								<label for="registrationLastName" class="form-label">Nachname</label>
+								<input type="text" class="form-control" id="registrationLastName" required="required">
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-						<button type="submit" class="btn btn-danger">Termin löschen</button>
+						<button type="submit" class="btn btn-primary">Registrieren</button>
 					</div>
 				</form>
 			</div>
