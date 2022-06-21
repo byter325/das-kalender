@@ -41,18 +41,10 @@ export module XMLManager {
         }
     }
 
-    export function getUserEventByUserUIDAndEventUID(userUid: string, eventUid: string): any {
-        return getEventByHashAndEventUID(userUid, eventUid, "userEvents")
-    }
-
-    export function getGroupEventByUserHashAndEventUID(groupUid: string, eventUid: string): any {
-        return getEventByHashAndEventUID(groupUid, eventUid, "groupEvents")
-    }
-
-    export function getEventByHashAndEventUID(uid: string, eventUid: string, subPath: string): any {
+    export function getEventByUIDAndEventUID(uid: string, eventUid: string): any {
         try {
             const parser = new XMLParser()
-            var fullPath = "./data/" + subPath
+            var fullPath = "./data/events/"
             var data = fs.readFileSync(fullPath + "/" + Utils.GenSHA256Hash(uid) + ".xml")
             var events = parser.parse(data)["events"]
             if(events['event'] instanceof Object){
@@ -116,17 +108,9 @@ export module XMLManager {
         }
     }
 
-    export function insertUserEvent(userUid: string, event: CalendarEvent): boolean {
-        return insertEvent(userUid, "userEvents", event)
-    }
-
-    export function insertGroupEvent(groupUid: string, event: CalendarEvent): boolean {
-        return insertEvent(groupUid, "groupEvents", event)
-    }
-
-    function insertEvent(uid: string, subPath: string, event: CalendarEvent): boolean {
+    export function insertEvent(uid: string, event: CalendarEvent): boolean {
         try {
-            var d = getAllEvents(uid, subPath)
+            var d = getAllEvents(uid)
             if (d == '') {
                 d = {event: []}
                 d['event'].push(event)
@@ -142,7 +126,7 @@ export module XMLManager {
 
             d = {events: d}
             var xmlDataStr: string = builder.build(d)
-            writeFileSync("./data/" + subPath + "/" + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            writeFileSync("./data/events/" + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e);
@@ -150,10 +134,10 @@ export module XMLManager {
         }
     }
 
-    export function getAllEvents(uid: string, subPath: string): any {
+    export function getAllEvents(uid: string): any {
         try {
             const parser = new XMLParser()
-            var fullPath = "./data/" + subPath + "/"
+            var fullPath = "./data/events/"
             var data = fs.readFileSync(fullPath + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
             var events = parser.parse(data)["events"]
             return events
@@ -187,17 +171,9 @@ export module XMLManager {
         }
     }
 
-    export function deleteUserEvent(userUID: string, eventUID: string): boolean {
-        return deleteEvent(userUID, eventUID, "userEvents")
-    }
-
-    export function deleteGroupEvent(groupUID: string, eventUID: string): boolean {
-        return deleteEvent(groupUID, eventUID, "groupEvents")
-    }
-
-    function deleteEvent(uid: string, eventUid: string, subPath: string): boolean {
+    export function deleteEvent(uid: string, eventUid: string): boolean {
         try {
-            var events: any[] = getAllEvents(uid, subPath)['event']
+            var events: any[] = getAllEvents(uid)['event']
             var filteredEvents: any[] = events.filter(event => event.uid != eventUid)
 
             var data = {events: {event: filteredEvents}}
@@ -209,7 +185,7 @@ export module XMLManager {
             var xmlDataStr = builder.build(data)
             console.log(xmlDataStr);
 
-            writeFileSync("./data/" + subPath + "/" + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            writeFileSync("./data/events/" + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e)

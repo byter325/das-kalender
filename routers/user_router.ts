@@ -4,7 +4,7 @@ import { XMLManager } from '../lib/xml_manager';
 const usersRouter = express.Router();
 
 usersRouter.get('/:uid', (request:express.Request, response:express.Response) => {
-    return response.json("Ok")
+    return response.send(XMLManager.getUserByUid(request.params.uid))
 });
 
 export default usersRouter;
