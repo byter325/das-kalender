@@ -27,10 +27,16 @@ app.use(routes)
 app.listen(port, () => {
     console.log(`Success! Your application is running on port ${port}.`);
     console.log(`You can open Swagger-UI here:  http://localhost:${port}/docs`);
+app.use(express.static(path.join(__dirname, "app")));
+});
+
+// user: public | pw: public
+app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
+    if (Handlers.authenticate(req, res)) Handlers.getRaplaEvents(req, res)
 });
 
 app.get("/", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, "static", "index.html"));
+    res.sendFile(path.join(__dirname, "app", "index.html"));
 });
 
 const swaggerDocument = YAML.load('./openapi.yaml');
@@ -50,14 +56,12 @@ app.use((req: Request, res: Response) => {
     res.send('404 - Not found')
 });
 
-app.use((err: Error, req: Request, res: Response) => {
+app.use((err: Error, req: Request, res: Response, next: any) => {
     console.error(err.message)
     res.status(500)
     res.send('500 - Internal Error')
 });
 
-cron.schedule("0 */1 * * * *", () => {
+cron.schedule("0 */15 * * * *", () => {
     Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
 });
-
-

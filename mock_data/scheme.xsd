@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- Brauchen wir noch ein element "events" als Sequenz aus "event"s? -->
+    <xs:element name="event">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Documentation for event:
+
+                title - (string) Title of the event
+                description - (string) Description of the event
+                presenter - (personInfo at least one) Information about the presenter(s) (name, initials and mail) for
+                contact
+                category - (category) Type of the event (e.g. Lecture, Exam, Meeting, ...)
+                participant - (group at least one) Group(s) which is(are) participating in this event
+                start - (dateTime) Date and time of the start of the event
+                end - (dateTime) Date and time of the end of the event
+                location - (string) Location of the event (e.g. room number, address, ...)
+                modified - (dateTime) Date and time of the last modification of the event <!-- TODO: bei eigenen Terminen Admin anzeigen? -->
+                modifiedBy - (personInfo only one) Information about the person who lastly modified the event (name,
+                initials and mail) for contact
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="title" type="xs:string"/>
+                <xs:element name="description" type="xs:string"/>
+                <xs:element name="presenter" type="personInfo" maxOccurs="unbounded"/>
+                <xs:element name="category" type="category"/>
+                <xs:element name="participant" type="group" maxOccurs="unbounded"/>
+                <xs:element name="start" type="xs:dateTime"/>
+                <xs:element name="end" type="xs:dateTime"/>
+                <xs:element name="location" type="xs:string"/>
+                <xs:element name="modified" type="xs:dateTime"/>
+                <xs:element name="modifiedBy" type="personInfo"/>
+            </xs:sequence>
+            <xs:attribute name="uid" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Ist das nur der user? -> Umbenennung in user sinnvoll. -->
+    <xs:element name="person">
+        <xs:annotation>
+            <xs:documentation>
+                Documentation of person:
+
+                firstName - (string) First name of the person/user
+                lastName - (string) Last name of the person/user
+                initials - (string) Upper case combination of the first letter of the first name and the first letter of
+                the last name
+                mail - (string) Valid mail address for contact
+                passwordHash - (string) Hash of the password for login
+
+                At least one group or editableGroup!
+                group - (group) Group which you are allowed to see but not to edit
+                editableGroup - (group) Group which you are allowed to see AND to edit
+
+                darkMode - (boolean) Does the user prefer dark mode?
+                isAdministrator - (boolean) Is the user an administrator for the whole installation?
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="firstName" type="xs:string"/>
+                <xs:element name="lastName" type="xs:string"/>
+                <xs:element name="initials">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="[A-Z][A-Z]"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="mail">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value=".+@.+\..+"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="passwordHash" type="xs:string"/>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element name="group" type="group"/>
+                    <xs:element name="editableGroup" type="group"/>
+                </xs:choice>
+                <xs:element name="darkMode" type="xs:boolean"/>
+                <xs:element name="isAdministrator" type="xs:boolean"/>
+            </xs:sequence>
+            <xs:attribute name="uid" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="personInfo">
+        <xs:annotation>
+            <xs:documentation>
+                Documentation of personInfo:
+
+                firstName - (string) First name of the person/user
+                lastName - (string) Last name of the person/user
+                initials - (string) Upper case combination of the first letter of the first name and the first letter of
+                the last name
+                mail - (string) Valid mail address for contact
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="initials">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="[A-Z][A-Z]"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="mail">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value=".+@.+\..+"/> <!-- Was macht der Punkt ? -->
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="category">
+        <xs:annotation>
+            <xs:documentation>
+                Documentation of category:
+
+                Category is a defined set of possible values. It might be a filter criteria.
+                If your event is not matching any of these values, choose other.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Lecture"/>
+            <xs:enumeration value="Exam"/>
+            <xs:enumeration value="Oral Exam"/>
+            <xs:enumeration value="Meeting"/> <!-- Was ist ein Meeting? -->
+            <xs:enumeration value="Other"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="group">
+        <xs:annotation>
+            <xs:documentation>
+                Documentation of group:
+
+                A group contains just a name and uid for identification. It can be assigned to a person and/or event.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="uid" type="xs:string"/>
+            <xs:element name="name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

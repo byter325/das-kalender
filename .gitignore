@@ -5,9 +5,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+*.sef.json
 
 # No js files because we use typescript
 #*.js
+
+# Don't include data, because of their immense size
+data/
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -107,7 +111,6 @@ dist
 
 # TernJS port file
 .tern-port
-
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,webstorm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,webstorm+all

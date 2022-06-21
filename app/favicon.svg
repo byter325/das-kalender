@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:export-ydpi="500.57449"
+   inkscape:export-xdpi="500.57449"
+   inkscape:export-filename="C:\Users\saure\Desktop\Zeichnung.png"
+   sodipodi:docname="favicon.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 25.400001 25.400001"
+   height="1in"
+   width="1in">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     units="in"
+     inkscape:window-maximized="1"
+     inkscape:window-y="-6"
+     inkscape:window-x="-6"
+     inkscape:window-height="842"
+     inkscape:window-width="1368"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="74.989278"
+     inkscape:cx="69.152469"
+     inkscape:zoom="2.6370372"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Ebene 1">
+    <path
+       style="fill:#ff7a00;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.47802;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 12.207062,0.75570099 C 12.230623,35.988641 5.0887598,21.856981 5.0887598,21.856981 l 3.8521885,-9.829092 c 0,0 -14.7549422,-3.4447251 -4.6856512,-4.7889431 C 14.324588,5.8947285 22.0378,13.436244 15.944392,18.190446 9.8509838,22.944648 2.6885052,21.269053 11.638659,14.358222 20.588812,7.4473931 29.636157,8.2090278 21.481177,16.899676 13.326199,25.590324 18.014796,10.932205 16.00624,5.539299 13.997682,0.14639353 12.207062,0.75570099 12.207062,0.75570099 Z"
+       id="path19" />
+  </g>
+</svg>

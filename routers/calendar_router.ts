@@ -10,7 +10,7 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
     if(eventID == undefined){
         return response.json(XMLManager.getAllEvents(uid))
     } else{
-        return response.json(XMLManager.getEventByUIDAndEventUID(uid, eventID))
+        return response.json(XMLManager.getEventByHashAndEventUID(uid, eventID))
     }
 });
 
