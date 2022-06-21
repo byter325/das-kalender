@@ -5,7 +5,6 @@ import {Utils} from "./utils"
 import {XMLParser, XMLBuilder} from 'fast-xml-parser'
 
 export module XMLManager{
-    
 
     /**
      * Tries to find a user by its uid
@@ -15,7 +14,7 @@ export module XMLManager{
      * @return {User} Returns an object of the User class if the user exists
      * @return {null} Returns null if the user is not found
      */
-    export function getUserByUid(uid:string): User | null{
+    export function getUser(uid:string): User | null{
         try{
             const parser = new XMLParser({
                 ignoreAttributes: false,
@@ -42,7 +41,7 @@ export module XMLManager{
      * @return {any}  Returns an object if the group exists
      * @return {null} Returns null if the group is not found
      */
-    export function getGroupByUid(uid:string): any | null{
+    export function getGroup(uid:string): any | null{
         try {
             const parser = new XMLParser({
                 ignoreAttributes: false,
@@ -64,11 +63,10 @@ export module XMLManager{
      * @export
      * @param {string} uid The unique (group or user) id
      * @param {string} eventUid The unique event id
-     * @param {string} subPath Either "groupEvents" or "userEvents"
      * @return {any}  Returns the event if it is found
      * @return {null} Returns null if the event is not found
      */
-    export function getEventByHashAndEventUID(uid:string, eventUid:string):any{
+    export function getEvent(uid:string, eventUid:string):any{
         try {
             const parser = new XMLParser()
             var fullPath = "./data/events/"
@@ -152,15 +150,14 @@ export module XMLManager{
     }
 
     /**
-     * Generic version of insertUserEvent and inserGroupEvent
      * Adds an event to a user's or a group's events
      * 
+     * @export
      * @param {string} uid The unique (user or group) id
-     * @param {string} subPath Either "userEvents" or "groupEvents"
      * @param {CalendarEvent} event The event to be added
      * @return {*} Returns if the operation was successful or not
      */
-    function insertEvent(uid:string, event:CalendarEvent):boolean{
+    export function insertEvent(uid:string, event:CalendarEvent):boolean{
         try{
             var d = getAllEvents(uid)
             if(d == ''){
@@ -250,10 +247,9 @@ export module XMLManager{
      *
      * @param {string} uid The group or user that the event belongs to
      * @param {string} eventUid The unique event id
-     * @param {string} subPath Either "userEvents" or "groupEvents"
      * @return {*}  Returns if the operation was successful or not
      */
-    function deleteEvent(uid:string, eventUid:string):boolean{
+    export function deleteEvent(uid:string, eventUid:string):boolean{
         try{
             var events:any[] = getAllEvents(uid)['event']
             var filteredEvents:any[] = events.filter(event => event.uid != eventUid)

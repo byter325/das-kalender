@@ -19,9 +19,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(xmlparser());
 
 const routes = express.Router()
-routes.use('/users', usersRouter);
-routes.use('/groups', groupRouter);
-routes.use('/calendar', calendarRouter);
+routes.use('/api/users', usersRouter);
+routes.use('/api/groups', groupRouter);
+routes.use('/api/calendar', calendarRouter);
 app.use(routes)
 
 app.listen(port, () => {

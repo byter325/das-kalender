@@ -1,4 +1,6 @@
 import * as express from 'express'
+import { CalendarEvent } from '../lib/classes/userEvent';
+import { Utils } from '../lib/utils';
 import { XMLManager } from '../lib/xml_manager';
 
 const calendarRouter = express.Router();
@@ -10,8 +12,16 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
     if(eventID == undefined){
         return response.json(XMLManager.getAllEvents(uid))
     } else{
-        return response.json(XMLManager.getEventByHashAndEventUID(uid, eventID))
+        return response.json(XMLManager.getEvent(uid, eventID))
     }
 });
+
+calendarRouter.post('/:uid', (request: express.Request, response) => {
+    if (Utils.isBodyForEventCorrect(request.body, true)) {
+        var b: boolean = XMLManager.insertEvent(request.body.uid, Utils.convertPostBodyToEvent(request.body))
+        if (b) return response.sendStatus(200)
+    }
+    return response.sendStatus(400)
+})
 
 export default calendarRouter;
