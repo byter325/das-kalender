@@ -130,6 +130,32 @@ $(() => {
 
     insertEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
     initTooltips();
+
+    $('#userSettingsForm').submit(function () {
+        (async () => userSettingsChange())();
+        return false;
+    });
+    $('#loginForm').submit(function () {
+        console.log(123);
+        (async () => login())();
+        return false;
+    });
+    $('#registrationForm').submit(function () {
+        (async () => registration())();
+        return false;
+    });
+    $('#newEventForm').submit(function () {
+        (async () => newEvent())();
+        return false;
+    });
+    $('#editEventForm').submit(function () {
+        (async () => submitEditEvent())();
+        return false;
+    });
+    $('#deleteEventForm').submit(function () {
+        (async () => submitDeleteEvent())();
+        return false;
+    });
 });
 
 /* UI events */
@@ -137,6 +163,8 @@ function editEvent(buttonClicked) {
     const eventId = buttonClicked.getAttribute("data-event-id");
     // TODO: get event information
     const editEventForm = document.forms["editEventForm"];
+    editEventForm["editEventId"].value = eventId;
+    console.log(eventId, editEventForm["editEventId"].value);
     editEventForm["editEventTitle"].value = "Ein zufälliger Titel";
     editEventForm["editEventDescription"].value = "Lorem ipsum";
     editEventForm["editEventCategory"].value = "Other";
@@ -149,6 +177,7 @@ function deleteEvent(buttonClicked) {
     const eventId = buttonClicked.getAttribute("data-event-id");
     // TODO: get event information
     const deleteEventForm = document.forms["deleteEventForm"];
+    deleteEventForm["deleteEventId"].value = eventId;
     deleteEventForm["deleteEventTitle"].value = "Etwas zum Löschen";
     deleteEventForm["deleteEventDescription"].value = "Das ist definitiv löschbar";
     deleteEventForm["deleteEventCategory"].value = "Lecture";
@@ -157,22 +186,46 @@ function deleteEvent(buttonClicked) {
     deleteEventForm["deleteEventEnd"].value = "1970-01-01T09:30";
 }
 
+function submitEditEvent() {
+    const editEventForm = document.forms["editEventForm"];
+    // TODO: send edited event
+}
+
+function submitDeleteEvent() {
+    const deleteEventForm = document.forms["deleteEventForm"];
+    // TODO: send deleted event
+}
+
 function newEvent() {
     const newEventForm = document.forms["newEventForm"];
+    // TODO: send new event
 }
 
 function login() {
+    console.log("login");
     const loginForm = document.forms["loginForm"];
     const email = loginForm["loginMail"].value;
     const password = loginForm["loginPassword"].value;
+    console.log("login with", email);
     // TODO: login process
 }
 
 function registration() {
     const registrationForm = document.forms["registrationForm"];
-    const email = registrationForm["loginMail"].value;
-    const password = registrationForm["loginPassword"].value;
-    const firstName = registrationForm["firstName"].value;
-    const lastName = registrationForm["lastName"].value;
+    const email = registrationForm["registrationMail"].value;
+    const password = registrationForm["registrationPassword"].value;
+    const firstName = registrationForm["registrationFirstName"].value;
+    const lastName = registrationForm["registrationLastName"].value;
+    console.log("user settings changed to", email, firstName, lastName);
     // TODO: registration process
+}
+
+function userSettingsChange() {
+    const userSettingsForm = document.forms["userSettingsForm"];
+    const email = userSettingsForm["userSettingsMail"].value;
+    const password = userSettingsForm["userSettingsPassword"].value;
+    const firstName = userSettingsForm["userSettingsFirstName"].value;
+    const lastName = userSettingsForm["userSettingsLastName"].value;
+    console.log("user settings changed to", email, password, firstName, lastName);
+    // TODO: userSettings process
 }

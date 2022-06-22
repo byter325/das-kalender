@@ -27,13 +27,22 @@
 		<h1 class="d-inline">
 			<img src="./favicon.svg" width="50rem" height="50rem"> das kalender
 		</h1>
-		<div class="btn-group float-end mb-3">
-			<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
-				<i class="bi bi-person-circle"></i> Anmelden
+		<div class="float-end mb-3">
+			<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+				data-bs-target="#userSettigsModal">
+				<i class="bi bi-gear-fill"></i> Profil
 			</button>
-			<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#registrationModal">
-				Registrieren
-			</button>
+			<div class="btn-group">
+				<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+					data-bs-target="#loginModal">
+					<i class="bi bi-person-circle"></i> Anmelden
+				</button>
+				<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+					data-bs-target="#registrationModal">
+					Registrieren
+				</button>
+
+			</div>
 		</div>
 	</header>
 	<div class="d-none d-sm-none d-md-block">
@@ -484,12 +493,12 @@
 		</div>
 	</div>
 
-
 	<!-- Modal: editEvent -->
 	<div class="modal fade" id="editEvent" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<form id="editEventForm">
+					<input type="hidden" id="editEventId">
 					<div class="modal-header">
 						<h5 class="modal-title" id="editEventModalLabel">Termin bearbeiten</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -550,6 +559,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<form id="deleteEventForm">
+					<input type="hidden" id="editEventId">
 					<div class="modal-header">
 						<h5 class="modal-title" id="deleteEventModalLabel">Termin löschen</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -670,6 +680,46 @@
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
 						<button type="submit" class="btn btn-primary">Registrieren</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal: userSettigsModal -->
+	<div class="modal fade" id="userSettigsModal" tabindex="-1" aria-labelledby="userSettigsModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form id="userSettingsForm">
+					<div class="modal-header">
+						<h5 class="modal-title" id="userSettigsModalLabel">Benutzereinstellungen</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+					</div>
+					<div class="modal-body">
+						<p>Füllen Sie das aus, was Sie ändern möchten.</p>
+						<div class="mb-2">
+							<label for="userSettingsMail" class="form-label">E-Mail</label>
+							<input type="email" class="form-control" id="userSettingsMail">
+						</div>
+						<div class="mb-2">
+							<label for="userSettingsPassword" class="form-label">Passwort</label>
+							<input type="password" class="form-control" id="userSettingsPassword">
+						</div>
+						<div class="row row-cols-sm-2 mb-2">
+							<div>
+								<label for="userSettingsFirstName" class="form-label">Vorname</label>
+								<input type="text" class="form-control" id="userSettingsFirstName">
+							</div>
+							<div>
+								<label for="userSettingsLastName" class="form-label">Nachname</label>
+								<input type="text" class="form-control" id="userSettingsLastName">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+						<button type="submit" class="btn btn-primary">Ändern</button>
 					</div>
 				</form>
 			</div>
