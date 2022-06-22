@@ -3,8 +3,12 @@ import {User} from "./classes/user"
 import {CalendarEvent} from "./classes/userEvent"
 import {Utils} from "./utils"
 import {XMLParser, XMLBuilder} from 'fast-xml-parser'
+import { dir } from "console"
 
 export module XMLManager{
+    const PATH_DATA_USERS = "./data/users/"
+    const PATH_DATA_GROUPS = "./data/groups/"
+    const PATH_DATA_EVENTS = "./data/events/"
 
     /**
      * Tries to find a user by its uid
@@ -20,7 +24,7 @@ export module XMLManager{
                 ignoreAttributes: false,
                 attributesGroupName: "group"
             })
-            var path = "./data/users/" + Utils.GenSHA256Hash(uid) + ".xml"
+            var path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml"
 
             var data = fs.readFileSync(path, "utf-8")
             var person = parser.parse(data)["person"]
@@ -46,7 +50,7 @@ export module XMLManager{
             const parser = new XMLParser({
                 ignoreAttributes: false,
             })
-            var path = "./data/groups/" + Utils.GenSHA256Hash(uid) + ".xml"
+            var path = PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml"
 
             var data = fs.readFileSync(path, "utf-8")
             var group = parser.parse(data)['group']
@@ -69,10 +73,11 @@ export module XMLManager{
     export function getEvent(uid:string, eventUid:string):any{
         try {
             const parser = new XMLParser()
-            var fullPath = "./data/events/"
-            var data = fs.readFileSync(fullPath + "/" + Utils.GenSHA256Hash(uid) + ".xml")
+            var data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenSHA256Hash(uid) + ".xml")
             var events = parser.parse(data)["events"]
-            if(events['event'] instanceof Object){
+            if(events['event'] == ""){
+                return null
+            } else if(events['event'] instanceof Object){
                 console.log(events['event']);
                 
                 return events['event']
@@ -92,10 +97,10 @@ export module XMLManager{
      *
      * @export
      * @param {User} user The user to be added
+     * @param {boolean} allowOverride Set to true to allow overriding existing users
      * @return {*}  Returns if the operation was successful or not
      */
-    export function insertUser(
-        user: User): boolean {
+    export function insertUser(user: User, allowOverride:boolean): boolean {
         try {
             var json = {
                 person: {
@@ -118,8 +123,21 @@ export module XMLManager{
             })
 
             var xmlDataStr: string = builder.build(json)
-            writeFileSync("./data/users/" + Utils.GenSHA256Hash(user.uid) + ".xml", xmlDataStr, {flag: "w+"})
-            writeFileSync("./data/events/" + Utils.GenSHA256Hash(user.uid) + ".xml", "<events></events>", {flag: "w+"})
+            createFoldersIfNotExist();
+
+            const usersPath = PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml"
+            const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(user.uid) + ".xml"
+
+            if (!allowOverride && fs.existsSync(usersPath))
+                return false;
+            else
+                writeFileSync(usersPath, xmlDataStr, { flag: "w+" })
+
+            if (!allowOverride && fs.existsSync(eventsPath))
+                return false;
+            else
+                writeFileSync(eventsPath, "<events></events>", { flag: "w+" })
+                
             return true
         } catch (e) {
             console.log(e);
@@ -134,15 +152,31 @@ export module XMLManager{
      * @export
      * @param {string} uid The id which is to  be given to the group
      * @param {string} name The name which is to be given to the group
+     * @param {string} url The url which will belong to the group
+     * @param {boolean} allowOverride Set to true to allow overriding existing groups
      * @return {*} Returns if the operation was successful or not
      */
-    export function insertGroup(uid:string,name:string):boolean{
+    export function insertGroup(uid:string,name:string,url:string, allowOverride:boolean):boolean{
         try{
             const builder = new XMLBuilder({})
-            var xmlDataStr: string = builder.build({group: {uid: uid, name: name}})
-            writeFileSync("./data/groups/" + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
-            writeFileSync("./data/events/" + Utils.GenSHA256Hash(uid) + ".xml", "<events></events>", {flag: "w+"})
+            var xmlDataStr: string = builder.build({group: {uid: uid, name: name, url:url}})
+            createFoldersIfNotExist()
+
+            const groupsPath = PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml"
+            const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml"
+
+            if(!allowOverride && fs.existsSync(groupsPath))
+                return false;
+            else 
+                writeFileSync(groupsPath, xmlDataStr, {flag: "w+"})
+
+            if (!allowOverride && fs.existsSync(eventsPath))
+                return false;
+            else    
+                writeFileSync(eventsPath, "<events></events>", {flag: "w+"})
+
             return true
+            
         } catch (e) {
             console.log(e);
             return false
@@ -175,7 +209,7 @@ export module XMLManager{
 
             d = {events: d}
             var xmlDataStr: string = builder.build(d)
-            writeFileSync("./data/events/" + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            writeFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e);
@@ -195,8 +229,7 @@ export module XMLManager{
     export function getAllEvents(uid:string):any{
         try {
             const parser = new XMLParser()
-            var fullPath = "./data/events/"
-            var data = fs.readFileSync(fullPath + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
+            var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
             var events = parser.parse(data)["events"]
             return events
         } catch (error) {
@@ -214,8 +247,8 @@ export module XMLManager{
      */
     export function deleteUser(uid:string):boolean{
         try{
-            fs.rmSync("./data/users/" + Utils.GenSHA256Hash(uid) + ".xml")
-            fs.rmSync("./data/events/" + Utils.GenSHA256Hash(uid) + ".xml")
+            fs.rmSync(PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml")
+            fs.rmSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
             return true
         } catch (e) {
             console.log(e)
@@ -228,12 +261,12 @@ export module XMLManager{
      *
      * @export
      * @param {string} uid The unique group id
-     * @return {*}  Returns if the operation was successful or not
+     * @return {boolean} {boolean} Returns if the operation was successful or not
      */
     export function deleteGroup(uid:string):boolean{
         try{
-            fs.rmSync("./data/groups/" + Utils.GenSHA256Hash(uid) + ".xml")
-            fs.rmSync("./data/events/" + Utils.GenSHA256Hash(uid) + ".xml")
+            fs.rmSync(PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml")
+            fs.rmSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
             return true
         } catch (e) {
             console.log(e)
@@ -242,8 +275,7 @@ export module XMLManager{
     }
 
     /**
-     * Generic version of deleteUserEvent and deleteGroupEvent
-     * Reads all events of a user and tries to remove the specified one using its eventUid
+     * Reads all events of a group or user and tries to remove the specified one using its eventUid
      *
      * @param {string} uid The group or user that the event belongs to
      * @param {string} eventUid The unique event id
@@ -263,11 +295,53 @@ export module XMLManager{
             var xmlDataStr = builder.build(data)
             console.log(xmlDataStr);
 
-            writeFileSync("./data/events/" + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            writeFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e)
             return false
         }
     }
+
+    /**
+     * Tries to return all the groups as an XML string
+     *
+     * @export
+     * @return {*}  {string} The XML string of all groups or just <groups></groups>
+     */
+    export function getAllGroups():string {
+        try {
+            var entries: string[] = fs.readdirSync(PATH_DATA_GROUPS)
+            var xmlStr: string = "<groups>"
+            for (const entry in entries) {
+                if (Object.prototype.hasOwnProperty.call(entries, entry)) {
+                    const element = entries[entry];
+
+                    const parser = new XMLParser({
+                        ignoreAttributes: false,
+                    })
+
+                    var data = fs.readFileSync(PATH_DATA_GROUPS + "/" + element, "utf-8")
+                    xmlStr = xmlStr.concat(data)
+                }
+            }
+            xmlStr = xmlStr.concat("</groups>")
+            return xmlStr
+        } catch (error) {
+            console.log(error);
+            return "<groups></groups>"
+        }
+    }
+
+    function createFoldersIfNotExist() {
+        if(!fs.existsSync(PATH_DATA_EVENTS)) 
+            fs.mkdirSync(PATH_DATA_EVENTS);
+
+        if(!fs.existsSync(PATH_DATA_USERS))
+            fs.mkdirSync(PATH_DATA_USERS);
+
+        if(!fs.existsSync(PATH_DATA_GROUPS))
+            fs.mkdirSync(PATH_DATA_GROUPS);
+    }
 }
+

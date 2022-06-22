@@ -6,7 +6,7 @@ const path = require('path');
 import express from 'express';
 import { XMLManager } from "./lib/xml_manager";
 import usersRouter from "./routers/user_router";
-import groupRouter from "./routers/group_router";
+import groupsRouter from "./routers/group_router";
 import calendarRouter from "./routers/calendar_router";
 const bodyParser = require('body-parser');
 const xmlparser = require('express-xml-bodyparser');
@@ -20,7 +20,7 @@ app.use(xmlparser());
 
 const routes = express.Router()
 routes.use('/api/users', usersRouter);
-routes.use('/api/groups', groupRouter);
+routes.use('/api/groups', groupsRouter);
 routes.use('/api/calendar', calendarRouter);
 app.use(routes)
 
