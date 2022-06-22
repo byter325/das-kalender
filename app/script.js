@@ -135,7 +135,9 @@ $(() => {
 });
 
 /* UI events */
-function editEvent(eventID) {
+function editEvent(buttonClicked) {
+    const eventId = buttonClicked.getAttribute("data-event-id");
+    // TODO: get event information
     const editEventForm = document.forms["editEventForm"];
     editEventForm["editEventTitle"].value = "Ein zufälliger Titel";
     editEventForm["editEventDescription"].value = "Lorem ipsum";
@@ -145,7 +147,9 @@ function editEvent(eventID) {
     editEventForm["editEventEnd"].value = "2022-02-22T20:20";
 }
 
-function deleteEvent(eventID) {
+function deleteEvent(buttonClicked) {
+    const eventId = buttonClicked.getAttribute("data-event-id");
+    // TODO: get event information
     const deleteEventForm = document.forms["deleteEventForm"];
     deleteEventForm["deleteEventTitle"].value = "Etwas zum Löschen";
     deleteEventForm["deleteEventDescription"].value = "Das ist definitiv löschbar";
