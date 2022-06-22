@@ -37,10 +37,21 @@
 		</div>
 	</header>
 	<div class="d-none d-sm-none d-md-block">
-		<div class="position-relative" style="height: 2em; font-size: 2em;">
-			<div class="position-absolute top-0 start-0" id="prevweek"><i class="bi bi-arrow-left-circle"></i></div>
-			<div class="position-absolute top-0 start-50 translate-middle" id="calweek"></div>
-			<div class="position-absolute top-0 end-0" id="nextweek"><i class="bi bi-arrow-right-circle"></i></div>
+		<div class="row row-cols-auto justify-content-md-between my-3">
+			<div>
+				<button class="btn btn-lg btn-secondary">Heute</button>
+			</div>
+			<div>
+				<h2 id="calweek"></h2>
+			</div>
+			<div>
+				<button class="btn btn-lg btn-secondary">
+					<i class="bi bi-arrow-left"></i>
+				</button>
+				<button class="btn btn-lg btn-secondary">
+					<i class="bi bi-arrow-right"></i>
+				</button>
+			</div>
 		</div>
 		<div class="kalendergrid" id="eventInsert">
 			<div class="ki-heading ki-col-1"></div>
