@@ -126,9 +126,7 @@ $(() => {
     }
     let weekRange = getWeekRange(calweek, calyear);
 
-    $('#prevweek').html('<a href="?calweek=' + prevweek + '&calyear=' + prevyear + '"><i class="bi bi-arrow-left-circle"></i></a>');
-    $('#nextweek').html('<a href="?calweek=' + nextweek + '&calyear=' + nextyear + '"><i class="bi bi-arrow-right-circle"></i></a>');
-    $('#calweek').html('KW ' + calweek + ", " + calyear + "<br />" + weekRange.startDay.toLocaleDateString() + " - " + weekRange.endDay.toLocaleDateString());
+    $('#calweek').text('KW ' + calweek + " (" + weekRange.startDay.toLocaleDateString() + " - " + weekRange.endDay.toLocaleDateString() + ")");
 
     insertEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
     initTooltips();
