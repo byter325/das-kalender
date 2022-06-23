@@ -1,5 +1,14 @@
 "use strict";
 
+function getCurrentKw() {
+    var date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    var week1 = new Date(date.getFullYear(), 0, 4);
+    return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+        - 3 + (week1.getDay() + 6) % 7) / 7);
+}
+
 function initTooltips() {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -12,9 +21,20 @@ function insertEvents(course, from, to) {
         url: `/api/getRaplaEvents/${course}?from=${from}&to=${to}`,
         xhrFields: { withCredentials: true }
     }).done(function (data) {
-        $('#eventInsert').append(data);
+        $('#eventGrid').after(data);
         adjustDays();
     });
+}
+
+function clearEvents() {
+    $('.kalenderitem').remove();
+}
+
+function updateSite() {
+    clearEvents();
+    let weekRange = getWeekRange(window.calweek, window.calyear);
+    $('#calweek').text('KW ' + window.calweek + " (" + weekRange.startDay.toLocaleDateString() + " - " + weekRange.endDay.toLocaleDateString() + ")");
+    insertEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
 }
 
 function adjustDays() {
@@ -62,15 +82,6 @@ function adjustDays() {
     });
 }
 
-Date.prototype.getWeek = function () {
-    var date = new Date(this.getTime());
-    date.setHours(0, 0, 0, 0);
-    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-    var week1 = new Date(date.getFullYear(), 0, 4);
-    return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
-        - 3 + (week1.getDay() + 6) % 7) / 7);
-}
-
 function addDays(date, days) {
     var result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -97,46 +108,44 @@ function getWeekRange(w, y) {
 
 
 $(() => {
-    let queryString = new URLSearchParams(window.location.search);
-    let calweek, calyear, nextweek, prevweek, nextyear, prevyear;
+    if (!window.hasOwnProperty("calweek")) {
+        window.calweek = getCurrentKw();
+    }
+    if (!window.hasOwnProperty("calyear")) {
+        window.calyear = new Date().getFullYear();
+    }
 
-    if (queryString.get("calweek")) {
-        calweek = parseInt(queryString.get("calweek"));
-    } else {
-        calweek = new Date().getWeek();
-    }
-    if (queryString.get("calyear")) {
-        calyear = parseInt(queryString.get("calyear"));
-    } else {
-        calyear = new Date().getFullYear();
-    }
-    if (calweek == 52) {
-        nextyear = calyear + 1;
-        nextweek = 1;
-    } else {
-        nextyear = calyear;
-        nextweek = calweek + 1;
-    }
-    if (calweek == 1) {
-        prevyear = calyear - 1;
-        prevweek = 52;
-    } else {
-        prevyear = calyear;
-        prevweek = calweek - 1;
-    }
-    let weekRange = getWeekRange(calweek, calyear);
-
-    $('#calweek').text('KW ' + calweek + " (" + weekRange.startDay.toLocaleDateString() + " - " + weekRange.endDay.toLocaleDateString() + ")");
-
-    insertEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
     initTooltips();
+
+    $('#thisweek').click(() => {
+        window.calweek = getCurrentKw();
+        window.calyear = new Date().getFullYear();
+        updateSite();
+    });
+    $('#prevweek').click(() => {
+        if (window.calweek == 1) {
+            window.calyear -= 1;
+            window.calweek = 52;
+        } else {
+            window.calweek -= 1;
+        }
+        updateSite();
+    });
+    $('#nextweek').click(() => {
+        if (window.calweek == 52) {
+            window.calyear += 1;
+            window.calweek = 1;
+        } else {
+            window.calweek += 1;
+        }
+        updateSite();
+    });
 
     $('#userSettingsForm').submit(function () {
         (async () => userSettingsChange())();
         return false;
     });
     $('#loginForm').submit(function () {
-        console.log(123);
         (async () => login())();
         return false;
     });
@@ -207,7 +216,38 @@ function login() {
     const email = loginForm["loginMail"].value;
     const password = loginForm["loginPassword"].value;
     console.log("login with", email);
-    // TODO: login process
+    $.ajax({
+        type: 'GET',
+        url: '/api/login',
+        username: email,
+        password: password,
+        xhrFields: {
+            withCredentials: true
+        },
+        statusCode: {
+            200: () => {
+                $('#loginMessage').removeClass("alert-danger d-none").addClass("alert-success").html("Login erfolgreich!");
+                $('#loginModal').modal('hide');
+                $('#loginBar').hide();
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/getActiveUser',
+                    xhrFields: {
+                        withCredentials: true
+                    }
+                }).done(function (data) {
+                    window.activeUser = JSON.parse(data);
+                    $('#statusInfo').removeClass("d-none").addClass("d-inline-block").html("Hallo, " + window.activeUser.firstName).show();
+                });
+            },
+            401: () => {
+                $('#loginMessage').removeClass("alert-success d-none").addClass("alert-danger").html("Login fehlgeschlagen!");
+            },
+            500: () => {
+                $('#loginMessage').removeClass("alert-success d-none").addClass("alert-danger").html("Login fehlgeschlagen!");
+            }
+        }
+    });
 }
 
 function registration() {

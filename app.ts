@@ -1,18 +1,40 @@
 import { Request, Response, Application } from "express";
 import { Handlers } from "./lib/handlers";
 import { Utils } from "./lib/utils";
+import { XMLManager } from "./lib/xml_manager";
 import * as path from "path";
 import * as cron from "node-cron";
 import express from "express";
 import { Server } from "http";
+import { User } from "./lib/classes/user";
 
 const app: Application = express();
 
 app.use(express.static(path.join(__dirname, "app")));
 
+
+app.get("/api/getActiveUser", (req: Request, res: Response) => {
+    if (Handlers.authenticate(req, res) && typeof req.headers.authorization != 'undefined') {
+        const credentials: string = Utils.Word2Hex(Utils.Hex2Word(req.headers.authorization.split(' ')[1]));
+        const uid: string = credentials.split(':')[0];
+        const user: null | User = XMLManager.getUserByUid(uid);
+        res.send(JSON.stringify(user));
+    }
+});
+
 // user: public | pw: public
+app.get("/api/login", (req: Request, res: Response) => {
+    if (Handlers.authenticate(req, res)) {
+        res.status(200);
+        res.send('login_success');
+    } else {
+        res.status(401);
+        res.send('login_error');
+    }
+});
+
 app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
-    if (Handlers.authenticate(req, res)) Handlers.getRaplaEvents(req, res)
+    if (Handlers.authenticate(req, res)) { Handlers.getRaplaEvents(req, res); }
 });
 
 app.get("/", (req: Request, res: Response) => {
