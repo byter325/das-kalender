@@ -10,9 +10,11 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
     var uid: string = request.params.uid
 
     if(eventID == undefined){
-        return response.json(XMLManager.getAllEvents(uid))
+        //return response.json(XMLManager.getAllEvents(uid))
+        return response.send("THIS SHOULD BE HTML")
     } else{
-        return response.json(XMLManager.getEvent(uid, eventID))
+        //return response.json(XMLManager.getEvent(uid, eventID))
+        return response.send("THIS SHOULD BE HTML")
     }
 });
 
