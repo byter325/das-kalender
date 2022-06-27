@@ -15,7 +15,7 @@ export module Handlers {
 	// const https = require('https');
 	const SaxonJs = require("saxon-js");
 
-
+	// TODO: Change folder structure to /events/
 	const dataDir: string = path.resolve(__dirname, '..', 'data');
 	const dataUsers: string = `${dataDir}/users`;
 	const dataUserEvents: string = `${dataDir}/userEvents`;
@@ -63,7 +63,7 @@ export module Handlers {
 				});
 
 				const tmpobj = tmp.fileSync();
-				fs.writeFile(tmpobj.fd, toXml(eventResults), () => {
+				fs.writeFile(tmpobj.fd, eventsToXml(eventResults), () => {
 					res.contentType('text/html');
 					res.send(xmlEventsToHtmlGridView(tmpobj.name));
 				});
@@ -77,14 +77,14 @@ export module Handlers {
 	 * @param {string} lecturer 
 	 * @param {string} course 
 	 */
-	export function fetchRaplaEvents(lecturer: string, course: string) {
+	export function updateRaplaEvents(lecturer: string, course: string) {
 		console.log(`Fetching events from Rapla for ${lecturer}/${course}`);
 		const outfile: string = `${dataDir}/${course}.xml`;
 		const outkalfile: string = `${dataDir}/${course}-kalender.xml`;
 		const icsUrl: string = raplaUrl.replace('@@page@@', 'ical').replace('@@lecturer@@', lecturer).replace('@@course@@', course);
 		fs.opendir(`${dataDir}`, (err: NodeJS.ErrnoException | null, dir: fs.Dir) => {
 			if (err) {
-				dir.close();
+				// dir.close();
 				fs.mkdir(`${dataDir}`, (err: NodeJS.ErrnoException | null) => {
 					if (err) {
 						throw err;
@@ -116,7 +116,7 @@ export module Handlers {
 						eventResults.push(jsdata[key]);
 					}
 				}
-				let xmldata: string = toXml(eventResults);
+				let xmldata: string = eventsToXml(eventResults);
 				if (checkCache(outfile, xmldata) == false) {
 					fs.writeFile(outfile, xmldata, () => {
 						/**
@@ -143,7 +143,7 @@ export module Handlers {
 		// 		eventResults.push(jsdata[key]);
 		// 	}
 		// }
-		// let xmldata: string = toXml(eventResults);
+		// let xmldata: string = eventsToXml(eventResults);
 		// fs.writeFileSync(outfile, xmldata)
 	}
 
@@ -217,7 +217,7 @@ export module Handlers {
 	 * @param {*} jsObj 
 	 * @returns {string} xmlString
 	 */
-	function toXml(jsObj: Object): string {
+	function eventsToXml(jsObj: Object): string {
 		return json2xml(JSON.stringify({ "events": { "event": jsObj } }), { compact: true })
 	}
 

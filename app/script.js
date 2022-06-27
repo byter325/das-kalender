@@ -236,8 +236,9 @@ function login() {
                         withCredentials: true
                     }
                 }).done(function (data) {
-                    window.activeUser = JSON.parse(data);
-                    $('#statusInfo').removeClass("d-none").addClass("d-inline-block").html("Hallo, " + window.activeUser.firstName).show();
+                    var domParser = new DOMParser();
+                    window.activeUser = domParser.parseFromString(data, "text/xml");
+                    $('#statusInfo').removeClass("d-none").addClass("d-inline-block").html("Hallo, " + $(window.activeUser).find("firstName").text()).show();
                 });
             },
             401: () => {

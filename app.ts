@@ -6,6 +6,7 @@ import * as path from "path";
 import * as cron from "node-cron";
 import express from "express";
 import { Server } from "http";
+import { XMLBuilder } from 'fast-xml-parser'
 import { User } from "./lib/classes/user";
 
 const app: Application = express();
@@ -18,7 +19,15 @@ app.get("/api/getActiveUser", (req: Request, res: Response) => {
         const credentials: string = Utils.Word2Hex(Utils.Hex2Word(req.headers.authorization.split(' ')[1]));
         const uid: string = credentials.split(':')[0];
         const user: null | User = XMLManager.getUserByUid(uid);
-        res.send(JSON.stringify(user));
+        if(user != null) user.passwordHash = "";
+        const builder = new XMLBuilder({
+            ignoreAttributes: false,
+            tagValueProcessor: (tagname: string,tagvalue: string):string => {
+                if(tagname != "passwordHash") return tagvalue;
+                else return "";
+            }
+        });
+        res.send(builder.build({person: user}));
     }
 });
 
@@ -53,10 +62,10 @@ app.use((err: Error, req: Request, res: Response, next: any) => {
 });
 
 cron.schedule("0 */15 * * * *", () => {
-    Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
+    Handlers.updateRaplaEvents("freudenmann", "TINF21B1");
 });
 
 const server: Server = app.listen(8080, () => {
     console.log(server.address());
-    Handlers.fetchRaplaEvents("freudenmann", "TINF21B1");
+    Handlers.updateRaplaEvents("freudenmann", "TINF21B1");
 });

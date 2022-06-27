@@ -7,6 +7,7 @@ import { XMLParser, XMLBuilder } from 'fast-xml-parser'
 
 export module XMLManager {
 
+    // TODO: Change folder structure to /events/
     const dataDir: string = path.resolve(__dirname, '..', 'data')
     const dataUsers: string = `${dataDir}/users`
     const dataUserEvents: string = `${dataDir}/userEvents`
