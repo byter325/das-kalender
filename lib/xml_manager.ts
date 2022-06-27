@@ -18,7 +18,7 @@ export module XMLManager{
      * @return {User} Returns an object of the User class if the user exists
      * @return {null} Returns null if the user is not found
      */
-    export function getUser(uid:string): User | null{
+    export function getUser(uid:string): String | null{
         try{
             const parser = new XMLParser({
                 ignoreAttributes: false,
@@ -30,7 +30,7 @@ export module XMLManager{
             var person = parser.parse(data)["person"]
             var user = new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
                 person.group, person.editableGroup, person.darkMode, person.isAdministrator)
-            return user
+            return fs.readFileSync(path, "utf-8")
         } catch (e) {
             console.log(e);
             return null
@@ -47,14 +47,8 @@ export module XMLManager{
      */
     export function getGroup(uid:string): any | null{
         try {
-            const parser = new XMLParser({
-                ignoreAttributes: false,
-            })
             var path = PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml"
-
-            var data = fs.readFileSync(path, "utf-8")
-            var group = parser.parse(data)['group']
-            return group
+            return fs.readFileSync(path, "utf-8")
         } catch (error) {
             console.log(error);
             return null
@@ -73,16 +67,17 @@ export module XMLManager{
     export function getEvent(uid:string, eventUid:string):any{
         try {
             const parser = new XMLParser()
+            const builder = new XMLBuilder({})
             var data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenSHA256Hash(uid) + ".xml")
             var events = parser.parse(data)["events"]
             if(events['event'] == ""){
-                return null
-            } else if(events['event'] instanceof Object){
-                console.log(events['event']);
-                
-                return events['event']
+                return "<events></events>"
             } else {
-                return events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)[0]
+                var filteredEvents = events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)
+                var firstElementAsXML = builder.build({event:filteredEvents[0]})
+                console.log("MULTIPLE EVENTS: " + filteredEvents + firstElementAsXML);
+                
+                return firstElementAsXML
             }
         } catch (error) {
             console.log(error);
@@ -193,7 +188,8 @@ export module XMLManager{
      */
     export function insertEvent(uid:string, event:CalendarEvent):boolean{
         try{
-            var d = getAllEvents(uid)
+            var d = getAllEventsJSON(uid)
+
             if(d == ''){
                 d = {event:[]}
                 d['event'].push(event)
@@ -226,16 +222,21 @@ export module XMLManager{
      * @return {any} an object (if user has one event entry)
      * @return {null} Returns null if the operation failed
      */
-    export function getAllEvents(uid:string):any{
+    export function getAllEvents(uid:string):string{
         try {
-            const parser = new XMLParser()
-            var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
-            var events = parser.parse(data)["events"]
-            return events
+            return fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
         } catch (error) {
             console.log(error);
-            return null
+            return "<events></events>"
         }
+    }
+
+    function getAllEventsJSON(uid:string):any{
+        const parser = new XMLParser()
+        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", { encoding: "utf-8" })
+        var events = parser.parse(data)["events"]
+        return events
+
     }
 
     /**
@@ -283,7 +284,7 @@ export module XMLManager{
      */
     export function deleteEvent(uid:string, eventUid:string):boolean{
         try{
-            var events:any[] = getAllEvents(uid)['event']
+            var events:any[] = getAllEventsJSON(uid)['event']
             var filteredEvents:any[] = events.filter(event => event.uid != eventUid)
             
             var data = {events:{event:filteredEvents}}

@@ -59,8 +59,11 @@ export module Utils{
     }
 
     export function convertFullPostBodyToEvent(body: any): CalendarEvent {
-        return new CalendarEvent(body.uid, body.title, body.description, body.presenter, body.category, body.start, body.end,
+        var o = new CalendarEvent(body.uid, body.title, body.description, body.presenter, body.category, body.start, body.end,
             body.location, body.modified, body.modifiedBy)
+        console.log(o);
+        
+        return o
     }
 
     export function convertPartialPostBodyToEvent(body: any): CalendarEvent {

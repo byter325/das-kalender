@@ -6,11 +6,15 @@ import { XMLManager } from '../lib/xml_manager';
 const groupsRouter = express.Router();
 
 groupsRouter.get('/:uid', (request:express.Request, response:express.Response) => {
-    return response.json(XMLManager.getGroup(request.params.uid));
+    var group = XMLManager.getGroup(request.params.uid);
+    if(group != null) return response.send(group)
+    return response.sendStatus(404)
 });
 
 groupsRouter.get('/', (request:express.Request, response:express.Response) => {
-    return response.json(XMLManager.getAllGroups());
+    var groups = XMLManager.getAllGroups()
+    if (groups != null) return response.send(groups)
+    return response.sendStatus(404)
 });
 
 groupsRouter.post("/", (request:express.Request,response) => {

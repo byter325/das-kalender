@@ -30,26 +30,12 @@ app.listen(port, () => {
 app.use(express.static(path.join(__dirname, "app")));
 });
 
-// user: public | pw: public
-app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
-    if (Handlers.authenticate(req, res)) Handlers.getRaplaEvents(req, res)
-});
-
 app.get("/", (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, "app", "index.html"));
 });
 
 const swaggerDocument = YAML.load('./openapi.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-//app.use('/api', new ApiRouter().router)
-
-// user: public | pw: public
-// legacy, will be removed soon
-app.get("/api/getRaplaEvents/:course", (req: Request, res: Response) => {
-    if (Handlers.authenticate(req, res)) Handlers.getRaplaEvents(req, res)
-});
-
 
 app.use((req: Request, res: Response) => {
     res.status(404)
