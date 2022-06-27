@@ -15,21 +15,11 @@ export module XMLManager{
      * 
      * @export
      * @param {string} uid unique user id
-     * @return {User} Returns an object of the User class if the user exists
-     * @return {null} Returns null if the user is not found
+     * @return {string} Returns an XML string of a user
      */
-    export function getUser(uid:string): String | null{
+    export function getUser(uid:string): string | null{
         try{
-            const parser = new XMLParser({
-                ignoreAttributes: false,
-                attributesGroupName: "group"
-            })
             var path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml"
-
-            var data = fs.readFileSync(path, "utf-8")
-            var person = parser.parse(data)["person"]
-            var user = new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
-                person.group, person.editableGroup, person.darkMode, person.isAdministrator)
             return fs.readFileSync(path, "utf-8")
         } catch (e) {
             console.log(e);
@@ -42,8 +32,7 @@ export module XMLManager{
      * 
      * @export
      * @param {string} uid The unique group id
-     * @return {any}  Returns an object if the group exists
-     * @return {null} Returns null if the group is not found
+     * @return {string}  Returns an XML string if the group exists
      */
     export function getGroup(uid:string): any | null{
         try {
@@ -61,17 +50,16 @@ export module XMLManager{
      * @export
      * @param {string} uid The unique (group or user) id
      * @param {string} eventUid The unique event id
-     * @return {any}  Returns the event if it is found
-     * @return {null} Returns null if the event is not found
+     * @return {string|undefined}  Returns the event as an XML string if found or nothing if not found
      */
-    export function getEvent(uid:string, eventUid:string):any{
+    export function getEvent(uid:string, eventUid:string):string|undefined{
         try {
             const parser = new XMLParser()
             const builder = new XMLBuilder({})
             var data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenSHA256Hash(uid) + ".xml")
             var events = parser.parse(data)["events"]
             if(events['event'] == ""){
-                return "<events></events>"
+                return undefined
             } else {
                 var filteredEvents = events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)
                 var firstElementAsXML = builder.build({event:filteredEvents[0]})
@@ -81,7 +69,7 @@ export module XMLManager{
             }
         } catch (error) {
             console.log(error);
-            return null
+            return undefined
         }
     }
 
@@ -93,7 +81,7 @@ export module XMLManager{
      * @export
      * @param {User} user The user to be added
      * @param {boolean} allowOverride Set to true to allow overriding existing users
-     * @return {*}  Returns if the operation was successful or not
+     * @return {boolean}  Returns if the operation was successful or not
      */
     export function insertUser(user: User, allowOverride:boolean): boolean {
         try {
@@ -149,7 +137,7 @@ export module XMLManager{
      * @param {string} name The name which is to be given to the group
      * @param {string} url The url which will belong to the group
      * @param {boolean} allowOverride Set to true to allow overriding existing groups
-     * @return {*} Returns if the operation was successful or not
+     * @return {boolean} Returns if the operation was successful or not
      */
     export function insertGroup(uid:string,name:string,url:string, allowOverride:boolean):boolean{
         try{
@@ -184,7 +172,7 @@ export module XMLManager{
      * @export
      * @param {string} uid The unique (user or group) id
      * @param {CalendarEvent} event The event to be added
-     * @return {*} Returns if the operation was successful or not
+     * @return {boolean} Returns if the operation was successful or not
      */
     export function insertEvent(uid:string, event:CalendarEvent):boolean{
         try{
@@ -218,9 +206,7 @@ export module XMLManager{
      *
      * @export
      * @param {string} uid The unique (user or group) id
-     * @return {any[]} Returns an empty array if no event entries exist or an array of events if multiple events exist 
-     * @return {any} an object (if user has one event entry)
-     * @return {null} Returns null if the operation failed
+     * @return {string} Returns the events as an XML or "<events></events>" if none are found
      */
     export function getAllEvents(uid:string):string{
         try {
@@ -231,6 +217,13 @@ export module XMLManager{
         }
     }
 
+    /**
+     * Gets all events and returns as a JS object
+     * For internal use only
+     *
+     * @param {string} uid The uid of the user or group
+     * @return {*}  {*} Returns null or >= 1 event
+     */
     function getAllEventsJSON(uid:string):any{
         const parser = new XMLParser()
         var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", { encoding: "utf-8" })
@@ -244,7 +237,7 @@ export module XMLManager{
      *
      * @export
      * @param {string} uid The unique user id
-     * @return {*}  Returns if the operation was successful or not
+     * @return {boolean}  Returns if the operation was successful or not
      */
     export function deleteUser(uid:string):boolean{
         try{
@@ -280,7 +273,7 @@ export module XMLManager{
      *
      * @param {string} uid The group or user that the event belongs to
      * @param {string} eventUid The unique event id
-     * @return {*}  Returns if the operation was successful or not
+     * @return {boolean}  Returns if the operation was successful or not
      */
     export function deleteEvent(uid:string, eventUid:string):boolean{
         try{
@@ -308,7 +301,7 @@ export module XMLManager{
      * Tries to return all the groups as an XML string
      *
      * @export
-     * @return {*}  {string} The XML string of all groups or just <groups></groups>
+     * @return {string}  {string} The XML string of all groups or just <groups></groups>
      */
     export function getAllGroups():string {
         try {
@@ -317,11 +310,6 @@ export module XMLManager{
             for (const entry in entries) {
                 if (Object.prototype.hasOwnProperty.call(entries, entry)) {
                     const element = entries[entry];
-
-                    const parser = new XMLParser({
-                        ignoreAttributes: false,
-                    })
-
                     var data = fs.readFileSync(PATH_DATA_GROUPS + "/" + element, "utf-8")
                     xmlStr = xmlStr.concat(data)
                 }
