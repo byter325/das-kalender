@@ -1,0 +1,588 @@
+openapi: 3.0.0
+info:
+  title: Das Kalender - API
+  description: "This is a instance of 'Das Kalender'. To learn more about this project visit [Github](https://github.com/maxomnia/pm_project_rapla)."
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: /
+tags:
+  - name: Calendar
+    description: Access to calendar data
+  - name: Users
+    description: Operations about users
+  - name: Groups
+    description: Operations about groups
+paths:
+  /api/calendar/{uid}:
+    post:
+      tags:
+        - Calendar
+      summary: Add a new event to the calendar
+      description: ""
+      operationId: createEvent
+      parameters:
+        - name: uid
+          in: path
+          description: UID of the user or group that owns the calendar
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      requestBody:
+        description: Event that needs to be added to the calendar
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Event'
+        required: true
+      responses:
+        "201":
+          description: Successfully created event
+        "400":
+          description: Invalid input
+      security:
+        - api_key: []
+      x-swagger-router-controller: Calendar
+    get:
+      tags:
+        - Calendar
+      summary: Get all events from a calendar
+      operationId: getEvent
+      parameters:
+        - name: uid
+          in: path
+          description: UID of the user or group that owns the calendar
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+        - name: eventID
+          in: query
+          description: UID of the event that should get returned (optional)
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+                x-content-type: application/xml
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Event not found
+        "405":
+          description: Validation exception
+      security:
+        - api_key:
+            - read:calendar
+      x-swagger-router-controller: Calendar
+    put:
+      tags:
+        - Calendar
+      summary: Update an existing event
+      operationId: updateEvent
+      parameters:
+        - name: uid
+          in: path
+          description: UID of the user or group that owns the calendar
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+        - name: eventID
+          in: query
+          description: UID of the event that should get updated
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+      requestBody:
+        description: Event that needs to be updated in the calendar
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Event'
+        required: true
+      responses:
+        "200":
+          description: Successfully updated event
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Event not found
+        "405":
+          description: Validation exception
+      security:
+        - api_key:
+            - write:calendar
+            - read:calendar
+      x-swagger-router-controller: Calendar
+    delete:
+      tags:
+        - Calendar
+      summary: Delete an existing event
+      operationId: deleteEvent
+      parameters:
+        - name: uid
+          in: path
+          description: UID of the user or group that owns the calendar
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+        - name: eventID
+          in: query
+          description: UID of the event that should get deleted
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully deleted event
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Event not found
+      security:
+        - api_key:
+            - write:calendar
+            - read:calendar
+      x-swagger-router-controller: Calendar
+
+  /api/users:
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      operationId: createUser
+      requestBody:
+        description: XML document of the user you want to add
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Person'
+        required: true
+      responses:
+        "201":
+          description: Successfully created user
+        "400":
+          description: Invalid input
+      security:
+        - api_key:
+            - write:user
+            - read:user
+      x-swagger-router-controller: Users
+    get:
+      tags:
+        - Users
+      summary: List all users
+      description: ""
+      operationId: listUsers
+      responses:
+        "200":
+          description: "List of all users (UID, first name, last name, mail)"
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PersonInfo'
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: User not found
+        "405":
+          description: Validation exception
+      security:
+        - api_key:
+            - read:user
+      x-swagger-router-controller: Users
+
+  /api/users/{uid}:
+    get:
+      tags:
+        - Users
+      summary: Get all user info
+      operationId: getUser
+      parameters:
+        - name: uid
+          in: path
+          description: UID of the user that is edited
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: All the user settings
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Person'
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: User not found
+        "405":
+          description: Validation exception
+      security:
+        - api_key:
+            - read:user
+      x-swagger-router-controller: Users
+    put:
+      tags:
+        - Users
+      summary: Update an existing user
+      operationId: updateUser
+      parameters:
+        - name: uid
+          in: path
+          description: UID of the user that is edited
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      requestBody:
+        description: Updated XML document of the user
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Person'
+        required: true
+      responses:
+        "200":
+          description: Successfully updated user
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: User not found
+        "405":
+          description: Validation exception
+      security:
+        - api_key:
+            - write:user
+            - read:user
+      x-swagger-router-controller: Users
+    delete:
+      tags:
+        - Users
+      summary: Delete an existing user
+      operationId: deleteUser
+      parameters:
+        - name: uid
+          in: path
+          description: UID of the user that gets deleted
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully deleted user
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: User not found
+      security:
+        - api_key:
+            - write:user
+            - read:user
+      x-swagger-router-controller: Users
+
+  /api/groups:
+    post:
+      tags:
+        - Groups
+      summary: Create a new group
+      operationId: createGroup
+      requestBody:
+        description: XML document of the group you want to add
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Group'
+        required: true
+      responses:
+        "201":
+          description: Successfully created group
+        "400":
+          description: Invalid input
+      security:
+        - api_key:
+            - write:group
+            - read:group
+      x-swagger-router-controller: Groups
+    get:
+      tags:
+        - Groups
+      summary: List all groups
+      description: ""
+      operationId: listGroups
+      responses:
+        "200":
+          description: "List of all groupss (UID, name, url)"
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Group'
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Group not found
+        "405":
+          description: Validation exception
+      security:
+        - api_key:
+            - read:group
+      x-swagger-router-controller: Groups
+
+  /api/groups/{uid}:
+    put:
+      tags:
+        - Groups
+      summary: Update an existing group
+      operationId: updateGroup
+      parameters:
+        - name: uid
+          in: path
+          description: UID of the group that is edited
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      requestBody:
+        description: Updated XML document of the group
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Group'
+        required: true
+      responses:
+        "200":
+          description: Successfully updated group
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Group not found
+        "405":
+          description: Validation exception
+      security:
+        - api_key:
+            - write:group
+            - read:group
+      x-swagger-router-controller: Groups
+    delete:
+      tags:
+        - Groups
+      summary: Delete an existing group
+      operationId: deleteGroup
+      parameters:
+        - name: uid
+          in: path
+          description: UID of the group that gets deleted
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully deleted group
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Group not found
+      security:
+        - api_key:
+            - write:group
+            - read:group
+      x-swagger-router-controller: Groups
+
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    PersonInfo:
+      required:
+        - firstName
+        - initials
+        - lastName
+        - mail
+        - uid
+      type: object
+      properties:
+        uid:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        initials:
+          type: string
+        mail:
+          type: string
+      example:
+        uid: uid
+        firstName: firstName
+        lastName: lastName
+        mail: mail
+        initials: initials
+    Event:
+      required:
+        - category
+        - description
+        - end
+        - location
+        - modified
+        - modifiedBy
+        - presenter
+        - start
+        - title
+        - uid
+      type: object
+      properties:
+        uid:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        presenter:
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonInfo'
+        category:
+          type: string
+          enum:
+            - Lecture
+            - Exam
+            - Oral Exam
+            - Meeting
+            - Other
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        location:
+          type: string
+        modified:
+          type: string
+          format: date-time
+        modifiedBy:
+          $ref: '#/components/schemas/PersonInfo'
+      example:
+        uid: uid
+        presenter:
+          - uid: uid
+            firstName: firstName
+            lastName: lastName
+            mail: mail
+            initials: initials
+          - uid: uid
+            firstName: firstName
+            lastName: lastName
+            mail: mail
+            initials: initials
+        start: 2000-01-23T04:56:07.000+00:00
+        description: description
+        modified: 2000-01-23T04:56:07.000+00:00
+        end: 2000-01-23T04:56:07.000+00:00
+        location: location
+        modifiedBy: null
+        title: title
+        category: Lecture
+    Person:
+      required:
+        - darkMode
+        - firstName
+        - initials
+        - isAdministrator
+        - lastName
+        - mail
+        - passwordHash
+        - uid
+      type: object
+      properties:
+        uid:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        initials:
+          type: string
+        mail:
+          type: string
+        passwordHash:
+          type: string
+        group:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+        editableGroup:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+        darkMode:
+          type: boolean
+        isAdministrator:
+          type: boolean
+      example:
+        uid: uid
+        firstName: firstName
+        lastName: lastName
+        mail: mail
+        initials: initials
+        darkMode: true
+        isAdministrator: true
+        passwordHash: passwordHash
+        group:
+          - uid: uid
+            name: name
+            url: url
+          - uid: uid
+            name: name
+            url: url
+        editableGroup:
+          - null
+          - null
+    Group:
+      type: object
+      properties:
+        uid:
+          type: string
+        name:
+          type: string
+        url:
+          type: string
+      example:
+        uid: uid
+        name: name
+        url: url

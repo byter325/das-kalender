@@ -8,7 +8,7 @@ lerna-debug.log*
 *.sef.json
 
 # No js files because we use typescript
-*.js
+#*.js
 
 # Don't include data, because of their immense size
 data/
