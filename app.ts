@@ -72,8 +72,3 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 cron.schedule("0 */15 * * * *", () => {
     Handlers.updateRaplaEvents("freudenmann", "TINF21B1");
 });
-
-const server: Server = app.listen(8080, () => {
-    console.log(server.address());
-    Handlers.updateRaplaEvents("freudenmann", "TINF21B1");
-});

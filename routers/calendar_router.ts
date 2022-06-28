@@ -18,7 +18,7 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
     } else if (type == "HTML") {
         if (eventID == undefined) {
             //return response.json(XMLManager.getAllEvents(uid))
-            return response.send("PLACEHOLDER: THIS SHOULD BE HTML")
+            return response.send(XMLManager.getAllEventsAsHTML(uid))
         } else {
             //return response.json(XMLManager.getEvent(uid, eventID))
             return response.send("PLACEHOLDER: THIS SHOULD BE HTML")

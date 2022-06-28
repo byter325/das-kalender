@@ -4,14 +4,15 @@ import { User } from "./classes/user"
 import { CalendarEvent } from "./classes/userEvent"
 import { Utils } from "./utils"
 import { XMLParser, XMLBuilder } from 'fast-xml-parser'
+import { Handlers } from "./handlers";
 
 export module XMLManager {
 
     // TODO: Change folder structure to /events/
     const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
-    const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users`
-    const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events`
-    const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups`
+    const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
+    const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
+    const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups/`
 
     /**
      * Tries to find a user by its uid
@@ -236,6 +237,17 @@ export module XMLManager {
             console.log(error);
             return "<events></events>"
         }
+    }
+
+    /**
+     * Converts a users events into an HTML string
+     *
+     * @export
+     * @param {string} uid The unique user or group id
+     * @return {*}  {string} The HTML string
+     */
+    export function getAllEventsAsHTML(uid:string):string{
+        return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
     }
 
     /**
