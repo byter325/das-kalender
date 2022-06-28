@@ -250,6 +250,43 @@ export module XMLManager {
         return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
     }
 
+    export function getWeekEventsAsHTML(uid:string, startdate:string, enddate:string){
+        //fetch
+        var boundaryStartDate = new Date(startdate)
+        var boundaryEndDate = new Date(enddate)
+        const builder = new XMLBuilder({attributesGroupName:"event"})
+
+        var events = getAllEventsJSON(uid)
+        if(events == ""){
+            return null
+        } else if(Array.isArray(events['event'])){
+            var filteredEvents = events['event'].filter((event: { [x: string]: String }) => {
+                var start = new Date(event['start'].toString())
+                var end = new Date(event['start'].toString())
+                if (start >= boundaryStartDate && end <= boundaryEndDate)
+                    return event
+
+            })
+            var x = { event: filteredEvents }            
+            var xmlEvents = "<events>"
+            xmlEvents += builder.build(x) + "</events>"
+            console.log(xmlEvents);
+
+            var path = PATH_DATA_EVENTS + "tmp_" + Utils.GenSHA256Hash(uid) + ".xml"
+            writeFileSync(path, xmlEvents)
+            var htmlString = Handlers.xmlEventsToHtmlGridView(path)
+            fs.rmSync(path)
+            return htmlString
+        } else {
+            return "This is an object"
+        }
+
+        //write to tmp.xml
+        //convert to html
+        //delete tmp.xml
+        //return
+    }
+
     /**
      * Gets all events and returns as a JS object
      * For internal use only
@@ -262,7 +299,6 @@ export module XMLManager {
         var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", { encoding: "utf-8" })
         var events = parser.parse(data)["events"]
         return events
-
     }
 
     /**
