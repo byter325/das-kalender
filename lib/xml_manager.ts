@@ -1,14 +1,17 @@
-import fs, {writeFileSync} from "fs"
-import {User} from "./classes/user"
-import {CalendarEvent} from "./classes/userEvent"
-import {Utils} from "./utils"
-import {XMLParser, XMLBuilder} from 'fast-xml-parser'
-import { dir } from "console"
+import * as path from "path";
+import fs, { writeFileSync } from "fs"
+import { User } from "./classes/user"
+import { CalendarEvent } from "./classes/userEvent"
+import { Utils } from "./utils"
+import { XMLParser, XMLBuilder } from 'fast-xml-parser'
 
-export module XMLManager{
-    const PATH_DATA_USERS = "./data/users/"
-    const PATH_DATA_GROUPS = "./data/groups/"
-    const PATH_DATA_EVENTS = "./data/events/"
+export module XMLManager {
+
+    // TODO: Change folder structure to /events/
+    const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
+    const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users`
+    const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events`
+    const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups`
 
     /**
      * Tries to find a user by its uid
@@ -26,7 +29,7 @@ export module XMLManager{
             return null
         }
     }
-    
+
     /**
      * Tries to find a group by its uid
      * 
@@ -249,7 +252,7 @@ export module XMLManager{
             return false
         }
     }
-    
+
     /**
      * Deletes a group and its entries by its uid
      *

@@ -6,19 +6,31 @@ import * as fs from "fs";
 import { Application, Express } from "express";
 import * as CryptoJs from "crypto-js";
 import * as tmp from "tmp";
-import { Utils } from "./utils"
+import { Utils } from "./utils";
+import { XMLManager } from "./xml_manager";
 import * as https from "https";
-
+import { User } from "./classes/user";
 
 export module Handlers {
 	// const https = require('https');
 	const SaxonJs = require("saxon-js");
 
-
+	// TODO: Change folder structure to /events/
 	const dataDir: string = path.resolve(__dirname, '..', 'data');
-	const raplaUrl: string = "https://rapla.dhbw-karlsruhe.de/rapla?page=@@page@@&user=@@lecturer@@&file=@@course@@";
-	const hashsFile: string = `${dataDir}/hashs.dat`;
+	const dataUsers: string = `${dataDir}/users`;
+	const dataUserEvents: string = `${dataDir}/userEvents`;
+	const dataGroups: string = `${dataDir}/groups`;
+	const dataGroupEvents: string = `${dataDir}/groupEvents`;
 
+	const xsltDir: string = path.resolve(__dirname, '..', 'transformations');
+	const raplaUrl: string = "https://rapla.dhbw-karlsruhe.de/rapla?page=@@page@@&user=@@lecturer@@&file=@@course@@";
+
+	/**
+	 * HTTP handler for displaying events
+	 * GET params: from, to
+	 * @param {Request} req 
+	 * @param {Response} res 
+	 */
 	export function getRaplaEvents(req: Request, res: Response) {
 		const course: string = req.params.course;
 		console.log(req.path);
@@ -51,29 +63,28 @@ export module Handlers {
 				});
 
 				const tmpobj = tmp.fileSync();
-				fs.writeFile(tmpobj.fd, toXml(eventResults), () => {
-					SaxonJs.transform({
-						stylesheetFileName: "transformations/b2f-events.sef.json",
-						sourceFileName: tmpobj.name,
-						destination: "serialized"
-					}, "async").then((outHtml: { principalResult: string; }) => {
-						res.contentType('text/html');
-						res.send(outHtml.principalResult);
-					});
+				fs.writeFile(tmpobj.fd, eventsToXml(eventResults), () => {
+					res.contentType('text/html');
+					res.send(xmlEventsToHtmlGridView(tmpobj.name));
 				});
 
 			});
 		}
 	}
 
-	export function fetchRaplaEvents(lecturer: string, course: string) {
+	/**
+	 * Fetch events from RAPLA
+	 * @param {string} lecturer 
+	 * @param {string} course 
+	 */
+	export function updateRaplaEvents(lecturer: string, course: string) {
 		console.log(`Fetching events from Rapla for ${lecturer}/${course}`);
 		const outfile: string = `${dataDir}/${course}.xml`;
 		const outkalfile: string = `${dataDir}/${course}-kalender.xml`;
 		const icsUrl: string = raplaUrl.replace('@@page@@', 'ical').replace('@@lecturer@@', lecturer).replace('@@course@@', course);
 		fs.opendir(`${dataDir}`, (err: NodeJS.ErrnoException | null, dir: fs.Dir) => {
 			if (err) {
-				dir.close();
+				// dir.close();
 				fs.mkdir(`${dataDir}`, (err: NodeJS.ErrnoException | null) => {
 					if (err) {
 						throw err;
@@ -85,7 +96,9 @@ export module Handlers {
 			}
 		});
 
-
+		/**
+		 * download ics
+		 */
 		https.get(icsUrl, (res: any) => {
 			let caldata: string;
 			res.setEncoding('utf8');
@@ -93,6 +106,9 @@ export module Handlers {
 				caldata += chunk;
 			});
 			res.on('end', () => {
+				/**
+				 * parse ics
+				 */
 				let jsdata = ical.sync.parseICS(caldata);
 				let eventResults = new Array();
 				for (const key in jsdata) {
@@ -100,16 +116,13 @@ export module Handlers {
 						eventResults.push(jsdata[key]);
 					}
 				}
-				let xmldata: string = toXml(eventResults);
+				let xmldata: string = eventsToXml(eventResults);
 				if (checkCache(outfile, xmldata) == false) {
 					fs.writeFile(outfile, xmldata, () => {
-						SaxonJs.transform({
-							stylesheetFileName: "transformations/rapla2kalender.sef.json",
-							sourceFileName: outfile,
-							destination: "serialized"
-						}, "async").then((output: { principalResult: string; }) => {
-							fs.writeFileSync(outkalfile, output.principalResult);
-						});
+						/**
+						 * transform events to xml
+						 */
+						fs.writeFileSync(outkalfile, xslTransform(outfile, "rapla2kalender.sef.json"));
 					});
 				}
 				else {
@@ -130,26 +143,48 @@ export module Handlers {
 		// 		eventResults.push(jsdata[key]);
 		// 	}
 		// }
-		// let xmldata: string = toXml(eventResults);
+		// let xmldata: string = eventsToXml(eventResults);
 		// fs.writeFileSync(outfile, xmldata)
 	}
 
+	/**
+	 * Authenticate User based on req.headers.authorization
+	 * @param req 
+	 * @param res 
+	 * @returns {boolean} True if authentication success, false otherwise
+	 */
 	export function authenticate(req: Request, res: Response) {
+		/**
+		 * check if authorization header is sent
+		 * respond "401 www-authenticate" otherwise
+		 */
 		if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
 			res.status(401).setHeader("WWW-Authenticate", "Basic realm=\"Geschuetzter Bereich\", charset=\"UTF-8\"").send();
 		} else {
 			const creds64: string = req.headers.authorization.split(' ')[1];
 			const credentials: string = Utils.Word2Hex(Utils.Hex2Word(creds64));
+			/**
+			 * public user for testing purposes only
+			 */
 			if (credentials == 'public:public') {
 				return true;
 			} else {
-				const hash: string = Utils.GenSHA256Hash(credentials);
-				const hashs: string[] = fs.readFileSync(hashsFile, "utf-8").split("\n");
-				if (!hashs.includes(hash)) {
-					res.status(401).send("Forbidden");
+				/**
+				 * get uid and pw from login request
+				 */
+				const uid = credentials.split(':')[0];
+				const pwHash = Utils.GenSHA256Hash(credentials.split(':')[1]);
+				var path = `${dataUsers}/${Utils.GenSHA256Hash(uid)}.xml`
+				if (!fs.existsSync(path)) {
 					return false;
+				} else {
+					var user: null | User = XMLManager.getUserByUid(uid);
+					if (user && pwHash == user.passwordHash) {
+						return true;
+					} else {
+						return false;
+					}
 				}
-				return true;
 			}
 		}
 	}
@@ -177,8 +212,35 @@ export module Handlers {
 		}
 	}
 
-    function toXml(jsObj: Object): string {
-        return json2xml(JSON.stringify({"events": {"event": jsObj}}), {compact: true})
-    }
+	/**
+	 * converts events from jsObj to xml
+	 * @param {*} jsObj 
+	 * @returns {string} xmlString
+	 */
+	function eventsToXml(jsObj: Object): string {
+		return json2xml(JSON.stringify({ "events": { "event": jsObj } }), { compact: true })
+	}
 
+	/**
+	 * transforms xml with given xslt stylesheet
+	 * @param {string} xmlFile 
+	 * @param {string} xsltFile 
+	 * @returns {string} xmlString
+	 */
+	function xslTransform(xmlFile: string, xsltFile: string) {
+		return SaxonJs.transform({
+			stylesheetFileName: `${xsltDir}/${xsltFile}`,
+			sourceFileName: xmlFile,
+			destination: "serialized"
+		}).principalResult;
+	}
+
+	/**
+	 * transforms xml event data to html
+	 * @param {string} xmlFile 
+	 * @returns {string} htmlString
+	 */
+	function xmlEventsToHtmlGridView(xmlFile: string) {
+		return xslTransform(xmlFile, "b2f-events.sef.json")
+	}
 }
