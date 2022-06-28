@@ -4,13 +4,23 @@
 
 Type
 
-`npm run start`
+`npm start`
 
-and open browser at https://localhost:8080/api/getRaplaEvents/TINF21B1
+and open browser at https://localhost:8080/
 
 ## Filters
 
-### examples
+
+## Security
+
+Because of HTTPS you must have a self signed certificate / signed certificate and place it into the `security` folder with the key named `server.key` and the certificate `server.cert`
+
+A self signed certificate can be created using openssl and the following command:
+
+`openssl req -nodes -new -x509 -keyout server.key -out server.cert
+`
+
+## API Examples
 
 /api/getRaplaEvents/TINF21B1?from=2022-03-21T00:00:00.000Z
 
