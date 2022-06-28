@@ -212,7 +212,6 @@ export module Handlers {
 		}
 	}
 
-<<<<<<< HEAD
 	/**
 	 * converts events from jsObj to xml
 	 * @param {*} jsObj 
@@ -221,11 +220,6 @@ export module Handlers {
 	function eventsToXml(jsObj: Object): string {
 		return json2xml(JSON.stringify({ "events": { "event": jsObj } }), { compact: true })
 	}
-=======
-    function toXml(jsObj: Object): string {
-        return json2xml(JSON.stringify({"events": {"event": jsObj}}), {compact: true})
-    }
->>>>>>> dev
 
 	/**
 	 * transforms xml with given xslt stylesheet
