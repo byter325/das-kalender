@@ -30,6 +30,25 @@ export module XMLManager {
         }
     }
 
+
+    export function getUserByUid(uid: string): User | null {
+        try {
+            const parser = new XMLParser({
+                ignoreAttributes: false,
+                attributesGroupName: "group"
+            })
+            var path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml"
+            var data = fs.readFileSync(path, "utf-8")
+            var person = parser.parse(data)["person"]
+            var user = new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
+                person.group, person.editableGroup, person.darkMode, person.isAdministrator)
+            return user
+        } catch (e) {
+            console.log(e);
+            return null
+        }
+    }
+
     /**
      * Tries to find a group by its uid
      * 
