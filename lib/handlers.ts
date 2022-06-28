@@ -177,8 +177,8 @@ export module Handlers {
 		}
 	}
 
-	function toXml(jsObj: Object): string {
-		return json2xml(JSON.stringify({ "events": { "event": jsObj } }), { compact: true })
-	}
+    function toXml(jsObj: Object): string {
+        return json2xml(JSON.stringify({"events": {"event": jsObj}}), {compact: true})
+    }
 
 }
