@@ -6,7 +6,7 @@ Type
 
 `npm run start`
 
-and open browser at http://localhost:8080/api/getRaplaEvents/TINF21B1
+and open browser at https://localhost:8080/api/getRaplaEvents/TINF21B1
 
 ## Filters
 

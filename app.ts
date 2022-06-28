@@ -10,6 +10,8 @@ import { User } from './lib/classes/user';
 import { Handlers } from './lib/handlers';
 import { Utils } from './lib/utils';
 import * as cron from "node-cron";
+import * as https from "https";
+import * as fs from "fs";
 
 const bodyParser = require('body-parser');
 const xmlparser = require('express-xml-bodyparser');
@@ -17,6 +19,19 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const app: Application = express();
 const port = 8080;
+
+const options = {
+    key: fs.readFileSync(path.join(__dirname, "security", "server.key")),
+    cert: fs.readFileSync(path.join(__dirname, "security", "server.cert"))
+};
+
+
+const server: Server = https.createServer(options, app).listen(port, () => {
+    console.log(`Success! Your application is running on port ${port}.`);
+    console.log(`You can open Swagger-UI here:  http://localhost:${port}/docs`);
+    console.log(server.address());
+    Handlers.updateRaplaEvents("freudenmann", "TINF21B1");
+});
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(xmlparser());
@@ -26,11 +41,6 @@ routes.use('/api/users', usersRouter);
 routes.use('/api/groups', groupsRouter);
 routes.use('/api/calendar', calendarRouter);
 app.use(routes)
-
-app.listen(port, () => {
-    console.log(`Success! Your application is running on port ${port}.`);
-    console.log(`You can open Swagger-UI here:  http://localhost:${port}/docs`);
-});
 
 app.use(express.static(path.join(__dirname, "app")));
 
@@ -52,7 +62,7 @@ app.get("/api/getActiveUser", (req: express.Request, res: express.Response) => {
 });
 
 // user: public | pw: public
-    app.get("/api/login", (req: express.Request, res: express.Response) => {
+app.get("/api/login", (req: express.Request, res: express.Response) => {
     if (Handlers.authenticate(req, res)) {
         res.status(200);
         res.send('login_success');
@@ -73,7 +83,3 @@ cron.schedule("0 */15 * * * *", () => {
     Handlers.updateRaplaEvents("freudenmann", "TINF21B1");
 });
 
-const server: Server = app.listen(8080, () => {
-    console.log(server.address());
-    Handlers.updateRaplaEvents("freudenmann", "TINF21B1");
-});
