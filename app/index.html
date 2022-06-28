@@ -27,7 +27,11 @@
 		<h1 class="d-inline">
 			<img src="./favicon.svg" width="50rem" height="50rem"> das kalender
 		</h1>
+    
 		<div class="mb-3">
+			<div id="statusInfo" class="d-none">
+
+			</div>
 			<div class="btn-group">
 				<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
 					data-bs-target="#userSettigsModal">
@@ -37,7 +41,7 @@
 					<i class="bi bi-box-arrow-right"></i> Abmelden
 				</button>
 			</div>
-			<div class="btn-group">
+			<div class="btn-group" id="loginBar">
 				<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
 					data-bs-target="#loginModal">
 					<i class="bi bi-person-circle"></i> Anmelden
@@ -46,28 +50,27 @@
 					data-bs-target="#registrationModal">
 					Registrieren
 				</button>
-
 			</div>
 		</div>
 	</header>
 	<div class="d-none d-sm-none d-md-block">
 		<div class="row row-cols-auto justify-content-md-between my-3">
 			<div>
-				<button class="btn btn-lg btn-secondary">Heute</button>
+				<button class="btn btn-lg btn-secondary" id="thisweek">Heute</button>
 			</div>
 			<div>
 				<h2 id="calweek"></h2>
 			</div>
 			<div>
-				<button class="btn btn-lg btn-secondary">
+				<button class="btn btn-lg btn-secondary" id="prevweek">
 					<i class="bi bi-arrow-left"></i>
 				</button>
-				<button class="btn btn-lg btn-secondary">
+				<button class="btn btn-lg btn-secondary" id="nextweek">
 					<i class="bi bi-arrow-right"></i>
 				</button>
 			</div>
 		</div>
-		<div class="kalendergrid" id="eventInsert">
+		<div class="kalendergrid">
 			<div class="ki-heading ki-col-1"></div>
 			<div class="ki-heading ki-day-monday ki-colspan-4 border-left">Montag</div>
 			<div class="ki-heading ki-day-tuesday ki-colspan-4 border-left">Dienstag</div>
@@ -143,6 +146,7 @@
 			<div class="ki-heading ki-row-37 ki-col-1 ki-rowspan-4">17:00</div>
 			<div class="ki-heading ki-row-41 ki-col-1 ki-rowspan-4">18:00</div>
 			<div class="ki-heading ki-row-45 ki-col-1 ki-rowspan-4">19:00</div>
+			<span id="eventGrid"></span>
 			<!-- 			
 			<div class="kalenderitem kalenderitem-vorlesung ki-colspan-4 ki-day-monday ki-hour-900 ki-duration-90">
 				<span class="fw-bold">Web-Engineering I (nur
@@ -636,7 +640,7 @@
 					<div class="modal-body">
 						<div class="mb-2">
 							<label for="loginMail" class="form-label">E-Mail</label>
-							<input type="email" class="form-control" id="loginMail" required="required">
+							<input type="text" class="form-control" id="loginMail" required="required">
 						</div>
 						<div class="mb-2">
 							<label for="loginPassword" class="form-label">Passwort</label>
@@ -648,6 +652,7 @@
 						<button type="submit" class="btn btn-primary">Anmelden</button>
 					</div>
 				</form>
+				<div id="loginMessage" class="alert"></div>
 			</div>
 		</div>
 	</div>
