@@ -1,0 +1,27 @@
+<!-- <!DOCTYPE events [ -->
+<!ELEMENT events (event*)>
+    <!ELEMENT event (type, lastmodified, created, start, dtstamp, end, uid, summary?, description?, location, categories, organizer?, attendee*, rrule)>
+    <!ELEMENT type (#PCDATA)>
+    <!ELEMENT lastmodified (#PCDATA)>
+    <!ELEMENT created (#PCDATA)>
+    <!ELEMENT start (#PCDATA)>
+    <!ELEMENT dtstamp (#PCDATA)>
+    <!ELEMENT end (#PCDATA)>
+    <!ELEMENT uid (#PCDATA)>
+    <!ELEMENT summary (#PCDATA)>
+    <!ELEMENT description (#PCDATA)>
+    <!ELEMENT location (#PCDATA)>
+    <!ELEMENT categories (#PCDATA)>
+    <!ELEMENT organizer (params?, val)>
+        <!ELEMENT params ((PARTSTAT?, CN?)|(ROLE?, PARTSTAT?))>
+            <!-- PARTSTAT schon Deklariert -->
+            <!ELEMENT CN (#PCDATA)>
+        <!ELEMENT val (#PCDATA)>
+    <!ELEMENT attendee (val?, PARTSTAT?, params?, val?)>
+        <!ELEMENT PARTSTAT (#PCDATA)>
+        <!-- <!ELEMENT val (#PCDATA)>    Schon Deklariert, aber Übersicht-->
+        <!-- <!ELEMENT params (ROLE?, PARTSTAT?)> -->
+            <!ELEMENT ROLE (#PCDATA)>
+            <!-- Partstat schon Deklariert -->
+    <!ELEMENT rrule (#PCDATA)>
+<!-- ]> -->
