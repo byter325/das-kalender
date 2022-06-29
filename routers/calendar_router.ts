@@ -5,10 +5,13 @@ import { XMLManager } from '../lib/xml_manager';
 
 const calendarRouter = express.Router();
 
+//Die Query hierfür könnte folgendermaßen aussehen: localhost:8080/api/calendar/:uid?type=HTML&start=2022-01-01T10:00:00.000Z&end=2022-01-01T14:00:00.000Z
 calendarRouter.get('/:uid', (request:express.Request, response:express.Response) => {
     var eventID:string|undefined = request.query.eventID?.toString()
     var uid: string = request.params.uid
     var type:string | undefined = request.query.type?.toString()
+    var start:string | undefined = request.query.start?.toString()
+    var end:string | undefined = request.query.end?.toString()
 
     if (type == 'XML'){
         if(eventID == undefined)
@@ -18,10 +21,12 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
     } else if (type == "HTML") {
         if (eventID == undefined) {
             //return response.json(XMLManager.getAllEvents(uid))
-            return response.send("PLACEHOLDER: THIS SHOULD BE HTML")
+            if(start == undefined || end == undefined)
+                return response.sendStatus(404)
+            return response.send(XMLManager.getWeekEventsAsHTML(uid, start, end))
         } else {
             //return response.json(XMLManager.getEvent(uid, eventID))
-            return response.send("PLACEHOLDER: THIS SHOULD BE HTML")
+            return response.send(XMLManager.getEvent(uid, eventID))
         }
     } else
         return response.sendStatus(400)

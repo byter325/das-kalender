@@ -4,14 +4,15 @@ import { User } from "./classes/user"
 import { CalendarEvent } from "./classes/userEvent"
 import { Utils } from "./utils"
 import { XMLParser, XMLBuilder } from 'fast-xml-parser'
+import { Handlers } from "./handlers";
 
 export module XMLManager {
 
     // TODO: Change folder structure to /events/
     const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
-    const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users`
-    const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events`
-    const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups`
+    const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
+    const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
+    const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups/`
 
     /**
      * Tries to find a user by its uid
@@ -239,6 +240,54 @@ export module XMLManager {
     }
 
     /**
+     * Converts a users events into an HTML string
+     *
+     * @export
+     * @param {string} uid The unique user or group id
+     * @return {*}  {string} The HTML string
+     */
+    export function getAllEventsAsHTML(uid:string):string{
+        return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+    }
+
+    export function getWeekEventsAsHTML(uid:string, startdate:string, enddate:string){
+        //fetch
+        var boundaryStartDate = new Date(startdate)
+        var boundaryEndDate = new Date(enddate)
+        const builder = new XMLBuilder({attributesGroupName:"event"})
+
+        var events = getAllEventsJSON(uid)
+        if(events == ""){
+            return null
+        } else if(Array.isArray(events['event'])){
+            var filteredEvents = events['event'].filter((event: { [x: string]: String }) => {
+                var start = new Date(event['start'].toString())
+                var end = new Date(event['start'].toString())
+                if (start >= boundaryStartDate && end <= boundaryEndDate)
+                    return event
+
+            })
+            var x = { event: filteredEvents }            
+            var xmlEvents = "<events>"
+            xmlEvents += builder.build(x) + "</events>"
+            console.log(xmlEvents);
+
+            var path = PATH_DATA_EVENTS + "tmp_" + Utils.GenSHA256Hash(uid) + ".xml"
+            writeFileSync(path, xmlEvents)
+            var htmlString = Handlers.xmlEventsToHtmlGridView(path)
+            fs.rmSync(path)
+            return htmlString
+        } else {
+            return "This is an object"
+        }
+
+        //write to tmp.xml
+        //convert to html
+        //delete tmp.xml
+        //return
+    }
+
+    /**
      * Gets all events and returns as a JS object
      * For internal use only
      *
@@ -250,7 +299,6 @@ export module XMLManager {
         var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", { encoding: "utf-8" })
         var events = parser.parse(data)["events"]
         return events
-
     }
 
     /**

@@ -217,7 +217,7 @@ export module Handlers {
 	 * @param {*} jsObj 
 	 * @returns {string} xmlString
 	 */
-	function eventsToXml(jsObj: Object): string {
+	export function eventsToXml(jsObj: Object): string {
 		return json2xml(JSON.stringify({ "events": { "event": jsObj } }), { compact: true })
 	}
 
@@ -240,7 +240,7 @@ export module Handlers {
 	 * @param {string} xmlFile 
 	 * @returns {string} htmlString
 	 */
-	function xmlEventsToHtmlGridView(xmlFile: string) {
+	export function xmlEventsToHtmlGridView(xmlFile: string) {
 		return xslTransform(xmlFile, "b2f-events.sef.json")
 	}
 }
