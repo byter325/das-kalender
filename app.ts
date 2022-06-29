@@ -86,4 +86,3 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 cron.schedule("0 */15 * * * *", () => {
     Handlers.updateRaplaEvents("freudenmann", "TINF21B1");
 });
-
