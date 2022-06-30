@@ -22,9 +22,12 @@ const port = 8080;
 const securityPath = path.join(__dirname, "security");
 
 if(!fs.existsSync(securityPath)) {
-    throw new Error("Security folder not found. Did you forget to add the folder and the certificate?");
+    console.log("No security folder found. Creating one...");
+    fs.mkdirSync(securityPath);
+    console.log("There is no certificate. If you want to create a certificate, look the README under 'Security'⁄nThe server will close now.");
+    process.exit(0);
 }
-
+    
 const options = {
     key: fs.readFileSync(path.join(__dirname, "security", "server.key")),
     cert: fs.readFileSync(path.join(__dirname, "security", "server.cert"))
