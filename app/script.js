@@ -16,9 +16,19 @@ function initTooltips() {
     });
 };
 
-function insertEvents(course, from, to) {
+function insertCourseEvents(course, from, to) {
     $.ajax({
         url: `/api/getRaplaEvents/${course}?from=${from}&to=${to}`,
+        xhrFields: { withCredentials: true }
+    }).done(function (data) {
+        $('#eventGrid').after(data);
+        adjustDays();
+    });
+}
+
+function insertUserEvents(uid, from, to) {
+    $.ajax({
+        url: `/api/calendar/${uid}?type=HTML&start=${from}&end=${to}`,
         xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#eventGrid').after(data);
@@ -34,7 +44,8 @@ function updateSite() {
     clearEvents();
     let weekRange = getWeekRange(window.calweek, window.calyear);
     $('#calweek').text('KW ' + window.calweek + " (" + weekRange.startDay.toLocaleDateString() + " - " + weekRange.endDay.toLocaleDateString() + ")");
-    insertEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    insertCourseEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    insertUserEvents($(window.activeUser).find("uid").text(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
 }
 
 function adjustDays() {
@@ -211,15 +222,17 @@ function newEvent() {
 }
 
 function login() {
-    console.log("login");
     const loginForm = document.forms["loginForm"];
     const email = loginForm["loginMail"].value;
     const password = loginForm["loginPassword"].value;
-    console.log("login with", email);
+    doLogin(email, password);
+}
+
+function doLogin(uid, password) {
     $.ajax({
         type: 'GET',
         url: '/api/login',
-        username: email,
+        username: uid,
         password: password,
         xhrFields: {
             withCredentials: true
@@ -258,7 +271,27 @@ function registration() {
     const firstName = registrationForm["registrationFirstName"].value;
     const lastName = registrationForm["registrationLastName"].value;
     console.log("user settings changed to", email, firstName, lastName);
-    // TODO: registration process
+    $.ajax({
+        type: 'POST',
+        url: '/api/users',
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            // TODO: uid = email?
+            uid: email,
+            firstName: firstName,
+            lastName: lastName,
+            mail: email,
+            // TODO: hashing in backend?
+            passwordHash: password
+        },
+        statusCode: {
+            200: () => {
+                doLogin(email, password);
+            }
+        }
+    });
 }
 
 function userSettingsChange() {

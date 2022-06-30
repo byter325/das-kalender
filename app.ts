@@ -21,7 +21,7 @@ const app: Application = express();
 const port = 8080;
 const securityPath = path.join(__dirname, "security");
 
-if(!fs.existsSync(securityPath)) {
+if (!fs.existsSync(securityPath)) {
     console.log("No security folder found. Creating one...");
     fs.mkdirSync(securityPath);
     console.log("There is no certificate. If you want to create a certificate, look at the README under 'Security'. The server will close now...");
@@ -51,7 +51,7 @@ const server: Server = https.createServer(options, app).listen(port, () => {
     Handlers.updateRaplaEvents("freudenmann", "TINF21B1");
 });
 
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(xmlparser());
 
 const routes = express.Router()
@@ -67,15 +67,15 @@ app.get("/api/getActiveUser", (req: express.Request, res: express.Response) => {
         const credentials: string = Utils.Word2Hex(Utils.Hex2Word(req.headers.authorization.split(' ')[1]));
         const uid: string = credentials.split(':')[0];
         const user: null | User = XMLManager.getUserByUid(uid);
-        if(user != null) user.passwordHash = "";
+        if (user != null) user.passwordHash = "";
         const builder = new XMLBuilder({
             ignoreAttributes: false,
-            tagValueProcessor: (tagname: string,tagvalue: string):string => {
-                if(tagname != "passwordHash") return tagvalue;
+            tagValueProcessor: (tagname: string, tagvalue: string): string => {
+                if (tagname != "passwordHash") return tagvalue;
                 else return "";
             }
         });
-        res.send(builder.build({person: user}));
+        res.send(builder.build({ person: user }));
     }
 });
 
