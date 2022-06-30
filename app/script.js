@@ -181,6 +181,7 @@ $(() => {
 /* UI events */
 function editEvent(buttonClicked) {
     const eventId = buttonClicked.getAttribute("data-event-id");
+    const eventOwnerId = buttonClicked.getAttribute("data-event-owner-id");
     // TODO: get event information
     const editEventForm = document.forms["editEventForm"];
     editEventForm["editEventId"].value = eventId;
@@ -191,6 +192,7 @@ function editEvent(buttonClicked) {
     editEventForm["editEventLocation"].value = "Mond 🌛";
     editEventForm["editEventStart"].value = "2020-02-02T22:22";
     editEventForm["editEventEnd"].value = "2022-02-22T20:20";
+    editEventForm["editEventOwnerId"].value = eventOwnerId;
 }
 
 function deleteEvent(buttonClicked) {
@@ -208,17 +210,70 @@ function deleteEvent(buttonClicked) {
 
 function submitEditEvent() {
     const editEventForm = document.forms["editEventForm"];
-    // TODO: send edited event
+    const eventId = editEventForm["editEventId"];
+    const ownerId = editEventForm["editEventOwnerId"];
+    const title = editEventForm["title"];
+    const description = editEventForm["description"];
+    const category = editEventForm["category"];
+    const location = editEventForm["location"];
+    const start = editEventForm["start"];
+    const end = editEventForm["end"];
+    $ajax({
+        type: 'PUT',
+        url: '/api/calendar/' + ownerId + '?eventId=' + eventId,
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            title,
+            description,
+            category,
+            location,
+            start,
+            end
+        }
+    });
 }
 
 function submitDeleteEvent() {
     const deleteEventForm = document.forms["deleteEventForm"];
-    // TODO: send deleted event
+    const uid = deleteEventForm["deleteEventId"];
+    $.ajax({
+        type: 'DELETE',
+        url: '/api/calendar',
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            uid
+        }
+    });
 }
 
 function newEvent() {
     const newEventForm = document.forms["newEventForm"];
-    // TODO: send new event
+    const title = newEventForm["newEventTitle"];
+    const description = newEventForm["newEventDescription"];
+    const category = newEventForm["newEventCategory"];
+    const location = newEventForm["newEventLocation"];
+    const start = newEventForm["newEventStart"];
+    const end = newEventForm["newEventEnd"];
+    $.ajax({
+        type: 'POST',
+        url: '/api/calendar',
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            uid: 'no',
+            title,
+            description,
+            category,
+            start,
+            end,
+            location
+        }
+    });
 }
 
 function login() {

@@ -251,10 +251,10 @@
 				<div class="btn-group float-end">
 					<!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
 					<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
-						data-bs-target="#editEvent" onclick="editEvent(this)" data-event-id="123"><i
+						data-bs-target="#editEvent" onclick="editEvent(this)" data-event-id="123" data-event-owner-id="abc"><i
 							class="bi bi-pencil-fill"></i></button>
 					<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
-						data-bs-target="#deleteEvent" onclick="deleteEvent(this)" data-event-id="123"><i
+						data-bs-target="#deleteEvent" onclick="deleteEvent(this)" data-event-id="123" data-event-owner-id="abc"><i
 							class="bi bi-trash-fill"></i></button>
 				</div>
 				<p class="text-muted mb-1 fw-bold">9:00-10:30<span class="ms-2">(1:30 h)</span></p>
@@ -459,7 +459,7 @@
 							<div class="mb-2 col-sm-6">
 								<label for="newEventCategory" class="form-label">
 									<i class="bi bi-list me-1"></i> Kategorie</label>
-								<select class="form-select" aria-label="Select a category">
+								<select class="form-select" aria-label="Select a category" id="newEventCategory">
 									<option selected value="Lecture">Vorlesung</option>
 									<option value="Exam">Klausur</option>
 									<option value="Post-exam">Nachklausur</option>
@@ -502,6 +502,7 @@
 			<div class="modal-content">
 				<form id="editEventForm">
 					<input type="hidden" id="editEventId">
+					<input type="hidden" id="editEventOwnerId">
 					<div class="modal-header">
 						<h5 class="modal-title" id="editEventModalLabel">Termin bearbeiten</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -562,7 +563,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<form id="deleteEventForm">
-					<input type="hidden" id="editEventId">
+					<input type="hidden" id="deleteEventId">
 					<div class="modal-header">
 						<h5 class="modal-title" id="deleteEventModalLabel">Termin löschen</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
