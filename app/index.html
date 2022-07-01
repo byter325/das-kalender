@@ -27,7 +27,7 @@
 		<h1 class="d-inline">
 			<img src="./favicon.svg" width="50rem" height="50rem"> das kalender
 		</h1>
-    
+
 		<div class="mb-3">
 			<div id="statusInfo" class="d-none">
 
@@ -53,101 +53,102 @@
 			</div>
 		</div>
 	</header>
-	<div class="d-none d-sm-none d-md-block">
-		<div class="row row-cols-auto justify-content-md-between my-3">
-			<div>
-				<button class="btn btn-lg btn-secondary" id="thisweek">Heute</button>
+	<main>
+		<article id="kalender" class="d-none d-sm-none d-md-block">
+			<div class="row row-cols-auto justify-content-md-between my-3">
+				<div>
+					<button class="btn btn-lg btn-secondary" id="thisweek">Heute</button>
+				</div>
+				<div>
+					<h2 id="calweek"></h2>
+				</div>
+				<div>
+					<button class="btn btn-lg btn-secondary" id="prevweek">
+						<i class="bi bi-arrow-left"></i>
+					</button>
+					<button class="btn btn-lg btn-secondary" id="nextweek">
+						<i class="bi bi-arrow-right"></i>
+					</button>
+				</div>
 			</div>
-			<div>
-				<h2 id="calweek"></h2>
-			</div>
-			<div>
-				<button class="btn btn-lg btn-secondary" id="prevweek">
-					<i class="bi bi-arrow-left"></i>
-				</button>
-				<button class="btn btn-lg btn-secondary" id="nextweek">
-					<i class="bi bi-arrow-right"></i>
-				</button>
-			</div>
-		</div>
-		<div class="kalendergrid">
-			<div class="ki-heading ki-col-1"></div>
-			<div class="ki-heading ki-day-monday ki-colspan-4 border-left">Montag</div>
-			<div class="ki-heading ki-day-tuesday ki-colspan-4 border-left">Dienstag</div>
-			<div class="ki-heading ki-day-wednesday ki-colspan-4 border-left">Mittwoch</div>
-			<div class="ki-heading ki-day-thursday ki-colspan-4 border-left">Donnerstag</div>
-			<div class="ki-heading ki-day-friday ki-colspan-4 border-left">Freitag</div>
-			<div class="ki-heading ki-day-saturday ki-colspan-4 border-left">Samstag</div>
-			<div class="ki-heading ki-day-sunday ki-colspan-4 border-left">Sonntag</div>
-			<div class="ki-wrow ki-row-1 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-2 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-3 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-4 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-5 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-6 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-7 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-8 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-9 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-10 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-11 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-12 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-13 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-14 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-15 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-16 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-17 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-18 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-19 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-20 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-21 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-22 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-23 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-24 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-25 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-26 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-27 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-28 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-29 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-30 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-31 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-32 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-33 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-34 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-35 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-36 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-37 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-38 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-39 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-40 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-41 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-42 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-43 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-44 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-45 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-46 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-47 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wrow ki-row-48 ki-col-1 ki-colspan-29"></div>
-			<div class="ki-wcolumn ki-row-1 ki-col-2 ki-rowspan-48"></div>
-			<div class="ki-wcolumn ki-row-1 ki-col-6 ki-rowspan-48"></div>
-			<div class="ki-wcolumn ki-row-1 ki-col-10 ki-rowspan-48"></div>
-			<div class="ki-wcolumn ki-row-1 ki-col-14 ki-rowspan-48"></div>
-			<div class="ki-wcolumn ki-row-1 ki-col-18 ki-rowspan-48"></div>
-			<div class="ki-wcolumn ki-row-1 ki-col-22 ki-rowspan-48"></div>
-			<div class="ki-wcolumn ki-row-1 ki-col-26 ki-rowspan-48"></div>
-			<div class="ki-heading ki-row-1 ki-col-1 ki-rowspan-4">8:00</div>
-			<div class="ki-heading ki-row-5 ki-col-1 ki-rowspan-4">9:00</div>
-			<div class="ki-heading ki-row-9 ki-col-1 ki-rowspan-4">10:00</div>
-			<div class="ki-heading ki-row-13 ki-col-1 ki-rowspan-4">11:00</div>
-			<div class="ki-heading ki-row-17 ki-col-1 ki-rowspan-4">12:00</div>
-			<div class="ki-heading ki-row-21 ki-col-1 ki-rowspan-4">13:00</div>
-			<div class="ki-heading ki-row-25 ki-col-1 ki-rowspan-4">14:00</div>
-			<div class="ki-heading ki-row-29 ki-col-1 ki-rowspan-4">15:00</div>
-			<div class="ki-heading ki-row-33 ki-col-1 ki-rowspan-4">16:00</div>
-			<div class="ki-heading ki-row-37 ki-col-1 ki-rowspan-4">17:00</div>
-			<div class="ki-heading ki-row-41 ki-col-1 ki-rowspan-4">18:00</div>
-			<div class="ki-heading ki-row-45 ki-col-1 ki-rowspan-4">19:00</div>
-			<span id="eventGrid"></span>
-			<!-- 			
+			<div class="kalendergrid">
+				<div class="ki-heading ki-col-1"></div>
+				<div class="ki-heading ki-day-monday ki-colspan-4 border-left">Montag</div>
+				<div class="ki-heading ki-day-tuesday ki-colspan-4 border-left">Dienstag</div>
+				<div class="ki-heading ki-day-wednesday ki-colspan-4 border-left">Mittwoch</div>
+				<div class="ki-heading ki-day-thursday ki-colspan-4 border-left">Donnerstag</div>
+				<div class="ki-heading ki-day-friday ki-colspan-4 border-left">Freitag</div>
+				<div class="ki-heading ki-day-saturday ki-colspan-4 border-left">Samstag</div>
+				<div class="ki-heading ki-day-sunday ki-colspan-4 border-left">Sonntag</div>
+				<div class="ki-wrow ki-row-1 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-2 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-3 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-4 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-5 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-6 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-7 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-8 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-9 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-10 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-11 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-12 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-13 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-14 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-15 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-16 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-17 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-18 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-19 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-20 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-21 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-22 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-23 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-24 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-25 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-26 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-27 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-28 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-29 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-30 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-31 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-32 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-33 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-34 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-35 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-36 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-37 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-38 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-39 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-40 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-41 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-42 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-43 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-44 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-45 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-46 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-47 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wrow ki-row-48 ki-col-1 ki-colspan-29"></div>
+				<div class="ki-wcolumn ki-row-1 ki-col-2 ki-rowspan-48"></div>
+				<div class="ki-wcolumn ki-row-1 ki-col-6 ki-rowspan-48"></div>
+				<div class="ki-wcolumn ki-row-1 ki-col-10 ki-rowspan-48"></div>
+				<div class="ki-wcolumn ki-row-1 ki-col-14 ki-rowspan-48"></div>
+				<div class="ki-wcolumn ki-row-1 ki-col-18 ki-rowspan-48"></div>
+				<div class="ki-wcolumn ki-row-1 ki-col-22 ki-rowspan-48"></div>
+				<div class="ki-wcolumn ki-row-1 ki-col-26 ki-rowspan-48"></div>
+				<div class="ki-heading ki-row-1 ki-col-1 ki-rowspan-4">8:00</div>
+				<div class="ki-heading ki-row-5 ki-col-1 ki-rowspan-4">9:00</div>
+				<div class="ki-heading ki-row-9 ki-col-1 ki-rowspan-4">10:00</div>
+				<div class="ki-heading ki-row-13 ki-col-1 ki-rowspan-4">11:00</div>
+				<div class="ki-heading ki-row-17 ki-col-1 ki-rowspan-4">12:00</div>
+				<div class="ki-heading ki-row-21 ki-col-1 ki-rowspan-4">13:00</div>
+				<div class="ki-heading ki-row-25 ki-col-1 ki-rowspan-4">14:00</div>
+				<div class="ki-heading ki-row-29 ki-col-1 ki-rowspan-4">15:00</div>
+				<div class="ki-heading ki-row-33 ki-col-1 ki-rowspan-4">16:00</div>
+				<div class="ki-heading ki-row-37 ki-col-1 ki-rowspan-4">17:00</div>
+				<div class="ki-heading ki-row-41 ki-col-1 ki-rowspan-4">18:00</div>
+				<div class="ki-heading ki-row-45 ki-col-1 ki-rowspan-4">19:00</div>
+				<span id="eventGrid"></span>
+				<!-- 			
 			<div class="kalenderitem kalenderitem-vorlesung ki-colspan-4 ki-day-monday ki-hour-900 ki-duration-90">
 				<span class="fw-bold">Web-Engineering I (nur
 					AI/INF)</span>
@@ -228,190 +229,198 @@
 				<span data-bs-toggle="tooltip" data-bs-placement="left" title="Gröll, Lutz (lg@test.example.com)"><i
 						class="bi bi-person-square me-1"></i> L.G.</span>
 			</div> -->
-		</div>
-	</div>
-
-	<!-- Buttons -->
-	<div class="mb-4">
-		<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#selectGroupModal">
-			<i class="bi bi-funnel-fill me-1"></i>
-			Gruppen auswählen
-		</button>
-		<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newEvent" onclick="newEvent()">
-			<i class="bi bi-plus-circle me-1"></i>
-			Neuer Termin
-		</button>
-	</div>
-
-	<!-- Timelines -->
-	<h3><a href="#monday" class="link-secondary" data-bs-toggle="collapse">Montag, 16.05.2022 <i
-				class="bi bi-caret-down-fill"></i></a></h3>
-	<div class="collapse" id="monday">
-		<ul class="timeline-with-icons py-2 mx-3">
-			<li class="timeline-item mb-4 mt-3">
-				<span class="timeline-icon">
-					<i class="bi bi-book"></i>
-				</span>
-
-				<h6 class="fw-bold d-inline">Web-Engineering I (nur AI/INF)</h6>
-				<div class="btn-group float-end">
-					<!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
-					<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
-						data-bs-target="#editEvent" onclick="editEvent(this)" data-event-id="123" data-event-owner-id="abc"><i
-							class="bi bi-pencil-fill"></i></button>
-					<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
-						data-bs-target="#deleteEvent" onclick="deleteEvent(this)" data-event-id="123" data-event-owner-id="abc"><i
-							class="bi bi-trash-fill"></i></button>
-				</div>
-				<p class="text-muted mb-1 fw-bold">9:00-10:30<span class="ms-2">(1:30 h)</span></p>
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="A268 Hörsaal">
-					<i class="bi bi-geo-alt-fill me-1"></i>A268 Hörsaal
-				</span><br>
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
-					title="jr@test.example.com">
-					<i class="bi bi-person-square me-1"></i>Röthig, Jürgen
-				</span>
-			</li>
-			<li class="timeline-item mb-4 mt-3">
-				<span class="timeline-icon-2">
-					<i class="bi bi-cup"></i>
-				</span>
-
-				<h6 class="fw-bold">Pause</h6>
-				<p class="text-muted mb-1 fw-bold">10:30-11:15<span class="ms-2">(0:45 h)</span></p>
-			</li>
-			<li class="timeline-item mb-4 mt-3">
-				<span class="timeline-icon">
-					<i class="bi bi-book"></i>
-				</span>
-
-				<h6 class="fw-bold d-inline">Intercultural Comm Gruppe 1</h6>
-				<div class="btn-group float-end">
-					<!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
-					<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
-						data-bs-target="#editEvent" onclick="editEvent(this)"><i class="bi bi-pencil-fill"></i></button>
-					<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
-						data-bs-target="#deleteEvent" onclick="deleteEvent(this)"><i
-							class="bi bi-trash-fill"></i></button>
-				</div>
-				<p class="text-muted mb-1 fw-bold">11:15-12:45<span class="ms-2">(1:30 h)</span></p>
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="A268 Hörsaal">
-					<i class="bi bi-geo-alt-fill me-1"></i>A268
-				</span><br>
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
-					title="mk@test.example.com">
-					<i class="bi bi-person-square me-1"></i>Koretnikov, Mila
-				</span>
-			</li>
-			<li class="timeline-item mb-4 mt-3">
-				<span class="timeline-icon-2">
-					<i class="bi bi-cup"></i>
-				</span>
-
-				<h6 class="fw-bold">Pause</h6>
-				<p class="text-muted mb-1 fw-bold">12:45-15:00<span class="ms-2">(2:15 h)</span></p>
-			</li>
-			<li class="timeline-item mb-4 mt-3">
-				<span class="timeline-icon">
-					<i class="bi bi-book"></i>
-				</span>
-
-				<h6 class="fw-bold d-inline">Marketing (nur AI/INF)</h6>
-				<div class="btn-group float-end">
-					<!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
-					<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
-						data-bs-target="#editEvent" onclick="editEvent(this)"><i class="bi bi-pencil-fill"
-							data-event-id="123"></i></button>
-					<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
-						data-bs-target="#deleteEvent" onclick="deleteEvent(this)"><i
-							class="bi bi-trash-fill"></i></button>
-				</div>
-				<p class="text-muted mb-1 fw-bold">15:00-18:15<span class="ms-2">(3:15 h)</span></p>
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
-					title="XOnline-Veranstaltung Virtueller Raum">
-					<i class="bi bi-geo-alt-fill me-1"></i>XOnline
-				</span><br>
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
-					title="sr@test.example.com">
-					<i class="bi bi-person-square me-1"></i>Rudolf, Sabine
-				</span>
-			</li>
-		</ul>
-	</div>
-	<hr>
-
-	<h3><a href="#tuesday" class="link-secondary" data-bs-toggle="collapse">Dienstag, 17.05.2022 <i
-				class="bi bi-caret-down-fill"></i></a></h3>
-	<div class="collapse" id="tuesday">
-		<div class="card mb-2">
-			<h5 class="card-header" style="background-color: lightyellow">
-				Programmieren
-				<span class="badge bg-white text-dark rounded-pill border float-end">
-					<i class="bi bi-geo-alt-fill"></i>
-					A268 Hörsaal
-				</span>
-			</h5>
-			<div class="card-body">
-				<i class="bi bi-clock-fill me-1"></i> 8:00-12:15 <span class="ms-2">(3:15 h)</span><br>
-				<i class="bi bi-person-square me-1"></i> <span data-bs-toggle="tooltip" data-bs-placement="right"
-					title="ws@test.example.com">Süß, Wolfgang</span>
 			</div>
-		</div>
+		</article>
 
-		<div class="text-success fw-bold mb-2">
-			<i class="bi bi-cup-fill ms-3 me-1"></i> Pause (0:15 h)
-		</div>
+		<!-- Buttons -->
+		<article id="button-row" class="mb-3">
+			<button type="button" class="btn btn-primary me-2 mb-1" data-bs-toggle="modal"
+				data-bs-target="#selectGroupModal">
+				<i class="bi bi-funnel-fill me-1"></i>
+				Gruppen auswählen
+			</button>
+			<buttont type="button" class="btn btn-success mb-1" data-bs-toggle="modal" data-bs-target="#newEvent"
+				onclick="newEvent()">
+				<i class="bi bi-plus-circle me-1"></i>
+				Neuer Termin
+				</button>
+		</article>
 
-		<div class="card mb-2">
-			<h5 class="card-header" style="background-color: lightcyan">
-				Projektmanagement 2
-				<span class="badge bg-white text-dark rounded-pill border float-end">
-					<i class="bi bi-geo-alt-fill"></i>
-					A268 Hörsaal
-				</span>
-			</h5>
-			<div class="card-body">
-				<i class="bi bi-clock-fill me-1"></i> 12:30-14:00 <span class="ms-2">(1:30 h)</span><br>
-				<i class="bi bi-person-square me-1"></i> <span data-bs-toggle="tooltip" data-bs-placement="right"
-					title="mv@test.example.com">Vetter, Michael</span>
+		<!-- Timelines -->
+		<article id="timelines">
+			<h3><a href="#monday" class="link-secondary" data-bs-toggle="collapse">Montag, 16.05.2022 <i
+						class="bi bi-caret-down-fill"></i></a></h3>
+			<div class="collapse" id="monday">
+				<ul class="timeline-with-icons py-2 mx-3">
+					<li class="timeline-item mb-4 mt-3">
+						<span class="timeline-icon">
+							<i class="bi bi-book"></i>
+						</span>
+
+						<h6 class="fw-bold d-inline">Web-Engineering I (nur AI/INF)</h6>
+						<div class="btn-group float-end">
+							<!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
+							<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
+								data-bs-target="#editEvent" onclick="editEvent(this)" data-event-id="123"
+								data-event-owner-id="abc"><i class="bi bi-pencil-fill"></i></button>
+							<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
+								data-bs-target="#deleteEvent" onclick="deleteEvent(this)" data-event-id="123"
+								data-event-owner-id="abc"><i class="bi bi-trash-fill"></i></button>
+						</div>
+						<p class="text-muted mb-1 fw-bold">9:00-10:30<span class="ms-2">(1:30 h)</span></p>
+						<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
+							title="A268 Hörsaal">
+							<i class="bi bi-geo-alt-fill me-1"></i>A268 Hörsaal
+						</span><br>
+						<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
+							title="jr@test.example.com">
+							<i class="bi bi-person-square me-1"></i>Röthig, Jürgen
+						</span>
+					</li>
+					<li class="timeline-item mb-4 mt-3">
+						<span class="timeline-icon-2">
+							<i class="bi bi-cup"></i>
+						</span>
+
+						<h6 class="fw-bold">Pause</h6>
+						<p class="text-muted mb-1 fw-bold">10:30-11:15<span class="ms-2">(0:45 h)</span></p>
+					</li>
+					<li class="timeline-item mb-4 mt-3">
+						<span class="timeline-icon">
+							<i class="bi bi-book"></i>
+						</span>
+
+						<h6 class="fw-bold d-inline">Intercultural Comm Gruppe 1</h6>
+						<div class="btn-group float-end">
+							<!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
+							<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
+								data-bs-target="#editEvent" onclick="editEvent(this)"><i
+									class="bi bi-pencil-fill"></i></button>
+							<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
+								data-bs-target="#deleteEvent" onclick="deleteEvent(this)"><i
+									class="bi bi-trash-fill"></i></button>
+						</div>
+						<p class="text-muted mb-1 fw-bold">11:15-12:45<span class="ms-2">(1:30 h)</span></p>
+						<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
+							title="A268 Hörsaal">
+							<i class="bi bi-geo-alt-fill me-1"></i>A268
+						</span><br>
+						<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
+							title="mk@test.example.com">
+							<i class="bi bi-person-square me-1"></i>Koretnikov, Mila
+						</span>
+					</li>
+					<li class="timeline-item mb-4 mt-3">
+						<span class="timeline-icon-2">
+							<i class="bi bi-cup"></i>
+						</span>
+
+						<h6 class="fw-bold">Pause</h6>
+						<p class="text-muted mb-1 fw-bold">12:45-15:00<span class="ms-2">(2:15 h)</span></p>
+					</li>
+					<li class="timeline-item mb-4 mt-3">
+						<span class="timeline-icon">
+							<i class="bi bi-book"></i>
+						</span>
+
+						<h6 class="fw-bold d-inline">Marketing (nur AI/INF)</h6>
+						<div class="btn-group float-end">
+							<!-- nur anzeigen, wenn zum Bearbeiten berechtigt -->
+							<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal"
+								data-bs-target="#editEvent" onclick="editEvent(this)"><i class="bi bi-pencil-fill"
+									data-event-id="123"></i></button>
+							<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal"
+								data-bs-target="#deleteEvent" onclick="deleteEvent(this)"><i
+									class="bi bi-trash-fill"></i></button>
+						</div>
+						<p class="text-muted mb-1 fw-bold">15:00-18:15<span class="ms-2">(3:15 h)</span></p>
+						<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
+							title="XOnline-Veranstaltung Virtueller Raum">
+							<i class="bi bi-geo-alt-fill me-1"></i>XOnline
+						</span><br>
+						<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right"
+							title="sr@test.example.com">
+							<i class="bi bi-person-square me-1"></i>Rudolf, Sabine
+						</span>
+					</li>
+				</ul>
 			</div>
-		</div>
+			<hr>
 
-		<div class="text-success fw-bold mb-2">
-			<i class="bi bi-cup-fill ms-3 me-1"></i> Pause (1:00 h)
-		</div>
+			<h3><a href="#tuesday" class="link-secondary" data-bs-toggle="collapse">Dienstag, 17.05.2022 <i
+						class="bi bi-caret-down-fill"></i></a></h3>
+			<div class="collapse" id="tuesday">
+				<div class="card mb-2">
+					<h5 class="card-header" style="background-color: lightyellow">
+						Programmieren
+						<span class="badge bg-white text-dark rounded-pill border float-end">
+							<i class="bi bi-geo-alt-fill"></i>
+							A268 Hörsaal
+						</span>
+					</h5>
+					<div class="card-body">
+						<i class="bi bi-clock-fill me-1"></i> 8:00-12:15 <span class="ms-2">(3:15 h)</span><br>
+						<i class="bi bi-person-square me-1"></i> <span data-bs-toggle="tooltip"
+							data-bs-placement="right" title="ws@test.example.com">Süß, Wolfgang</span>
+					</div>
+				</div>
 
-		<div class="card mb-2">
-			<h5 class="card-header" style="background-color: lightblue">
-				Marketing (nur AI/INF)
-				<span class="badge bg-black rounded-pill border float-end">
-					<i class="bi bi-geo-alt-fill"></i>
-					XOnline-Veranstaltung
-				</span>
-			</h5>
-			<div class="card-body">
-				<i class="bi bi-clock-fill me-1"></i> 15:00 - 18:15 <span class="ms-2">(3:15 h)</span><br>
-				<i class="bi bi-person-square me-1"></i> <span data-bs-toggle="tooltip" data-bs-placement="right"
-					title="sr@test.example.com">Rudolf, Sabine</span>
+				<div class="text-success fw-bold mb-2">
+					<i class="bi bi-cup-fill ms-3 me-1"></i> Pause (0:15 h)
+				</div>
+
+				<div class="card mb-2">
+					<h5 class="card-header" style="background-color: lightcyan">
+						Projektmanagement 2
+						<span class="badge bg-white text-dark rounded-pill border float-end">
+							<i class="bi bi-geo-alt-fill"></i>
+							A268 Hörsaal
+						</span>
+					</h5>
+					<div class="card-body">
+						<i class="bi bi-clock-fill me-1"></i> 12:30-14:00 <span class="ms-2">(1:30 h)</span><br>
+						<i class="bi bi-person-square me-1"></i> <span data-bs-toggle="tooltip"
+							data-bs-placement="right" title="mv@test.example.com">Vetter, Michael</span>
+					</div>
+				</div>
+
+				<div class="text-success fw-bold mb-2">
+					<i class="bi bi-cup-fill ms-3 me-1"></i> Pause (1:00 h)
+				</div>
+
+				<div class="card mb-2">
+					<h5 class="card-header" style="background-color: lightblue">
+						Marketing (nur AI/INF)
+						<span class="badge bg-black rounded-pill border float-end">
+							<i class="bi bi-geo-alt-fill"></i>
+							XOnline-Veranstaltung
+						</span>
+					</h5>
+					<div class="card-body">
+						<i class="bi bi-clock-fill me-1"></i> 15:00 - 18:15 <span class="ms-2">(3:15 h)</span><br>
+						<i class="bi bi-person-square me-1"></i> <span data-bs-toggle="tooltip"
+							data-bs-placement="right" title="sr@test.example.com">Rudolf, Sabine</span>
+					</div>
+				</div>
 			</div>
-		</div>
-	</div>
-	<hr>
+			<hr>
 
-	<h3><a href="#wednesday" class="link-secondary" data-bs-toggle="collapse">Mittwoch, 18.05.2022 <i
-				class="bi bi-caret-down-fill"></i></a></h3>
-	<div class="collapse" id="wednesday"></div>
-	<hr>
+			<h3><a href="#wednesday" class="link-secondary" data-bs-toggle="collapse">Mittwoch, 18.05.2022 <i
+						class="bi bi-caret-down-fill"></i></a></h3>
+			<div class="collapse" id="wednesday"></div>
+			<hr>
 
-	<h3><a href="#thursday" class="link-secondary" data-bs-toggle="collapse">Donnerstag, 19.05.2022 <i
-				class="bi bi-caret-down-fill"></i></a></h3>
-	<div class="collapse" id="thursday"></div>
-	<hr>
+			<h3><a href="#thursday" class="link-secondary" data-bs-toggle="collapse">Donnerstag, 19.05.2022 <i
+						class="bi bi-caret-down-fill"></i></a></h3>
+			<div class="collapse" id="thursday"></div>
+			<hr>
 
-	<h3><a href="#friday" class="link-secondary" data-bs-toggle="collapse">Freitag, 20.05.2022 <i
-				class="bi bi-caret-down-fill"></i></a></h3>
-	<div class="collapse" id="friday"></div>
-	<hr>
+			<h3><a href="#friday" class="link-secondary" data-bs-toggle="collapse">Freitag, 20.05.2022 <i
+						class="bi bi-caret-down-fill"></i></a></h3>
+			<div class="collapse" id="friday"></div>
+			<hr>
+		</article>
+	</main>
 
 
 	<!-- Modal: selectGroup -->

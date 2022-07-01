@@ -218,7 +218,7 @@ async function submitEditEvent() {
     const location = editEventForm["location"];
     const start = editEventForm["start"];
     const end = editEventForm["end"];
-    $ajax({
+    $.ajax({
         type: 'PUT',
         url: '/api/calendar/' + ownerId + '?eventId=' + eventId,
         xhrFields: {
