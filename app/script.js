@@ -1,5 +1,22 @@
 "use strict";
 
+// https://www.w3schools.com/js/js_cookies.asp
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 function getCurrentKw() {
     var date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -117,14 +134,31 @@ function getWeekRange(w, y) {
     };
 }
 
+function checkTokenCredentials() {
+    console.log("Token is being checked.");
+    const token = getCookie('token');
+    const ALWAYS_AUTHENTICATED_DEBUG = false;
+    if (token.length > 0 || ALWAYS_AUTHENTICATED_DEBUG) {
+        $('#loggedin-bar').show();
+        $('#kalender').show(500);
+        $('#button-row').show(500);
+        $('#timelines').show(500);
+    } else {
+        $('#login-and-registration').show();
+    }
+}
 
 $(() => {
+    checkTokenCredentials();
+
     if (!window.hasOwnProperty("calweek")) {
         window.calweek = getCurrentKw();
     }
     if (!window.hasOwnProperty("calyear")) {
         window.calyear = new Date().getFullYear();
     }
+    //updateSite();
+
 
     initTooltips();
 
