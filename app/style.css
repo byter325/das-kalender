@@ -862,3 +862,8 @@ table {
     background-color: rgb(208, 252, 207);
     color: rgb(9, 129, 25);
 }
+
+/* hide components by default */
+#loggedin-bar, #kalender, #button-row, #timelines, #login-and-registration {
+    display: none;
+}

@@ -1,31 +1,43 @@
-import fs, {writeFileSync} from "fs"
-import {User} from "./classes/user"
-import {CalendarEvent} from "./classes/userEvent"
-import {Utils} from "./utils"
-import {XMLParser, XMLBuilder} from 'fast-xml-parser'
-import { dir } from "console"
+import * as path from "path";
+import fs, { writeFileSync } from "fs"
+import { User } from "./classes/user"
+import { CalendarEvent } from "./classes/userEvent"
+import { Utils } from "./utils"
+import { XMLParser, XMLBuilder } from 'fast-xml-parser'
+import { Handlers } from "./handlers";
 
-export module XMLManager{
-    const PATH_DATA_USERS = "./data/users/"
-    const PATH_DATA_GROUPS = "./data/groups/"
-    const PATH_DATA_EVENTS = "./data/events/"
+export module XMLManager {
+
+    // TODO: Change folder structure to /events/
+    const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
+    const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
+    const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
+    const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups/`
 
     /**
      * Tries to find a user by its uid
      * 
      * @export
      * @param {string} uid unique user id
-     * @return {User} Returns an object of the User class if the user exists
-     * @return {null} Returns null if the user is not found
+     * @return {string} Returns an XML string of a user
      */
-    export function getUser(uid:string): User | null{
+    export function getUser(uid:string): string | null{
         try{
+            var path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml"
+            return fs.readFileSync(path, "utf-8")
+        } catch (e) {
+            console.log(e);
+            return null
+        }
+    }
+
+    export function getUserByUid(uid: string): User | null {
+        try {
             const parser = new XMLParser({
                 ignoreAttributes: false,
                 attributesGroupName: "group"
             })
             var path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml"
-
             var data = fs.readFileSync(path, "utf-8")
             var person = parser.parse(data)["person"]
             var user = new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
@@ -36,25 +48,18 @@ export module XMLManager{
             return null
         }
     }
-    
+
     /**
      * Tries to find a group by its uid
      * 
      * @export
      * @param {string} uid The unique group id
-     * @return {any}  Returns an object if the group exists
-     * @return {null} Returns null if the group is not found
+     * @return {string}  Returns an XML string if the group exists
      */
     export function getGroup(uid:string): any | null{
         try {
-            const parser = new XMLParser({
-                ignoreAttributes: false,
-            })
             var path = PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml"
-
-            var data = fs.readFileSync(path, "utf-8")
-            var group = parser.parse(data)['group']
-            return group
+            return fs.readFileSync(path, "utf-8")
         } catch (error) {
             console.log(error);
             return null
@@ -67,26 +72,26 @@ export module XMLManager{
      * @export
      * @param {string} uid The unique (group or user) id
      * @param {string} eventUid The unique event id
-     * @return {any}  Returns the event if it is found
-     * @return {null} Returns null if the event is not found
+     * @return {string|undefined}  Returns the event as an XML string if found or nothing if not found
      */
-    export function getEvent(uid:string, eventUid:string):any{
+    export function getEvent(uid:string, eventUid:string):string|undefined{
         try {
             const parser = new XMLParser()
+            const builder = new XMLBuilder({})
             var data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenSHA256Hash(uid) + ".xml")
             var events = parser.parse(data)["events"]
             if(events['event'] == ""){
-                return null
-            } else if(events['event'] instanceof Object){
-                console.log(events['event']);
-                
-                return events['event']
+                return undefined
             } else {
-                return events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)[0]
+                var filteredEvents = events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)
+                var firstElementAsXML = builder.build({event:filteredEvents[0]})
+                console.log("MULTIPLE EVENTS: " + filteredEvents + firstElementAsXML);
+                
+                return firstElementAsXML
             }
         } catch (error) {
             console.log(error);
-            return null
+            return undefined
         }
     }
 
@@ -98,7 +103,7 @@ export module XMLManager{
      * @export
      * @param {User} user The user to be added
      * @param {boolean} allowOverride Set to true to allow overriding existing users
-     * @return {*}  Returns if the operation was successful or not
+     * @return {boolean}  Returns if the operation was successful or not
      */
     export function insertUser(user: User, allowOverride:boolean): boolean {
         try {
@@ -154,7 +159,7 @@ export module XMLManager{
      * @param {string} name The name which is to be given to the group
      * @param {string} url The url which will belong to the group
      * @param {boolean} allowOverride Set to true to allow overriding existing groups
-     * @return {*} Returns if the operation was successful or not
+     * @return {boolean} Returns if the operation was successful or not
      */
     export function insertGroup(uid:string,name:string,url:string, allowOverride:boolean):boolean{
         try{
@@ -189,11 +194,12 @@ export module XMLManager{
      * @export
      * @param {string} uid The unique (user or group) id
      * @param {CalendarEvent} event The event to be added
-     * @return {*} Returns if the operation was successful or not
+     * @return {boolean} Returns if the operation was successful or not
      */
     export function insertEvent(uid:string, event:CalendarEvent):boolean{
         try{
-            var d = getAllEvents(uid)
+            var d = getAllEventsJSON(uid)
+
             if(d == ''){
                 d = {event:[]}
                 d['event'].push(event)
@@ -222,20 +228,77 @@ export module XMLManager{
      *
      * @export
      * @param {string} uid The unique (user or group) id
-     * @return {any[]} Returns an empty array if no event entries exist or an array of events if multiple events exist 
-     * @return {any} an object (if user has one event entry)
-     * @return {null} Returns null if the operation failed
+     * @return {string} Returns the events as an XML or "<events></events>" if none are found
      */
-    export function getAllEvents(uid:string):any{
+    export function getAllEvents(uid:string):string{
         try {
-            const parser = new XMLParser()
-            var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
-            var events = parser.parse(data)["events"]
-            return events
+            return fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
         } catch (error) {
             console.log(error);
-            return null
+            return "<events></events>"
         }
+    }
+
+    /**
+     * Converts a users events into an HTML string
+     *
+     * @export
+     * @param {string} uid The unique user or group id
+     * @return {*}  {string} The HTML string
+     */
+    export function getAllEventsAsHTML(uid:string):string{
+        return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+    }
+
+    export function getWeekEventsAsHTML(uid:string, startdate:string, enddate:string){
+        //fetch
+        var boundaryStartDate = new Date(startdate)
+        var boundaryEndDate = new Date(enddate)
+        const builder = new XMLBuilder({attributesGroupName:"event"})
+
+        var events = getAllEventsJSON(uid)
+        if(events == ""){
+            return null
+        } else if(Array.isArray(events['event'])){
+            var filteredEvents = events['event'].filter((event: { [x: string]: String }) => {
+                var start = new Date(event['start'].toString())
+                var end = new Date(event['start'].toString())
+                if (start >= boundaryStartDate && end <= boundaryEndDate)
+                    return event
+
+            })
+            var x = { event: filteredEvents }            
+            var xmlEvents = "<events>"
+            xmlEvents += builder.build(x) + "</events>"
+            console.log(xmlEvents);
+
+            var path = PATH_DATA_EVENTS + "tmp_" + Utils.GenSHA256Hash(uid) + ".xml"
+            writeFileSync(path, xmlEvents)
+            var htmlString = Handlers.xmlEventsToHtmlGridView(path)
+            fs.rmSync(path)
+            return htmlString
+        } else {
+            return "This is an object"
+        }
+
+        //write to tmp.xml
+        //convert to html
+        //delete tmp.xml
+        //return
+    }
+
+    /**
+     * Gets all events and returns as a JS object
+     * For internal use only
+     *
+     * @param {string} uid The uid of the user or group
+     * @return {*}  {*} Returns null or >= 1 event
+     */
+    function getAllEventsJSON(uid:string):any{
+        const parser = new XMLParser()
+        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", { encoding: "utf-8" })
+        var events = parser.parse(data)["events"]
+        return events
     }
 
     /**
@@ -243,7 +306,7 @@ export module XMLManager{
      *
      * @export
      * @param {string} uid The unique user id
-     * @return {*}  Returns if the operation was successful or not
+     * @return {boolean}  Returns if the operation was successful or not
      */
     export function deleteUser(uid:string):boolean{
         try{
@@ -255,7 +318,7 @@ export module XMLManager{
             return false
         }
     }
-    
+
     /**
      * Deletes a group and its entries by its uid
      *
@@ -279,11 +342,11 @@ export module XMLManager{
      *
      * @param {string} uid The group or user that the event belongs to
      * @param {string} eventUid The unique event id
-     * @return {*}  Returns if the operation was successful or not
+     * @return {boolean}  Returns if the operation was successful or not
      */
     export function deleteEvent(uid:string, eventUid:string):boolean{
         try{
-            var events:any[] = getAllEvents(uid)['event']
+            var events:any[] = getAllEventsJSON(uid)['event']
             var filteredEvents:any[] = events.filter(event => event.uid != eventUid)
             
             var data = {events:{event:filteredEvents}}
@@ -307,7 +370,7 @@ export module XMLManager{
      * Tries to return all the groups as an XML string
      *
      * @export
-     * @return {*}  {string} The XML string of all groups or just <groups></groups>
+     * @return {string}  {string} The XML string of all groups or just <groups></groups>
      */
     export function getAllGroups():string {
         try {
@@ -316,11 +379,6 @@ export module XMLManager{
             for (const entry in entries) {
                 if (Object.prototype.hasOwnProperty.call(entries, entry)) {
                     const element = entries[entry];
-
-                    const parser = new XMLParser({
-                        ignoreAttributes: false,
-                    })
-
                     var data = fs.readFileSync(PATH_DATA_GROUPS + "/" + element, "utf-8")
                     xmlStr = xmlStr.concat(data)
                 }
