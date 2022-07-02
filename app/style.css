@@ -864,6 +864,6 @@ table {
 }
 
 /* hide components by default */
-#kalender, #button-row, #timelines, #loggedin-bar, #login-and-registration {
+#loggedin-bar, #kalender, #button-row, #timelines, #login-and-registration {
     display: none;
 }

@@ -143,7 +143,14 @@ function checkTokenCredentials() {
         $('#kalender').show(500);
         $('#button-row').show(500);
         $('#timelines').show(500);
+
+        $('#login-and-registration').hide();
     } else {
+        $('#loggedin-bar').hide();
+        $('#kalender').hide();
+        $('#button-row').hide();
+        $('#timelines').hide();
+
         $('#login-and-registration').show();
     }
 }
@@ -157,7 +164,7 @@ $(() => {
     if (!window.hasOwnProperty("calyear")) {
         window.calyear = new Date().getFullYear();
     }
-    //updateSite();
+    updateSite();
 
 
     initTooltips();
@@ -185,6 +192,7 @@ $(() => {
         }
         updateSite();
     });
+    $('#logout-button').click(doLogout);
 
     $('#userSettingsForm').submit(function () {
         submitUserSettingsChange();
@@ -351,6 +359,11 @@ function doLogin(uid, password) {
             }
         }
     });
+}
+
+function doLogout() {
+    // TODO: logout
+    checkTokenCredentials();
 }
 
 async function submitRegistration() {
