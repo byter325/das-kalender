@@ -1,9 +1,15 @@
 import * as express from 'express'
-import { CalendarEvent } from '../lib/classes/userEvent';
 import { Utils } from '../lib/utils';
 import { XMLManager } from '../lib/xml_manager';
+import {AuthManager} from "../lib/authManager";
 
 const calendarRouter = express.Router();
+
+calendarRouter.use((req, res, next) => {
+    const authToken = req.cookies['AuthToken'] || req.headers.authorization
+    req.user = AuthManager.getUserFromToken(authToken);
+    next();
+})
 
 //Die Query hierfür könnte folgendermaßen aussehen: localhost:8080/api/calendar/:uid?type=HTML&start=2022-01-01T10:00:00.000Z&end=2022-01-01T14:00:00.000Z
 calendarRouter.get('/:uid', (request:express.Request, response:express.Response) => {

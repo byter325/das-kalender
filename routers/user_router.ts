@@ -1,8 +1,15 @@
 import * as express from 'express'
 import { Utils } from '../lib/utils';
 import { XMLManager } from '../lib/xml_manager';
+import {AuthManager} from "../lib/authManager";
 
 const usersRouter = express.Router();
+
+usersRouter.use((req, res, next) => {
+    const authToken = req.cookies['AuthToken'] || req.headers.authorization
+    req.user = AuthManager.getUserFromToken(authToken);
+    next();
+})
 
 usersRouter.get('/:uid', (request:express.Request, response:express.Response) => {
     return response.send(XMLManager.getUser(request.params.uid))

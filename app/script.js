@@ -145,14 +145,14 @@ $(() => {
         (async () => userSettingsChange())();
         return false;
     });
-    $('#loginForm').submit(function () {
-        (async () => login())();
-        return false;
-    });
-    $('#registrationForm').submit(function () {
-        (async () => registration())();
-        return false;
-    });
+    // $('#loginForm').submit(function () {
+    //     (async () => login())();
+    //     return false;
+    // });
+    // $('#registrationForm').submit(function () {
+    //     (async () => registration())();
+    //     return false;
+    // });
     $('#newEventForm').submit(function () {
         (async () => newEvent())();
         return false;
@@ -217,8 +217,8 @@ function login() {
     const password = loginForm["loginPassword"].value;
     console.log("login with", email);
     $.ajax({
-        type: 'GET',
-        url: '/api/login',
+        type: 'POST',
+        url: '/login',
         username: email,
         password: password,
         xhrFields: {
@@ -258,6 +258,8 @@ function registration() {
     const firstName = registrationForm["registrationFirstName"].value;
     const lastName = registrationForm["registrationLastName"].value;
     console.log("user settings changed to", email, firstName, lastName);
+
+
     // TODO: registration process
 }
 

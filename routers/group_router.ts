@@ -1,9 +1,15 @@
-import { urlencoded } from 'body-parser';
 import * as express from 'express'
 import { Utils } from '../lib/utils';
 import { XMLManager } from '../lib/xml_manager';
+import {AuthManager} from "../lib/authManager";
 
 const groupsRouter = express.Router();
+
+groupsRouter.use((req, res, next) => {
+    const authToken = req.cookies['AuthToken'] || req.headers.authorization
+    req.user = AuthManager.getUserFromToken(authToken);
+    next();
+})
 
 groupsRouter.get('/:uid', (request:express.Request, response:express.Response) => {
     var group = XMLManager.getGroup(request.params.uid);

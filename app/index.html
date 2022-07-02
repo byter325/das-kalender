@@ -556,7 +556,6 @@
 		</div>
 	</div>
 
-
 	<!-- Modal: deleteEvent -->
 	<div class="modal fade" id="deleteEvent" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
@@ -626,7 +625,7 @@
 	<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form id="loginForm">
+				<form id="loginForm" action="/login" method="POST">
 					<div class="modal-header">
 						<h5 class="modal-title" id="loginModalLabel">Anmeldung</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -634,11 +633,11 @@
 					<div class="modal-body">
 						<div class="mb-2">
 							<label for="loginMail" class="form-label">E-Mail</label>
-							<input type="text" class="form-control" id="loginMail" required="required">
+							<input type="text" class="form-control" id="loginMail" name="loginMail" required="required">
 						</div>
 						<div class="mb-2">
 							<label for="loginPassword" class="form-label">Passwort</label>
-							<input type="password" class="form-control" id="loginPassword" required="required">
+							<input type="password" class="form-control" id="loginPassword" name="loginPassword" required="required">
 						</div>
 					</div>
 					<div class="modal-footer">
@@ -656,7 +655,7 @@
 		aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form id="registrationForm">
+				<form id="registrationForm" action="/register" method="POST">
 					<div class="modal-header">
 						<h5 class="modal-title" id="registrationModalLabel">Registrierung</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -664,20 +663,20 @@
 					<div class="modal-body">
 						<div class="mb-2">
 							<label for="registrationMail" class="form-label">E-Mail</label>
-							<input type="email" class="form-control" id="registrationMail" required="required">
+							<input type="email" class="form-control" id="registrationMail"  name="registrationMail" required="required">
 						</div>
 						<div class="mb-2">
 							<label for="registrationPassword" class="form-label">Passwort</label>
-							<input type="password" class="form-control" id="registrationPassword" required="required">
+							<input type="password" class="form-control" id="registrationPassword" name="registrationPassword" required="required">
 						</div>
 						<div class="row row-cols-sm-2 mb-2">
 							<div>
 								<label for="registrationFirstName" class="form-label">Vorname</label>
-								<input type="text" class="form-control" id="registrationFirstName" required="required">
+								<input type="text" class="form-control" id="registrationFirstName" name="registrationFirstName" required="required">
 							</div>
 							<div>
 								<label for="registrationLastName" class="form-label">Nachname</label>
-								<input type="text" class="form-control" id="registrationLastName" required="required">
+								<input type="text" class="form-control" id="registrationLastName" name="registrationLastName" required="required">
 							</div>
 						</div>
 					</div>
