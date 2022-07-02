@@ -5,9 +5,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.0
-servers:
-  - url: /
+  version: 1.1.0
 tags:
   - name: Calendar
     description: Access to calendar data
@@ -15,6 +13,8 @@ tags:
     description: Operations about users
   - name: Groups
     description: Operations about groups
+  - name: Token
+    description: Operations about Auth-Token
 paths:
   /api/calendar/{uid}:
     post:
@@ -45,8 +45,8 @@ paths:
         "400":
           description: Invalid input
       security:
-        - api_key: []
-      x-swagger-router-controller: Calendar
+        - auth_token_header: []
+        - auth_token_cookie: []
     get:
       tags:
         - Calendar
@@ -69,6 +69,33 @@ paths:
           explode: true
           schema:
             type: string
+        - name: type
+          in: query
+          description: Type of the answer given by the server (optional)
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum: ["HTML", "XML"]
+        - name: start
+          in: query
+          description: SO time string of the start of the output range (optional)
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          description: SO time string of the end of the output range (optional)
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: date-time
       responses:
         "200":
           description: List of events
@@ -86,9 +113,8 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - read:calendar
-      x-swagger-router-controller: Calendar
+        - auth_token_header: []
+        - auth_token_cookie: []
     put:
       tags:
         - Calendar
@@ -128,10 +154,8 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - write:calendar
-            - read:calendar
-      x-swagger-router-controller: Calendar
+        - auth_token_header: []
+        - auth_token_cookie: []
     delete:
       tags:
         - Calendar
@@ -162,10 +186,8 @@ paths:
         "404":
           description: Event not found
       security:
-        - api_key:
-            - write:calendar
-            - read:calendar
-      x-swagger-router-controller: Calendar
+        - auth_token_header: []
+        - auth_token_cookie: []
 
   /api/users:
     post:
@@ -186,10 +208,8 @@ paths:
         "400":
           description: Invalid input
       security:
-        - api_key:
-            - write:user
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
     get:
       tags:
         - Users
@@ -210,9 +230,8 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
 
   /api/users/{uid}:
     get:
@@ -243,9 +262,8 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
     put:
       tags:
         - Users
@@ -277,10 +295,8 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - write:user
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
     delete:
       tags:
         - Users
@@ -303,10 +319,8 @@ paths:
         "404":
           description: User not found
       security:
-        - api_key:
-            - write:user
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
 
   /api/groups:
     post:
@@ -327,10 +341,8 @@ paths:
         "400":
           description: Invalid input
       security:
-        - api_key:
-            - write:group
-            - read:group
-      x-swagger-router-controller: Groups
+        - auth_token_header: []
+        - auth_token_cookie: []
     get:
       tags:
         - Groups
@@ -351,9 +363,8 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - read:group
-      x-swagger-router-controller: Groups
+        - auth_token_header: []
+        - auth_token_cookie: []
 
   /api/groups/{uid}:
     put:
@@ -387,10 +398,8 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - write:group
-            - read:group
-      x-swagger-router-controller: Groups
+        - auth_token_header: []
+        - auth_token_cookie: []
     delete:
       tags:
         - Groups
@@ -413,17 +422,103 @@ paths:
         "404":
           description: Group not found
       security:
-        - api_key:
-            - write:group
-            - read:group
-      x-swagger-router-controller: Groups
+        - auth_token_header: []
+        - auth_token_cookie: []
+
+  /api/token:
+    post:
+      tags:
+        - Token
+      summary: Create a new token
+      operationId: createToken
+      requestBody:
+        description: XML document of the token you want to create
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Token'
+        required: true
+      responses:
+        "201":
+          description: Successfully created token
+          content:
+            text/plain:
+              schema:
+                type: string
+        "400":
+          description: Invalid input
+      security:
+        - auth_token_header: []
+        - auth_token_cookie: []
+    get:
+      tags:
+        - Token
+      summary: List all tokens of a user
+      operationId: listToken
+      parameters:
+        - name: uid
+          in: query
+          description: UID of the user whose tokens should be listed
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "List all tokens of specific user"
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Token'
+                xml:
+                  name: 'results'
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Token not found
+        "405":
+          description: Validation exception
+      security:
+        - auth_token_header: []
+        - auth_token_cookie: []
+    delete:
+      tags:
+        - Token
+      summary: Delete an existing token
+      operationId: deleteToken
+      parameters:
+        - name: token
+          in: query
+          description: Token that should be deleted
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully deleted token
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Token not found
+      security:
+        - auth_token_header: []
+        - auth_token_cookie: []
 
 components:
   securitySchemes:
-    api_key:
+    auth_token_header:
       type: apiKey
       in: header
-      name: X-API-Key
+      name: AuthToken
+    auth_token_cookie:
+      type: apiKey
+      in: cookie
+      name: AuthToken
   schemas:
     PersonInfo:
       required:
@@ -444,12 +539,6 @@ components:
           type: string
         mail:
           type: string
-      example:
-        uid: uid
-        firstName: firstName
-        lastName: lastName
-        mail: mail
-        initials: initials
     Event:
       required:
         - category
@@ -497,27 +586,6 @@ components:
           format: date-time
         modifiedBy:
           $ref: '#/components/schemas/PersonInfo'
-      example:
-        uid: uid
-        presenter:
-          - uid: uid
-            firstName: firstName
-            lastName: lastName
-            mail: mail
-            initials: initials
-          - uid: uid
-            firstName: firstName
-            lastName: lastName
-            mail: mail
-            initials: initials
-        start: 2000-01-23T04:56:07.000+00:00
-        description: description
-        modified: 2000-01-23T04:56:07.000+00:00
-        end: 2000-01-23T04:56:07.000+00:00
-        location: location
-        modifiedBy: null
-        title: title
-        category: Lecture
     Person:
       required:
         - darkMode
@@ -554,25 +622,6 @@ components:
           type: boolean
         isAdministrator:
           type: boolean
-      example:
-        uid: uid
-        firstName: firstName
-        lastName: lastName
-        mail: mail
-        initials: initials
-        darkMode: true
-        isAdministrator: true
-        passwordHash: passwordHash
-        group:
-          - uid: uid
-            name: name
-            url: url
-          - uid: uid
-            name: name
-            url: url
-        editableGroup:
-          - null
-          - null
     Group:
       type: object
       properties:
@@ -582,7 +631,13 @@ components:
           type: string
         url:
           type: string
-      example:
-        uid: uid
-        name: name
-        url: url
+    Token:
+      type: object
+      properties:
+        uid:
+          type: string
+        unlimited:
+          type: boolean
+        validUntil:
+          type: string
+          format: date-time
