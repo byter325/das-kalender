@@ -20,12 +20,26 @@ const port = 8080
 const securityPath = path.join(__dirname, "security")
 
 if(!fs.existsSync(securityPath)) {
-    throw new Error("Security folder not found. Did you forget to add the folder and the certificate?")
+    console.log("No security folder found. Creating one...");
+    fs.mkdirSync(securityPath);
+    console.log("There is no certificate. If you want to create a certificate, look at the README under 'Security'. The server will close now...");
+    process.exit(-1);
+}
+
+let key: Buffer;
+let cert: Buffer;
+
+try {
+    key = fs.readFileSync(path.join(securityPath, "server.key"));
+    cert = fs.readFileSync(path.join(securityPath, "server.cert"));
+} catch (error) {
+    console.log("There is no certificate. If you want to create a certificate, look at the README under 'Security'. The server will close now...");
+    process.exit(-1);
 }
 
 const options = {
-    key: fs.readFileSync(path.join(__dirname, "security", "server.key")),
-    cert: fs.readFileSync(path.join(__dirname, "security", "server.cert"))
+    key: key,
+    cert: cert
 };
 
 const server: Server = https.createServer(options, app).listen(port, () => {

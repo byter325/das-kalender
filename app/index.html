@@ -23,18 +23,24 @@
 </head>
 
 <body class="container pt-3">
-	<header>
+	<header class="row row-cols-auto justify-content-between">
 		<h1 class="d-inline">
 			<img src="./favicon.svg" width="50rem" height="50rem"> das kalender
 		</h1>
-		<div class="float-end mb-3">
+    
+		<div class="mb-3">
 			<div id="statusInfo" class="d-none">
 
 			</div>
-			<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-				data-bs-target="#userSettigsModal">
-				<i class="bi bi-gear-fill"></i> Profil
-			</button>
+			<div class="btn-group">
+				<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+					data-bs-target="#userSettigsModal">
+					<i class="bi bi-gear-fill"></i> Profil
+				</button>
+				<button type="button" class="btn btn-outline-primary">
+					<i class="bi bi-box-arrow-right"></i> Abmelden
+				</button>
+			</div>
 			<div class="btn-group" id="loginBar">
 				<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
 					data-bs-target="#loginModal">

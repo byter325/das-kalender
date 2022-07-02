@@ -142,7 +142,7 @@ $(() => {
     });
 
     $('#userSettingsForm').submit(function () {
-        (async () => userSettingsChange())();
+        submitUserSettingsChange();
         return false;
     });
     // $('#loginForm').submit(function () {
@@ -154,15 +154,15 @@ $(() => {
     //     return false;
     // });
     $('#newEventForm').submit(function () {
-        (async () => newEvent())();
+        submitNewEvent();
         return false;
     });
     $('#editEventForm').submit(function () {
-        (async () => submitEditEvent())();
+        submitEditEvent();
         return false;
     });
     $('#deleteEventForm').submit(function () {
-        (async () => submitDeleteEvent())();
+        submitDeleteEvent();
         return false;
     });
 });
@@ -195,22 +195,22 @@ function deleteEvent(buttonClicked) {
     deleteEventForm["deleteEventEnd"].value = "1970-01-01T09:30";
 }
 
-function submitEditEvent() {
+async function submitEditEvent() {
     const editEventForm = document.forms["editEventForm"];
     // TODO: send edited event
 }
 
-function submitDeleteEvent() {
+async function submitDeleteEvent() {
     const deleteEventForm = document.forms["deleteEventForm"];
     // TODO: send deleted event
 }
 
-function newEvent() {
+async function submitNewEvent() {
     const newEventForm = document.forms["newEventForm"];
     // TODO: send new event
 }
 
-function login() {
+async function submitLogin() {
     console.log("login");
     const loginForm = document.forms["loginForm"];
     const email = loginForm["loginMail"].value;
@@ -251,7 +251,7 @@ function login() {
     });
 }
 
-function registration() {
+async function submitRegistration() {
     const registrationForm = document.forms["registrationForm"];
     const email = registrationForm["registrationMail"].value;
     const password = registrationForm["registrationPassword"].value;
@@ -263,7 +263,7 @@ function registration() {
     // TODO: registration process
 }
 
-function userSettingsChange() {
+function submitUserSettingsChange() {
     const userSettingsForm = document.forms["userSettingsForm"];
     const email = userSettingsForm["userSettingsMail"].value;
     const password = userSettingsForm["userSettingsPassword"].value;

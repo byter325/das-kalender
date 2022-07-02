@@ -17,8 +17,11 @@ Because of HTTPS you must have a self signed certificate / signed certificate an
 
 A self signed certificate can be created using openssl and the following command:
 
-`openssl req -nodes -new -x509 -keyout server.key -out server.cert
-`
+`openssl req -nodes -new -x509 -keyout security/server.key -out security/server.cert -keyout security/server.key`
+
+or run:
+
+`npm certificate`
 
 ## API Examples
 
