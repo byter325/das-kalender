@@ -6,8 +6,8 @@ import {Token} from "./classes/token";
 export module AuthManager {
     import getAllUsers = XMLManager.getAllUsers;
     import GenSHA256Hash = Utils.GenSHA256Hash;
-    let authTokens: Map<string, Token> = new Map<string, Token>()
-    let users: Map<string, User> = new Map<string, User>()
+    export let authTokens: Map<string, Token> = new Map<string, Token>()
+    export let users: Map<string, User> = new Map<string, User>()
 
     function loadUsers() {
         getAllUsers().forEach(user => {

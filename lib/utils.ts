@@ -115,16 +115,4 @@ export module Utils {
         return new User(body.uid, body.firstName, body.lastName, body.firstName[0] + body.lastName[0], body.mail, body.passwordHash, [{}],
             [{}], false, false)
     }
-
-    /*public uid:string
-    public title:string
-    public description:string
-    public presenter:object
-    public category:string
-    public start:string
-    public end:string
-    public location:string
-    public modified:string
-    public modifiedBy:object */
-
 }

@@ -479,8 +479,6 @@ paths:
           description: Invalid UID supplied
         "404":
           description: Token not found
-        "405":
-          description: Validation exception
       security:
         - auth_token_header: []
         - auth_token_cookie: []
@@ -499,7 +497,7 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        "204":
           description: Successfully deleted token
         "400":
           description: Invalid UID supplied
