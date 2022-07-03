@@ -1,27 +1,17 @@
-<!-- <!DOCTYPE events [ -->
 <!ELEMENT events (event*)>
-    <!ELEMENT event (type, lastmodified, created, start, dtstamp, end, uid, summary?, description?, location, categories, organizer?, attendee*, rrule)>
-    <!ELEMENT type (#PCDATA)>
-    <!ELEMENT lastmodified (#PCDATA)>
-    <!ELEMENT created (#PCDATA)>
-    <!ELEMENT start (#PCDATA)>
-    <!ELEMENT dtstamp (#PCDATA)>
-    <!ELEMENT end (#PCDATA)>
-    <!ELEMENT uid (#PCDATA)>
-    <!ELEMENT summary (#PCDATA)>
-    <!ELEMENT description (#PCDATA)>
-    <!ELEMENT location (#PCDATA)>
-    <!ELEMENT categories (#PCDATA)>
-    <!ELEMENT organizer (params?, val)>
-        <!ELEMENT params ((PARTSTAT?, CN?)|(ROLE?, PARTSTAT?))>
-            <!-- PARTSTAT schon Deklariert -->
-            <!ELEMENT CN (#PCDATA)>
-        <!ELEMENT val (#PCDATA)>
-    <!ELEMENT attendee (val?, PARTSTAT?, params?, val?)>
-        <!ELEMENT PARTSTAT (#PCDATA)>
-        <!-- <!ELEMENT val (#PCDATA)>    Schon Deklariert, aber Übersicht-->
-        <!-- <!ELEMENT params (ROLE?, PARTSTAT?)> -->
-            <!ELEMENT ROLE (#PCDATA)>
-            <!-- Partstat schon Deklariert -->
-    <!ELEMENT rrule (#PCDATA)>
-<!-- ]> -->
+    <!ELEMENT event (uid, title, description, presenter, category, start, end, location, modified, modifiedBy)>
+        <!ELEMENT uid (#PCDATA)>
+        <!ELEMENT title (#PCDATA)>
+        <!ELEMENT description (#PCDATA)>
+        <!ELEMENT presenter (firstName, lastName, initials, mail)>
+            <!ELEMENT firstName (#PCDATA)>
+            <!ELEMENT lastName (#PCDATA)>
+            <!ELEMENT initials (#PCDATA)>
+            <!ELEMENT mail (#PCDATA)>
+        <!ELEMENT category (#PCDATA)>
+        <!ELEMENT start (#PCDATA)>
+        <!ELEMENT end (#PCDATA)>
+        <!ELEMENT location (#PCDATA)>
+        <!ELEMENT modified (#PCDATA)>
+        <!ELEMENT modifiedBy (firstName, lastName, initials, mail)>
+            
