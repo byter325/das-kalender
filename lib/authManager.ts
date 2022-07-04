@@ -27,7 +27,7 @@ export module AuthManager {
         XMLManager.saveTokens(authTokens)
     }
 
-    export function login(username: string, password: string): User|null {
+    export function login(username: string, password: string): User | null {
         loadUsers()
         var result = null
         users.forEach(user => {
@@ -39,8 +39,8 @@ export module AuthManager {
         return result
     }
 
-    export function register(mail: string, password: string, firstName: string, lastName: string){
-        let user = new User("U" + users.size+1, firstName, lastName, firstName.substring(0,1), mail, Utils.GenSHA256Hash(password), [], [], false, false)
+    export function register(mail: string, password: string, firstName: string, lastName: string) {
+        let user = new User("U" + users.size + 1, firstName, lastName, firstName.substring(0, 1), mail, Utils.GenSHA256Hash(password), [], [], false, false)
         users.set(user.uid, user)
         XMLManager.insertUser(user, false)
         return user
