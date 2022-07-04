@@ -81,7 +81,7 @@ paths:
             enum: ["HTML", "XML"]
         - name: start
           in: query
-          description: SO time string of the start of the output range (optional)
+          description: ISO time string of the start of the output range (optional)
           required: false
           style: form
           explode: true
@@ -90,7 +90,7 @@ paths:
             format: date-time
         - name: end
           in: query
-          description: SO time string of the end of the output range (optional)
+          description: ISO time string of the end of the output range (optional)
           required: false
           style: form
           explode: true
