@@ -198,14 +198,14 @@ $(() => {
         submitUserSettingsChange();
         return false;
     });
-    $('#loginForm').submit(function () {
-        submitLogin();
-        return false;
-    });
-    $('#registrationForm').submit(function () {
-        submitRegistration();
-        return false;
-    });
+    // $('#loginForm').submit(function () {
+    //     (async () => login())();
+    //     return false;
+    // });
+    // $('#registrationForm').submit(function () {
+    //     (async () => registration())();
+    //     return false;
+    // });
     $('#newEventForm').submit(function () {
         submitNewEvent();
         return false;
@@ -327,8 +327,8 @@ async function submitLogin() {
 
 function doLogin(uid, password) {
     $.ajax({
-        type: 'GET',
-        url: '/api/login',
+        type: 'POST',
+        url: '/login',
         username: uid,
         password: password,
         xhrFields: {
