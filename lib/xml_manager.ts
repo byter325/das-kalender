@@ -198,23 +198,20 @@ export module XMLManager {
      */
     export function insertEvent(uid:string, event:CalendarEvent):boolean{
         try{
-            var d = getAllEventsJSON(uid)
-
-            if(d == ''){
-                d = {event:[]}
-                d['event'].push(event)
-            } else if (d instanceof Object) {
-                d['event'] = [d['event']]
-                d['event'].push(event)
-            }
-
+            var events = getAllEventsJSON(uid)
+            
             const builder = new XMLBuilder({
                 ignoreAttributes: false,
                 attributesGroupName: "event",
             })
-
-            d = {events: d}
-            var xmlDataStr: string = builder.build(d)
+            console.log(events);
+            
+            events.event.push(event)
+            events = {events: events}
+            
+            var xmlDataStr: string = builder.build(events)
+            console.log(xmlDataStr);
+            
             writeFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
@@ -295,9 +292,14 @@ export module XMLManager {
      * @return {*}  {*} Returns null or >= 1 event
      */
     function getAllEventsJSON(uid:string):any{
-        const parser = new XMLParser()
+        const parser = new XMLParser({isArray(tagName, jPath, isLeafNode, isAttribute) {
+            if(tagName == "event") return true
+            return false
+        },})
         var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", { encoding: "utf-8" })
         var events = parser.parse(data)["events"]
+        if(events == undefined || events == "")
+            events = {event:[]}
         return events
     }
 

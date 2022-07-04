@@ -9,6 +9,8 @@ usersRouter.get('/:uid', (request:express.Request, response:express.Response) =>
 });
 
 usersRouter.post("/", (request: express.Request, response) => {
+    console.log(request.body);
+    
     var correctness: number = Utils.isBodyForUserCorrect(request.body, true)
     if (correctness == Utils.BODY_PARTIALLY_CORRECT) {
         var b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(request.body), false)
@@ -17,7 +19,8 @@ usersRouter.post("/", (request: express.Request, response) => {
         var b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(request.body), false)
         if (b) return response.sendStatus(200)
     }
-    return response.sendStatus(400)
+    response.status(400)
+    return response.send("The request body is incorrectly formatted (" + correctness + ")")
 });
 
 usersRouter.delete("/:uid", (request: express.Request, response) => {

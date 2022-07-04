@@ -41,4 +41,13 @@ calendarRouter.post('/:uid', (request: express.Request, response) => {
     return response.send("Body is malformed")
 })
 
+calendarRouter.delete('/:uid', (request:express.Request, response:express.Response) => {
+    var eventID:string|undefined = request.query.eventID?.toString()
+    if(eventID != undefined ){
+        var b = XMLManager.deleteEvent(request.params.uid, eventID)
+        if(b) return response.sendStatus(200)
+    }
+    return response.sendStatus(400)
+})
+
 export default calendarRouter;
