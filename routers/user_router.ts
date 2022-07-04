@@ -9,14 +9,20 @@ usersRouter.get('/:uid', (request:express.Request, response:express.Response) =>
 });
 
 usersRouter.post("/", (request: express.Request, response) => {
-    console.log(request.body);
-    
-    var correctness: number = Utils.isBodyForUserCorrect(request.body, true)
+    var body = request.body
+
+    const requestType = request.headers['content-type']
+    if (requestType == "application/xml" || requestType == "text/html") {
+        body = XMLManager.convertXMLResponseJSONToCorrectJSONForUser(body.person)
+    }
+    console.log(body);
+
+    var correctness: number = Utils.isBodyForUserCorrect(body, true)
     if (correctness == Utils.BODY_PARTIALLY_CORRECT) {
-        var b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(request.body), false)
+        var b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false)
         if (b) return response.sendStatus(200)
     } else if (correctness == Utils.BODY_FULLY_CORRECT) {
-        var b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(request.body), false)
+        var b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false)
         if (b) return response.sendStatus(200)
     }
     response.status(400)
@@ -30,14 +36,7 @@ usersRouter.delete("/:uid", (request: express.Request, response) => {
 });
 
 usersRouter.put("/:uid", (request: express.Request, response: express.Response) => {
-    var correctness: number = Utils.isBodyForUserCorrect(request.body, true)
-    if (correctness == Utils.BODY_PARTIALLY_CORRECT) {
-        var b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(request.body), true)
-        if (b) return response.sendStatus(200)
-    } else if (correctness == Utils.BODY_FULLY_CORRECT) {
-        var b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(request.body), true)
-        if (b) return response.sendStatus(200)
-    }
-    return response.sendStatus(400)
+    response.status(500)
+    return response.send("Please delete the event and then insert it again")
 })
 export default usersRouter;

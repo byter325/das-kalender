@@ -37,7 +37,19 @@ export module Utils{
      * @return {*}  {number} 0: For partiall correctness, 1: for full correctness, -1: for bad format
      */
     export function isBodyForEventCorrect(body: any, allowPartialCorrectness:boolean): number {
-
+        console.log(body);
+        
+        console.log(body.title + "," 
+            + body.description + ","
+            + body.presenter + ","
+            + body.category + ","
+            + body.start + ","
+            + body.end + ","
+            + body.location + ","
+            + body.modified + ","
+            + body.modifiedBy + ","
+        );
+        
         if (allowPartialCorrectness){
             if (body.uid != undefined
                 && body.title != undefined

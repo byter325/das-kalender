@@ -18,8 +18,17 @@ groupsRouter.get('/', (request:express.Request, response:express.Response) => {
 });
 
 groupsRouter.post("/", (request:express.Request,response) => {
-    if (Utils.isBodyForGroupCorrect(request.body)){
-        var b:boolean = XMLManager.insertGroup(request.body.uid, request.body.name, request.body.url, false)
+    
+    var body = request.body
+
+    const requestType = request.headers['content-type']
+    if (requestType == "application/xml" || requestType == "text/html") {
+        body = XMLManager.convertXMLResponseJSONToCorrectJSONForGroup(body.group)
+    }
+    console.log(body);
+    
+    if (Utils.isBodyForGroupCorrect(body)){
+        var b:boolean = XMLManager.insertGroup(body.uid, body.name, body.url, false)
         if (b) return response.sendStatus(200)
     }
     return response.sendStatus(400)
@@ -32,11 +41,16 @@ groupsRouter.delete("/:uid", (request: express.Request, response) => {
 });
 
 groupsRouter.put("/:uid", (request: express.Request, response:express.Response) => {
-    console.log(request.body);
-    
-    if (Utils.isBodyForGroupCorrect(request.body)) {
-        if(request.body.uid != request.params.uid) return response.sendStatus(400)
-        var b: boolean = XMLManager.insertGroup(request.body.uid, request.body.name, request.body.url, true)
+    var body = request.body
+
+    const requestType = request.headers['content-type']
+    if (requestType == "application/xml" || requestType == "text/html") {
+        body = XMLManager.convertXMLResponseJSONToCorrectJSONForGroup(body.group)
+    }
+    console.log(body);
+
+    if (Utils.isBodyForGroupCorrect(body)) {
+        var b: boolean = XMLManager.insertGroup(body.uid, body.name, body.url, true)
         if (b) return response.sendStatus(200)
     }
     return response.sendStatus(400)

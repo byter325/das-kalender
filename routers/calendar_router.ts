@@ -33,8 +33,16 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
 });
 
 calendarRouter.post('/:uid', (request: express.Request, response) => {
-    if (Utils.isBodyForEventCorrect(request.body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
-        var b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(request.body))
+    
+    var body = request.body
+    const requestType = request.headers['content-type']
+    if(requestType == "application/xml" || requestType == "text/html"){
+        body = XMLManager.convertXMLResponseJSONToCorrectJSONForEvent(request.body.event)
+    }
+    console.log(body);
+    
+    if (Utils.isBodyForEventCorrect(body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
+        var b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body))
         if (b) return response.sendStatus(200)
     }
     response.status(400)
