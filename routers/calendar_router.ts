@@ -13,6 +13,12 @@ calendarRouter.use((req, res, next) => {
 
 //Die Query hierfür könnte folgendermaßen aussehen: localhost:8080/api/calendar/:uid?type=HTML&start=2022-01-01T10:00:00.000Z&end=2022-01-01T14:00:00.000Z
 calendarRouter.get('/:uid', (request:express.Request, response:express.Response) => {
+    if (!(
+        request.user.uid == request.params.uid ||
+        request.user.group.uid == request.params.uid ||
+        request.user.editableGroup.uid == request.params.uid ||
+        request.user.isAdministrator)) return response.sendStatus(401)
+
     let eventID:string|undefined = request.query.eventID?.toString()
     let uid: string = request.params.uid
     let type:string | undefined = request.query.type?.toString()
@@ -39,6 +45,11 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
 });
 
 calendarRouter.post('/:uid', (request: express.Request, response) => {
+    if (!(
+        request.user.uid == request.params.uid ||
+        request.user.editableGroup.uid == request.params.uid ||
+        request.user.isAdministrator)) return response.sendStatus(401)
+
     if (Utils.isBodyForEventCorrect(request.body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
         var b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(request.body))
         if (b) return response.sendStatus(200)
