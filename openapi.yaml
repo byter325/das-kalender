@@ -21,7 +21,7 @@ paths:
       tags:
         - Calendar
       summary: Add a new event to the calendar
-      description: ""
+      description: "You must either own this calendar, have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: createEvent
       parameters:
         - name: uid
@@ -51,6 +51,7 @@ paths:
       tags:
         - Calendar
       summary: Get all events from a calendar
+      description: "You must either own this calendar, have the associated group set as group/editableGroup or be an administrator to perform this action."
       operationId: getEvent
       parameters:
         - name: uid
@@ -119,6 +120,7 @@ paths:
       tags:
         - Calendar
       summary: Update an existing event
+      description: "You must either own this calendar, have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: updateEvent
       parameters:
         - name: uid
@@ -160,6 +162,7 @@ paths:
       tags:
         - Calendar
       summary: Delete an existing event
+      description: "You must either own this calendar, have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: deleteEvent
       parameters:
         - name: uid
@@ -194,6 +197,7 @@ paths:
       tags:
         - Users
       summary: Create a new user
+      description: "You must be an administrator to perform this action."
       operationId: createUser
       requestBody:
         description: XML document of the user you want to add
@@ -214,7 +218,7 @@ paths:
       tags:
         - Users
       summary: List all users
-      description: ""
+      description: "You must be an administrator to perform this action."
       operationId: listUsers
       responses:
         "200":
@@ -238,6 +242,7 @@ paths:
       tags:
         - Users
       summary: Get all user info
+      description: "You must either be the corresponding user or an administrator to perform this action."
       operationId: getUser
       parameters:
         - name: uid
@@ -268,6 +273,7 @@ paths:
       tags:
         - Users
       summary: Update an existing user
+      description: "You must either be the corresponding user or an administrator to perform this action. As normal user you can't edit the properties group, editableGroup and isAdministrator."
       operationId: updateUser
       parameters:
         - name: uid
@@ -301,6 +307,7 @@ paths:
       tags:
         - Users
       summary: Delete an existing user
+      description: "You must either be the corresponding user or an administrator to perform this action."
       operationId: deleteUser
       parameters:
         - name: uid
@@ -327,6 +334,7 @@ paths:
       tags:
         - Groups
       summary: Create a new group
+      description: "You must be an administrator to perform this action."
       operationId: createGroup
       requestBody:
         description: XML document of the group you want to add
@@ -347,11 +355,11 @@ paths:
       tags:
         - Groups
       summary: List all groups
-      description: ""
+      description: "You must be an administrator to perform this action."
       operationId: listGroups
       responses:
         "200":
-          description: "List of all groupss (UID, name, url)"
+          description: "List of all groups"
           content:
             application/xml:
               schema:
@@ -371,6 +379,7 @@ paths:
       tags:
         - Groups
       summary: Update an existing group
+      description: "You must either have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: updateGroup
       parameters:
         - name: uid
@@ -404,6 +413,7 @@ paths:
       tags:
         - Groups
       summary: Delete an existing group
+      description: "You must either have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: deleteGroup
       parameters:
         - name: uid
@@ -430,6 +440,7 @@ paths:
       tags:
         - Token
       summary: Create a new token
+      description: "Everyone can perform this action. It sets the AuthToken as cookie and returns it in the body."
       operationId: createToken
       requestBody:
         description: XML document of the token you want to create
@@ -454,6 +465,7 @@ paths:
       tags:
         - Token
       summary: List all tokens of a user
+      description: "You must be either the corresponding user or administrator to perform this action."
       operationId: listToken
       parameters:
         - name: uid
@@ -479,6 +491,8 @@ paths:
           description: Invalid UID supplied
         "404":
           description: Token not found
+        "405":
+          description: Validation exception
       security:
         - auth_token_header: []
         - auth_token_cookie: []
@@ -486,6 +500,7 @@ paths:
       tags:
         - Token
       summary: Delete an existing token
+      description: "You must be either the corresponding user or administrator to perform this action."
       operationId: deleteToken
       parameters:
         - name: token
@@ -497,7 +512,7 @@ paths:
           schema:
             type: string
       responses:
-        "204":
+        "200":
           description: Successfully deleted token
         "400":
           description: Invalid UID supplied
