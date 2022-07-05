@@ -2,11 +2,20 @@ import * as crypto from "crypto-js";
 import {User} from "./classes/user";
 import {CalendarEvent} from "./classes/userEvent";
 import {randomBytes} from "crypto";
+import join from 'path';
+import fs from 'fs';
+import path from "path";
+import { Console } from "console";
 
 export module Utils {
     export const BODY_PARTIALLY_CORRECT = 0;
     export const BODY_FULLY_CORRECT = 1;
     export const BODY_INCORRECT = -1;
+    
+    let currUID = 0;
+    let idFetched = false;
+    const idDataPath = path.join(__dirname, ".." , "data", "utils");
+    const idDataFile = path.join(idDataPath, "id.json");
 
     export function GenSHA256Hash(message: string): string {
         return crypto.SHA256(message).toString();
@@ -115,4 +124,47 @@ export module Utils {
         return new User(body.uid, body.firstName, body.lastName, body.firstName[0] + body.lastName[0], body.mail, body.passwordHash, [{}],
             [{}], false, false)
     }
+
+    export function getNextUID(): number {
+        if (!idFetched){
+            currUID = getLastUID();
+            idFetched = true;
+        }
+        currUID++;
+        saveUID(currUID);
+        return currUID;
+    }
+
+    function createDirectoryIfNotExists(path: string): void {
+        if (!fs.existsSync(path)){
+            fs.mkdirSync(path);
+        }
+    }
+
+    function saveUID(uid: number){
+        createDirectoryIfNotExists(idDataPath);
+        
+        let data = {"uid": uid, "last_time": new Date().toISOString() };
+        fs.writeFileSync(idDataFile, JSON.stringify(data));
+    }
+
+    function getLastUID(): number {
+        createDirectoryIfNotExists(idDataPath);
+        if (fs.existsSync(idDataFile)){
+            let data = JSON.parse(fs.readFileSync(idDataFile, "utf8"));
+            return data.uid;
+        }
+        return 0;
+    }
+
+    /*public uid:string
+    public title:string
+    public description:string
+    public presenter:object
+    public category:string
+    public start:string
+    public end:string
+    public location:string
+    public modified:string
+    public modifiedBy:object */
 }
