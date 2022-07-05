@@ -13,7 +13,6 @@ groupsRouter.use((req, res, next) => {
 
 groupsRouter.get('/:uid', (request:express.Request, response:express.Response) => {
     if (!(
-        request.user.uid == request.params.uid ||
         request.user.group.uid == request.params.uid ||
         request.user.editableGroup.uid == request.params.uid ||
         request.user.isAdministrator)) return response.sendStatus(401)

@@ -17,6 +17,7 @@ export module AuthManager {
 
     function loadTokens() {
         const rawTokens = XMLManager.getTokens()
+        if (rawTokens == undefined) return
         //iterate over all elements of the array and add them as Token to the map
         for (var i = 0; i < rawTokens.length; i++) {
             authTokens.set(rawTokens[i].token, new Token(rawTokens[i].uid, rawTokens[i].unlimited, rawTokens[i].validUntil))

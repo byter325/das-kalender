@@ -76,7 +76,7 @@ app.post("/login", (req: express.Request, res: express.Response) => {
         res.redirect("/")
         // res.sendFile(path.join(__dirname, "app", "index.html"))
     } else {
-        res.sendStatus(401)
+        res.sendStatus(400)
     }
 })
 
