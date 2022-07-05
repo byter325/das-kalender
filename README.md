@@ -8,6 +8,9 @@ On Arch: `sudo pacman -S nodejs npm` \
 On MacOS: `brew install node`\
 On Windows, you need to download and execute the installer from the [NodeJS](https://nodejs.org/en/download/) website.
 
+### The first launch
+
+After installing NodeJS, you need to run the following commands in a terminal:
 ```bash
 git clone https://github.com/maxomnia/pm_project_rapla.git
 cd pm_project_rapla
@@ -16,8 +19,17 @@ npm run certificate
 npm run start
 ```
 
-The webUI is available at https://localhost:8080/. \
+Now you will be able to visit the web-based calendar UI under https://localhost:8080/
+
 The API documentation is available at https://localhost:8080/docs.
+
+### Relaunching the application
+To relaunch the "das kalender" application, you will need to run the following commands
+```bash
+cd <your_path>
+npm start
+```
+<your_path> needs to be replaced with the main directory titled something like *C:\\...\pm_project_rapla*
 
 ## Security
 
