@@ -21,6 +21,7 @@ const app: Application = express();
 const port = 8080;
 const securityPath = path.join(__dirname, "security");
 
+
 if(!fs.existsSync(securityPath)) {
     console.log("No security folder found. Creating one...");
     fs.mkdirSync(securityPath);
