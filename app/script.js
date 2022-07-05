@@ -1,5 +1,22 @@
 "use strict";
 
+// https://www.w3schools.com/js/js_cookies.asp
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 function getCurrentKw() {
     var date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -16,9 +33,19 @@ function initTooltips() {
     });
 };
 
-function insertEvents(course, from, to) {
+function insertCourseEvents(course, from, to) {
     $.ajax({
         url: `/api/getRaplaEvents/${course}?from=${from}&to=${to}`,
+        xhrFields: { withCredentials: true }
+    }).done(function (data) {
+        $('#eventGrid').after(data);
+        adjustDays();
+    });
+}
+
+function insertUserEvents(uid, from, to) {
+    $.ajax({
+        url: `/api/calendar/${uid}?type=HTML&start=${from}&end=${to}`,
         xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#eventGrid').after(data);
@@ -34,7 +61,8 @@ function updateSite() {
     clearEvents();
     let weekRange = getWeekRange(window.calweek, window.calyear);
     $('#calweek').text('KW ' + window.calweek + " (" + weekRange.startDay.toLocaleDateString() + " - " + weekRange.endDay.toLocaleDateString() + ")");
-    insertEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    insertCourseEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    insertUserEvents($(window.activeUser).find("uid").text(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
 }
 
 function adjustDays() {
@@ -106,14 +134,38 @@ function getWeekRange(w, y) {
     };
 }
 
+function checkTokenCredentials() {
+    console.log("Token is being checked.");
+    const token = getCookie('token');
+    const ALWAYS_AUTHENTICATED_DEBUG = false;
+    if (token.length > 0 || ALWAYS_AUTHENTICATED_DEBUG) {
+        $('#loggedin-bar').show();
+        $('#kalender').show(500);
+        $('#button-row').show(500);
+        $('#timelines').show(500);
+
+        $('#login-and-registration').hide();
+    } else {
+        $('#loggedin-bar').hide();
+        $('#kalender').hide();
+        $('#button-row').hide();
+        $('#timelines').hide();
+
+        $('#login-and-registration').show();
+    }
+}
 
 $(() => {
+    checkTokenCredentials();
+
     if (!window.hasOwnProperty("calweek")) {
         window.calweek = getCurrentKw();
     }
     if (!window.hasOwnProperty("calyear")) {
         window.calyear = new Date().getFullYear();
     }
+    updateSite();
+
 
     initTooltips();
 
@@ -140,29 +192,30 @@ $(() => {
         }
         updateSite();
     });
+    $('#logout-button').click(doLogout);
 
     $('#userSettingsForm').submit(function () {
-        (async () => userSettingsChange())();
+        submitUserSettingsChange();
         return false;
     });
-    $('#loginForm').submit(function () {
-        (async () => login())();
-        return false;
-    });
-    $('#registrationForm').submit(function () {
-        (async () => registration())();
-        return false;
-    });
+    // $('#loginForm').submit(function () {
+    //     (async () => login())();
+    //     return false;
+    // });
+    // $('#registrationForm').submit(function () {
+    //     (async () => registration())();
+    //     return false;
+    // });
     $('#newEventForm').submit(function () {
-        (async () => newEvent())();
+        submitNewEvent();
         return false;
     });
     $('#editEventForm').submit(function () {
-        (async () => submitEditEvent())();
+        submitEditEvent();
         return false;
     });
     $('#deleteEventForm').submit(function () {
-        (async () => submitDeleteEvent())();
+        submitDeleteEvent();
         return false;
     });
 });
@@ -170,6 +223,7 @@ $(() => {
 /* UI events */
 function editEvent(buttonClicked) {
     const eventId = buttonClicked.getAttribute("data-event-id");
+    const eventOwnerId = buttonClicked.getAttribute("data-event-owner-id");
     // TODO: get event information
     const editEventForm = document.forms["editEventForm"];
     editEventForm["editEventId"].value = eventId;
@@ -180,6 +234,7 @@ function editEvent(buttonClicked) {
     editEventForm["editEventLocation"].value = "Mond 🌛";
     editEventForm["editEventStart"].value = "2020-02-02T22:22";
     editEventForm["editEventEnd"].value = "2022-02-22T20:20";
+    editEventForm["editEventOwnerId"].value = eventOwnerId;
 }
 
 function deleteEvent(buttonClicked) {
@@ -195,31 +250,86 @@ function deleteEvent(buttonClicked) {
     deleteEventForm["deleteEventEnd"].value = "1970-01-01T09:30";
 }
 
-function submitEditEvent() {
+async function submitEditEvent() {
     const editEventForm = document.forms["editEventForm"];
-    // TODO: send edited event
+    const eventId = editEventForm["editEventId"];
+    const ownerId = editEventForm["editEventOwnerId"];
+    const title = editEventForm["title"];
+    const description = editEventForm["description"];
+    const category = editEventForm["category"];
+    const location = editEventForm["location"];
+    const start = editEventForm["start"];
+    const end = editEventForm["end"];
+    $.ajax({
+        type: 'PUT',
+        url: '/api/calendar/' + ownerId + '?eventId=' + eventId,
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            title,
+            description,
+            category,
+            location,
+            start,
+            end
+        }
+    });
 }
 
-function submitDeleteEvent() {
+async function submitDeleteEvent() {
     const deleteEventForm = document.forms["deleteEventForm"];
-    // TODO: send deleted event
+    const uid = deleteEventForm["deleteEventId"];
+    $.ajax({
+        type: 'DELETE',
+        url: '/api/calendar',
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            uid
+        }
+    });
 }
 
-function newEvent() {
+async function submitNewEvent() {
     const newEventForm = document.forms["newEventForm"];
-    // TODO: send new event
+    const title = newEventForm["newEventTitle"];
+    const description = newEventForm["newEventDescription"];
+    const category = newEventForm["newEventCategory"];
+    const location = newEventForm["newEventLocation"];
+    const start = newEventForm["newEventStart"];
+    const end = newEventForm["newEventEnd"];
+    $.ajax({
+        type: 'POST',
+        url: '/api/calendar',
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            uid: 'no',
+            title,
+            description,
+            category,
+            start,
+            end,
+            location
+        }
+    });
 }
 
-function login() {
-    console.log("login");
+async function submitLogin() {
     const loginForm = document.forms["loginForm"];
     const email = loginForm["loginMail"].value;
     const password = loginForm["loginPassword"].value;
-    console.log("login with", email);
+    doLogin(email, password);
+}
+
+function doLogin(uid, password) {
     $.ajax({
-        type: 'GET',
-        url: '/api/login',
-        username: email,
+        type: 'POST',
+        url: '/login',
+        username: uid,
         password: password,
         xhrFields: {
             withCredentials: true
@@ -251,17 +361,42 @@ function login() {
     });
 }
 
-function registration() {
+function doLogout() {
+    // TODO: logout
+    checkTokenCredentials();
+}
+
+async function submitRegistration() {
     const registrationForm = document.forms["registrationForm"];
     const email = registrationForm["registrationMail"].value;
     const password = registrationForm["registrationPassword"].value;
     const firstName = registrationForm["registrationFirstName"].value;
     const lastName = registrationForm["registrationLastName"].value;
     console.log("user settings changed to", email, firstName, lastName);
-    // TODO: registration process
+    $.ajax({
+        type: 'POST',
+        url: '/api/users',
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            // TODO: uid = email?
+            uid: email,
+            firstName: firstName,
+            lastName: lastName,
+            mail: email,
+            // TODO: hashing in backend?
+            passwordHash: password
+        },
+        statusCode: {
+            200: () => {
+                doLogin(email, password);
+            }
+        }
+    });
 }
 
-function userSettingsChange() {
+function submitUserSettingsChange() {
     const userSettingsForm = document.forms["userSettingsForm"];
     const email = userSettingsForm["userSettingsMail"].value;
     const password = userSettingsForm["userSettingsPassword"].value;

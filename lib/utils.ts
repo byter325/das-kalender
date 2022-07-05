@@ -1,31 +1,44 @@
 import * as crypto from "crypto-js";
-import { User } from "./classes/user";
-import { CalendarEvent } from "./classes/userEvent";
+import {User} from "./classes/user";
+import {CalendarEvent} from "./classes/userEvent";
+import {randomBytes} from "crypto";
+import join from 'path';
+import fs from 'fs';
+import path from "path";
+import { Console } from "console";
 
-export module Utils{
+export module Utils {
     export const BODY_PARTIALLY_CORRECT = 0;
     export const BODY_FULLY_CORRECT = 1;
     export const BODY_INCORRECT = -1;
+    
+    let currUID = 0;
+    let idFetched = false;
+    const idDataPath = path.join(__dirname, ".." , "data", "utils");
+    const idDataFile = path.join(idDataPath, "id.json");
 
-    export function GenSHA256Hash(message: string): string{
+    export function GenSHA256Hash(message: string): string {
         return crypto.SHA256(message).toString();
     }
 
-    export function GenSHA512Hash(message:string): string{
+    export function GenSHA512Hash(message: string): string {
         return crypto.SHA512(message).toString();
     }
 
-    export function Hex2Word(message:string): crypto.lib.WordArray{
+    export function Hex2Word(message: string): crypto.lib.WordArray {
         return crypto.enc.Base64.parse(message);
     }
-    
-    export function Word2Hex(words:crypto.lib.WordArray):string{
+
+    export function Word2Hex(words: crypto.lib.WordArray): string {
         return crypto.enc.Utf8.stringify(words);
     }
 
-    export function isBodyForGroupCorrect(body:any):boolean{
-        if (body.name != undefined && body.uid != undefined && body.url != undefined) return true
-        return false
+    export function isBodyForGroupCorrect(body: any): boolean {
+        return body.name != undefined && body.uid != undefined && body.url != undefined;
+    }
+
+    export function generateAuthToken(): String {
+        return randomBytes(64).toString("hex")
     }
 
     /**
@@ -36,21 +49,9 @@ export module Utils{
      * @param {boolean} allowPartialCorrectness Whether or not all fields have to be correct
      * @return {*}  {number} 0: For partiall correctness, 1: for full correctness, -1: for bad format
      */
-    export function isBodyForEventCorrect(body: any, allowPartialCorrectness:boolean): number {
-        console.log(body);
-        
-        console.log(body.title + "," 
-            + body.description + ","
-            + body.presenter + ","
-            + body.category + ","
-            + body.start + ","
-            + body.end + ","
-            + body.location + ","
-            + body.modified + ","
-            + body.modifiedBy + ","
-        );
-        
-        if (allowPartialCorrectness){
+    export function isBodyForEventCorrect(body: any, allowPartialCorrectness: boolean): number {
+
+        if (allowPartialCorrectness) {
             if (body.uid != undefined
                 && body.title != undefined
                 && body.start != undefined
@@ -74,7 +75,7 @@ export module Utils{
         var o = new CalendarEvent(body.uid, body.title, body.description, body.presenter, body.category, body.start, body.end,
             body.location, body.modified, body.modifiedBy)
         console.log(o);
-        
+
         return o
     }
 
@@ -82,7 +83,7 @@ export module Utils{
         return new CalendarEvent(body.uid, body.title, "No description", {}, "No category", body.start, body.end,
             "No location", new Date().toISOString(), {})
     }
-    
+
     /**
      * Checks if the body of a POST or PUT request has the correct data types
      *
@@ -91,9 +92,9 @@ export module Utils{
      * @param {boolean} allowPartialCorrectness Whether or not all fields have to be correct
      * @return {*}  {number} 0: For partiall correctness, 1: for full correctness, -1: for bad format
      */
-    export function isBodyForUserCorrect(body: any, allowPartialCorrectness:boolean):number {
+    export function isBodyForUserCorrect(body: any, allowPartialCorrectness: boolean): number {
 
-        if (allowPartialCorrectness){
+        if (allowPartialCorrectness) {
             if (body.uid != undefined
                 && body.firstName != undefined
                 && body.lastName != undefined
@@ -113,8 +114,8 @@ export module Utils{
         }
         return BODY_INCORRECT
     }
-    
-    export function convertFullPostBodyToUser(body:any):User{
+
+    export function convertFullPostBodyToUser(body: any): User {
         return new User(body.uid, body.firstName, body.lastName, body.initials, body.mail, body.passwordHash, body.group,
             body.editableGroup, body.darkMode, body.isAdministrator)
     }
@@ -122,6 +123,38 @@ export module Utils{
     export function convertPartialPostBodyToUser(body: any): User {
         return new User(body.uid, body.firstName, body.lastName, body.firstName[0] + body.lastName[0], body.mail, body.passwordHash, [{}],
             [{}], false, false)
+    }
+
+    export function getNextUID(): number {
+        if (!idFetched){
+            currUID = getLastUID();
+            idFetched = true;
+        }
+        currUID++;
+        saveUID(currUID);
+        return currUID;
+    }
+
+    function createDirectoryIfNotExists(path: string): void {
+        if (!fs.existsSync(path)){
+            fs.mkdirSync(path);
+        }
+    }
+
+    function saveUID(uid: number){
+        createDirectoryIfNotExists(idDataPath);
+        
+        let data = {"uid": uid, "last_time": new Date().toISOString() };
+        fs.writeFileSync(idDataFile, JSON.stringify(data));
+    }
+
+    function getLastUID(): number {
+        createDirectoryIfNotExists(idDataPath);
+        if (fs.existsSync(idDataFile)){
+            let data = JSON.parse(fs.readFileSync(idDataFile, "utf8"));
+            return data.uid;
+        }
+        return 0;
     }
 
     /*public uid:string
@@ -134,5 +167,4 @@ export module Utils{
     public location:string
     public modified:string
     public modifiedBy:object */
-
 }

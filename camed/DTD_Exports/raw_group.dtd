@@ -1,0 +1,4 @@
+<!ELEMENT group (uid, name, url)>
+    <!ELEMENT uid (#PCDATA)>
+    <!ELEMENT name (#PCDATA)>
+    <!ELEMENT url (#PCDATA)>
