@@ -23,6 +23,7 @@
   "homepage": "https://github.com/maxomnia/pm_project_rapla#readme",
   "dependencies": {
     "body-parser": "^1.20.0",
+    "cookie-parser": "^1.4.6",
     "crypto-js": "^4.1.1",
     "express": "^4.18.1",
     "express-xml-bodyparser": "^0.3.0",
@@ -33,10 +34,10 @@
     "saxon-js": "^2.4.0",
     "swagger-ui-express": "^4.4.0",
     "tmp": "^0.2.1",
+    "ts-node": "^10.8.1",
     "xml-js": "^1.6.11",
     "yaml": "^2.1.1",
-    "yamljs": "^0.3.0",
-    "ts-node": "^10.8.1"
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.1.1",

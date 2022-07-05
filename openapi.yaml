@@ -5,9 +5,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.0
-servers:
-  - url: /
+  version: 1.1.0
 tags:
   - name: Calendar
     description: Access to calendar data
@@ -15,13 +13,15 @@ tags:
     description: Operations about users
   - name: Groups
     description: Operations about groups
+  - name: Token
+    description: Operations about Auth-Token
 paths:
   /api/calendar/{uid}:
     post:
       tags:
         - Calendar
       summary: Add a new event to the calendar
-      description: ""
+      description: "You must either own this calendar, have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: createEvent
       parameters:
         - name: uid
@@ -45,12 +45,13 @@ paths:
         "400":
           description: Invalid input
       security:
-        - api_key: []
-      x-swagger-router-controller: Calendar
+        - auth_token_header: []
+        - auth_token_cookie: []
     get:
       tags:
         - Calendar
       summary: Get all events from a calendar
+      description: "You must either own this calendar, have the associated group set as group/editableGroup or be an administrator to perform this action."
       operationId: getEvent
       parameters:
         - name: uid
@@ -69,6 +70,33 @@ paths:
           explode: true
           schema:
             type: string
+        - name: type
+          in: query
+          description: Type of the answer given by the server (optional)
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum: ["HTML", "XML"]
+        - name: start
+          in: query
+          description: ISO time string of the start of the output range (optional)
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          description: ISO time string of the end of the output range (optional)
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: date-time
       responses:
         "200":
           description: List of events
@@ -86,13 +114,13 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - read:calendar
-      x-swagger-router-controller: Calendar
+        - auth_token_header: []
+        - auth_token_cookie: []
     put:
       tags:
         - Calendar
       summary: Update an existing event
+      description: "You must either own this calendar, have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: updateEvent
       parameters:
         - name: uid
@@ -128,14 +156,13 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - write:calendar
-            - read:calendar
-      x-swagger-router-controller: Calendar
+        - auth_token_header: []
+        - auth_token_cookie: []
     delete:
       tags:
         - Calendar
       summary: Delete an existing event
+      description: "You must either own this calendar, have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: deleteEvent
       parameters:
         - name: uid
@@ -162,16 +189,15 @@ paths:
         "404":
           description: Event not found
       security:
-        - api_key:
-            - write:calendar
-            - read:calendar
-      x-swagger-router-controller: Calendar
+        - auth_token_header: []
+        - auth_token_cookie: []
 
   /api/users:
     post:
       tags:
         - Users
       summary: Create a new user
+      description: "You must be an administrator to perform this action."
       operationId: createUser
       requestBody:
         description: XML document of the user you want to add
@@ -186,15 +212,13 @@ paths:
         "400":
           description: Invalid input
       security:
-        - api_key:
-            - write:user
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
     get:
       tags:
         - Users
       summary: List all users
-      description: ""
+      description: "You must be an administrator to perform this action."
       operationId: listUsers
       responses:
         "200":
@@ -210,15 +234,15 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
 
   /api/users/{uid}:
     get:
       tags:
         - Users
       summary: Get all user info
+      description: "You must either be the corresponding user or an administrator to perform this action."
       operationId: getUser
       parameters:
         - name: uid
@@ -243,13 +267,13 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
     put:
       tags:
         - Users
       summary: Update an existing user
+      description: "You must either be the corresponding user or an administrator to perform this action. As normal user you can't edit the properties group, editableGroup and isAdministrator."
       operationId: updateUser
       parameters:
         - name: uid
@@ -277,14 +301,13 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - write:user
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
     delete:
       tags:
         - Users
       summary: Delete an existing user
+      description: "You must either be the corresponding user or an administrator to perform this action."
       operationId: deleteUser
       parameters:
         - name: uid
@@ -303,16 +326,15 @@ paths:
         "404":
           description: User not found
       security:
-        - api_key:
-            - write:user
-            - read:user
-      x-swagger-router-controller: Users
+        - auth_token_header: []
+        - auth_token_cookie: []
 
   /api/groups:
     post:
       tags:
         - Groups
       summary: Create a new group
+      description: "You must be an administrator to perform this action."
       operationId: createGroup
       requestBody:
         description: XML document of the group you want to add
@@ -327,19 +349,17 @@ paths:
         "400":
           description: Invalid input
       security:
-        - api_key:
-            - write:group
-            - read:group
-      x-swagger-router-controller: Groups
+        - auth_token_header: []
+        - auth_token_cookie: []
     get:
       tags:
         - Groups
       summary: List all groups
-      description: ""
+      description: "You must be an administrator to perform this action."
       operationId: listGroups
       responses:
         "200":
-          description: "List of all groupss (UID, name, url)"
+          description: "List of all groups"
           content:
             application/xml:
               schema:
@@ -351,15 +371,15 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - read:group
-      x-swagger-router-controller: Groups
+        - auth_token_header: []
+        - auth_token_cookie: []
 
   /api/groups/{uid}:
     put:
       tags:
         - Groups
       summary: Update an existing group
+      description: "You must either have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: updateGroup
       parameters:
         - name: uid
@@ -387,14 +407,13 @@ paths:
         "405":
           description: Validation exception
       security:
-        - api_key:
-            - write:group
-            - read:group
-      x-swagger-router-controller: Groups
+        - auth_token_header: []
+        - auth_token_cookie: []
     delete:
       tags:
         - Groups
       summary: Delete an existing group
+      description: "You must either have the associated group set as editableGroup or be an administrator to perform this action."
       operationId: deleteGroup
       parameters:
         - name: uid
@@ -413,17 +432,106 @@ paths:
         "404":
           description: Group not found
       security:
-        - api_key:
-            - write:group
-            - read:group
-      x-swagger-router-controller: Groups
+        - auth_token_header: []
+        - auth_token_cookie: []
+
+  /api/token:
+    post:
+      tags:
+        - Token
+      summary: Create a new token
+      description: "Everyone can perform this action. It sets the AuthToken as cookie and returns it in the body."
+      operationId: createToken
+      requestBody:
+        description: XML document of the token you want to create
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Token'
+        required: true
+      responses:
+        "201":
+          description: Successfully created token
+          content:
+            text/plain:
+              schema:
+                type: string
+        "400":
+          description: Invalid input
+      security:
+        - auth_token_header: []
+        - auth_token_cookie: []
+    get:
+      tags:
+        - Token
+      summary: List all tokens of a user
+      description: "You must be either the corresponding user or administrator to perform this action."
+      operationId: listToken
+      parameters:
+        - name: uid
+          in: query
+          description: UID of the user whose tokens should be listed
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "List all tokens of specific user"
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Token'
+                xml:
+                  name: 'results'
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Token not found
+        "405":
+          description: Validation exception
+      security:
+        - auth_token_header: []
+        - auth_token_cookie: []
+    delete:
+      tags:
+        - Token
+      summary: Delete an existing token
+      description: "You must be either the corresponding user or administrator to perform this action."
+      operationId: deleteToken
+      parameters:
+        - name: token
+          in: query
+          description: Token that should be deleted
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully deleted token
+        "400":
+          description: Invalid UID supplied
+        "404":
+          description: Token not found
+      security:
+        - auth_token_header: []
+        - auth_token_cookie: []
 
 components:
   securitySchemes:
-    api_key:
+    auth_token_header:
       type: apiKey
       in: header
-      name: X-API-Key
+      name: AuthToken
+    auth_token_cookie:
+      type: apiKey
+      in: cookie
+      name: AuthToken
   schemas:
     PersonInfo:
       required:
@@ -444,12 +552,6 @@ components:
           type: string
         mail:
           type: string
-      example:
-        uid: uid
-        firstName: firstName
-        lastName: lastName
-        mail: mail
-        initials: initials
     Event:
       required:
         - category
@@ -497,27 +599,6 @@ components:
           format: date-time
         modifiedBy:
           $ref: '#/components/schemas/PersonInfo'
-      example:
-        uid: uid
-        presenter:
-          - uid: uid
-            firstName: firstName
-            lastName: lastName
-            mail: mail
-            initials: initials
-          - uid: uid
-            firstName: firstName
-            lastName: lastName
-            mail: mail
-            initials: initials
-        start: 2000-01-23T04:56:07.000+00:00
-        description: description
-        modified: 2000-01-23T04:56:07.000+00:00
-        end: 2000-01-23T04:56:07.000+00:00
-        location: location
-        modifiedBy: null
-        title: title
-        category: Lecture
     Person:
       required:
         - darkMode
@@ -554,25 +635,6 @@ components:
           type: boolean
         isAdministrator:
           type: boolean
-      example:
-        uid: uid
-        firstName: firstName
-        lastName: lastName
-        mail: mail
-        initials: initials
-        darkMode: true
-        isAdministrator: true
-        passwordHash: passwordHash
-        group:
-          - uid: uid
-            name: name
-            url: url
-          - uid: uid
-            name: name
-            url: url
-        editableGroup:
-          - null
-          - null
     Group:
       type: object
       properties:
@@ -582,7 +644,13 @@ components:
           type: string
         url:
           type: string
-      example:
-        uid: uid
-        name: name
-        url: url
+    Token:
+      type: object
+      properties:
+        uid:
+          type: string
+        unlimited:
+          type: boolean
+        validUntil:
+          type: string
+          format: date-time
