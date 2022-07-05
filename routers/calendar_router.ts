@@ -54,7 +54,7 @@ calendarRouter.post('/:uid', (request: express.Request, response) => {
     var body = request.body
     const requestType = request.headers['content-type']
     if(requestType == "application/xml" || requestType == "text/html"){
-        body = XMLManager.convertXMLResponseJSONToCorrectJSONForEvent(request.body.event)
+        body = XMLManager.convertXMLResponseJSONToCorrectJSONForEvent(body.event)
     }
 
     if (Utils.isBodyForEventCorrect(request.body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
