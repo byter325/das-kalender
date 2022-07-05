@@ -1,6 +1,12 @@
-# PM Rapla Backend
+![](/app/banner.png)
 
-## Installation
+# A quick overview
+Before starting, our team wants to quickly thank you for choosing **das kalender** as your calendar software of choice. 
+
+This guide is supposed to help you install and run the **das kalender** web-based application for the first time and the times after that.
+This guide also contains more information about the software like information concerning the security.
+
+# Installing and Running
 You have to install Node.js and npm first:
 
 On Ubuntu/Debian: `sudo apt install -y nodejs npm` \
@@ -8,7 +14,7 @@ On Arch: `sudo pacman -S nodejs npm` \
 On MacOS: `brew install node`\
 On Windows, you need to download and execute the installer from the [NodeJS](https://nodejs.org/en/download/) website.
 
-### The first launch
+## The first launch
 
 After installing NodeJS, you need to run the following commands in a terminal:
 ```bash
@@ -19,19 +25,19 @@ npm run certificate
 npm run start
 ```
 
-Now you will be able to visit the web-based calendar UI under https://localhost:8080/
+Now you will be able to visit the web-based calendar interface at https://localhost:8080/
 
-The API documentation is available at https://localhost:8080/docs.
-
-### Relaunching the application
+## Relaunching the application
 To relaunch the "das kalender" application, you will need to run the following commands
 ```bash
 cd <your_path>
 npm start
 ```
-<your_path> needs to be replaced with the main directory titled something like *C:\\...\pm_project_rapla*
+<your_path> needs to be replaced with the main directory of the application titled something like *C:\\...\pm_project_rapla*
 
-## Security
+Now you will be able to visit the web-based calendar interface at https://localhost:8080/
+
+# Security
 
 Because of HTTPS you must have a self signed certificate / signed certificate and place it into the `security` folder with the key named `server.key` and the certificate `server.cert`
 
@@ -43,8 +49,5 @@ or run:
 
 `npm run certificate`
 
-=======
-
-# pm_project_rapla
-
-Nützliches Tool für XML-Schemata: https://sourceforge.net/projects/camprocessor/files/CAM%20Editor/Releases/3.2.2/
+# Misc
+The API documentation is available at https://localhost:8080/docs.
