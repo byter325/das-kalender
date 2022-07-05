@@ -45,17 +45,33 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
 });
 
 calendarRouter.post('/:uid', (request: express.Request, response) => {
+    
     if (!(
         request.user.uid == request.params.uid ||
         request.user.editableGroup.uid == request.params.uid ||
         request.user.isAdministrator)) return response.sendStatus(401)
 
+    var body = request.body
+    const requestType = request.headers['content-type']
+    if(requestType == "application/xml" || requestType == "text/html"){
+        body = XMLManager.convertXMLResponseJSONToCorrectJSONForEvent(body.event)
+    }
+
     if (Utils.isBodyForEventCorrect(request.body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
-        var b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(request.body))
+        var b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body))
         if (b) return response.sendStatus(200)
     }
     response.status(400)
     return response.send("Body is malformed")
+})
+
+calendarRouter.delete('/:uid', (request:express.Request, response:express.Response) => {
+    var eventID:string|undefined = request.query.eventID?.toString()
+    if(eventID != undefined ){
+        var b = XMLManager.deleteEvent(request.params.uid, eventID)
+        if(b) return response.sendStatus(200)
+    }
+    return response.sendStatus(400)
 })
 
 export default calendarRouter;

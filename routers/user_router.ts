@@ -30,13 +30,21 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
 });
 
 usersRouter.post("/", (request: express.Request, response) => {
+    var body = request.body
+
+    const requestType = request.headers['content-type']
+    if (requestType == "application/xml" || requestType == "text/html") {
+        body = XMLManager.convertXMLResponseJSONToCorrectJSONForUser(body.person)
+    }
+    console.log(body);
+
     if (request.user.isAdministrator) {
-        let correctness: number = Utils.isBodyForUserCorrect(request.body, true)
+        let correctness: number = Utils.isBodyForUserCorrect(body, true)
         if (correctness == Utils.BODY_PARTIALLY_CORRECT) {
-            var b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(request.body), false)
+            var b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false)
             if (b) return response.sendStatus(200)
         } else if (correctness == Utils.BODY_FULLY_CORRECT) {
-            var b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(request.body), false)
+            var b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false)
             if (b) return response.sendStatus(200)
         }
         return response.sendStatus(400)

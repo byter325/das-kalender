@@ -195,25 +195,22 @@ export module XMLManager {
      * @param {CalendarEvent} event The event to be added
      * @return {boolean} Returns if the operation was successful or not
      */
-    export function insertEvent(uid: string, event: CalendarEvent): boolean {
-        try {
-            let d = getAllEventsJSON(uid);
-
-            if (d == '') {
-                d = {event: []}
-                d['event'].push(event)
-            } else if (d instanceof Object) {
-                d['event'] = [d['event']]
-                d['event'].push(event)
-            }
-
+    export function insertEvent(uid:string, event:CalendarEvent):boolean{
+        try{
+            var events = getAllEventsJSON(uid)
+            
             const builder = new XMLBuilder({
                 ignoreAttributes: false,
                 attributesGroupName: "event",
             })
-
-            d = {events: d}
-            let xmlDataStr: string = builder.build(d);
+            console.log(events);
+            
+            events.event.push(event)
+            events = {events: events}
+            
+            var xmlDataStr: string = builder.build(events)
+            console.log(xmlDataStr);
+            
             writeFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
@@ -288,10 +285,16 @@ export module XMLManager {
      * @param {string} uid The uid of the user or group
      * @return {*}  {*} Returns null or >= 1 event
      */
-    function getAllEventsJSON(uid: string): any {
-        const parser = new XMLParser()
-        let data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"});
-        return parser.parse(data)["events"]
+    function getAllEventsJSON(uid:string):any{
+        const parser = new XMLParser({isArray(tagName, jPath, isLeafNode, isAttribute) {
+            if(tagName == "event") return true
+            return false
+        },})
+        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", { encoding: "utf-8" })
+        var events = parser.parse(data)["events"]
+        if(events == undefined || events == "")
+            events = {event:[]}
+        return events
     }
 
     /**
@@ -381,6 +384,73 @@ export module XMLManager {
         } catch (error) {
             console.log(error);
             return "<groups></groups>"
+        }
+    }
+
+    export function convertXMLResponseJSONToCorrectJSONForEvent(xmlJSON:any){
+        return {
+            uid: xmlJSON.uid[0],
+            presenter: {
+                firstName: xmlJSON.presenter[0].firstname[0],
+                lastName: xmlJSON.presenter[0].lastname[0],
+                mail: xmlJSON.presenter[0].mail[0],
+                initials: xmlJSON.presenter[0].initials[0],
+            },
+            start: xmlJSON.start[0],
+            description: xmlJSON.description[0],
+            modified: xmlJSON.modified[0],
+            end: xmlJSON.end[0],
+            location: xmlJSON.location[0],
+            modifiedBy: {
+                firstName: xmlJSON.modifiedby[0].firstname[0],
+                lastName: xmlJSON.modifiedby[0].lastname[0],
+                mail: xmlJSON.modifiedby[0].mail[0],
+                initials: xmlJSON.modifiedby[0].initials[0],
+            }, //This misspelling with a lower case b is caused by some express conversion from XML to JSON
+            title: xmlJSON.title[0],
+            category: xmlJSON.category[0]
+        }
+    }
+
+    export function convertXMLResponseJSONToCorrectJSONForUser(xmlJSON: any) {
+        let person = {
+            uid: xmlJSON.uid[0],
+            firstName: xmlJSON.firstname[0],
+            lastName: xmlJSON.lastname[0],
+            initials: xmlJSON.initials[0],
+            mail: xmlJSON.mail[0],
+            passwordHash: xmlJSON.passwordhash[0],
+            group: [xmlJSON.group.length],
+            editableGroup: [xmlJSON.group.length],
+            darkMode: xmlJSON.darkmode[0],
+            isAdministrator: xmlJSON.isadministrator[0]
+        }
+        for (let index = 0; index < xmlJSON.group.length; index++) {
+            const element = xmlJSON.group[index];
+            let group: any = {
+                uid: element.uid[0],
+                name: element.name[0]
+            }
+            person.group.push(group)
+        }
+
+        for (let index = 0; index < xmlJSON.editablegroup.length; index++) {
+            const element = xmlJSON.editablegroup[index];
+            let group: any = {
+                uid: element.uid[0],
+                name: element.name[0]
+            }
+            person.editableGroup.push(group)
+        }
+
+        return person
+    }
+
+    export function convertXMLResponseJSONToCorrectJSONForGroup(xmlJSON: any) {
+        return {
+            uid:xmlJSON.uid[0],
+            name: xmlJSON.name[0],
+            url: xmlJSON.url[0],
         }
     }
 
