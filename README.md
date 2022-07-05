@@ -1,15 +1,23 @@
 # PM Rapla Backend
 
-## Quick start
+## Installation
+You have to install Node.js and npm first:
 
-Type
+On Ubuntu/Debian: `sudo apt install -y nodejs npm` \
+On Arch: `sudo pacman -S nodejs npm` \
+On MacOS: `brew install node`\
+On Windows, you need to download and execute the installer from the [NodeJS](https://nodejs.org/en/download/) website.
 
-`npm start`
+```bash
+git clone https://github.com/maxomnia/pm_project_rapla.git
+cd pm_project_rapla
+npm install
+npm run certificate
+npm run start
+```
 
-and open browser at https://localhost:8080/
-
-## Filters
-
+The webUI is available at https://localhost:8080/. \
+The API documentation is available at https://localhost:8080/docs.
 
 ## Security
 
@@ -21,15 +29,7 @@ A self signed certificate can be created using openssl and the following command
 
 or run:
 
-`npm certificate`
-
-## API Examples
-
-/api/getRaplaEvents/TINF21B1?from=2022-03-21T00:00:00.000Z
-
-/api/getRaplaEvents/TINF21B1?to=2022-03-21T00:00:00.000Z
-
-/api/getRaplaEvents/TINF21B1?from=2022-03-21T00:00:00.000Z&to=2022-04-21T00:00:00.000Z
+`npm run certificate`
 
 =======
 
