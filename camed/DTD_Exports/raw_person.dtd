@@ -1,0 +1,12 @@
+<!ELEMENT person (uid, firstName, lastName, initials, mail, passwordHash, group*, editableGroup*, darkMode, isAdministrator)>
+    <!ELEMENT uid (#PCDATA)>
+    <!ELEMENT firstName (#PCDATA)>
+    <!ELEMENT lastName (#PCDATA)>
+    <!ELEMENT initials (#PCDATA)>
+    <!ELEMENT mail (#PCDATA)>
+    <!ELEMENT passwordHash (#PCDATA)>
+    <!ELEMENT group (uid, name)>
+        <!ELEMENT name (#PCDATA)>
+    <!ELEMENT editableGroup (uid, name)>
+    <!ELEMENT darkMode (#PCDATA)>
+    <!ELEMENT isAdministrator (#PCDATA)>
