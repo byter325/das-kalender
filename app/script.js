@@ -41,6 +41,12 @@ function insertCourseEvents(course, from, to) {
         $('#eventGrid').after(data);
         adjustDays();
     });
+    $.ajax({
+        url: `/api/getRaplaEvents/${course}?format=timeline&from=${from}&to=${to}`,
+        xhrFields: { withCredentials: true }
+    }).done(function (data) {
+        $('#timelines').replaceWith(data);
+    });
 }
 
 function insertUserEvents(uid, from, to) {
@@ -55,6 +61,7 @@ function insertUserEvents(uid, from, to) {
 
 function clearEvents() {
     $('.kalenderitem').remove();
+    $('#timelines').html("");
 }
 
 function updateSite() {
