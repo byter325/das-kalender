@@ -17,6 +17,14 @@ function getCookie(cname) {
     return "";
 }
 
+// https://www.w3schools.com/js/js_cookies.asp
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
 function getCurrentKw() {
     var date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -136,9 +144,9 @@ function getWeekRange(w, y) {
 
 function checkTokenCredentials() {
     console.log("Token is being checked.");
-    const token = getCookie('token');
-    const ALWAYS_AUTHENTICATED_DEBUG = false;
-    if (token.length > 0 || ALWAYS_AUTHENTICATED_DEBUG) {
+    const token = getCookie('AuthToken');
+    console.log(token);
+    if (token.length > 0) {
         $('#loggedin-bar').show();
         $('#kalender').show(500);
         $('#button-row').show(500);
@@ -151,7 +159,7 @@ function checkTokenCredentials() {
         $('#button-row').hide();
         $('#timelines').hide();
 
-        $('#login-and-registration').show();
+        $('#login-and-registration').show(500);
     }
 }
 
@@ -198,14 +206,14 @@ $(() => {
         submitUserSettingsChange();
         return false;
     });
-    // $('#loginForm').submit(function () {
-    //     (async () => login())();
-    //     return false;
-    // });
-    // $('#registrationForm').submit(function () {
-    //     (async () => registration())();
-    //     return false;
-    // });
+    $('#loginForm').submit(function () {
+        submitLogin();
+        return false;
+    });
+    $('#registrationForm').submit(function () {
+        submitRegistration();
+        return false;
+    });
     $('#newEventForm').submit(function () {
         submitNewEvent();
         return false;
@@ -329,19 +337,24 @@ function doLogin(uid, password) {
     $.ajax({
         type: 'POST',
         url: '/login',
-        username: uid,
-        password: password,
+        data: {
+            loginMail: uid,
+            loginPassword: password
+        },
         xhrFields: {
             withCredentials: true
         },
         statusCode: {
             200: () => {
-                $('#loginMessage').removeClass("alert-danger d-none").addClass("alert-success").html("Login erfolgreich!");
-                $('#loginModal').modal('hide');
-                $('#loginBar').hide();
+                $('#loginMessage').removeClass("alert-danger").addClass("alert-success").text("Login erfolgreich!").show();
+                setTimeout(() => {
+                    checkTokenCredentials();
+                    $('#loginMessage').hide();
+                }, 1000);
+                
                 $.ajax({
                     type: 'GET',
-                    url: '/api/getActiveUser',
+                    url: '/api/getActiveUser', // TODO: change, getActiveUser does not exist
                     xhrFields: {
                         withCredentials: true
                     }
@@ -362,7 +375,9 @@ function doLogin(uid, password) {
 }
 
 function doLogout() {
-    // TODO: logout
+    console.log("User logout");
+    setCookie('AuthToken', '', 0);
+    setCookie('UID', '', 0);
     checkTokenCredentials();
 }
 
@@ -375,18 +390,15 @@ async function submitRegistration() {
     console.log("user settings changed to", email, firstName, lastName);
     $.ajax({
         type: 'POST',
-        url: '/api/users',
+        url: '/register',
         xhrFields: {
             withCredentials: true
         },
         data: {
-            // TODO: uid = email?
-            uid: email,
-            firstName: firstName,
-            lastName: lastName,
-            mail: email,
-            // TODO: hashing in backend?
-            passwordHash: password
+            registrationMail: email,
+            registrationFirstName: firstName,
+            registrationLastName: lastName,
+            registrationPassword: password,
         },
         statusCode: {
             200: () => {
