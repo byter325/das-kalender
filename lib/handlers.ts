@@ -29,7 +29,7 @@ export module Handlers {
      */
     export function getRaplaEvents(req: Request, res: Response) {
         const course: string = req.params.course;
-        const format: any = req.query.format;
+        const timeline: string | undefined = req.query.timeline?.toString();
         console.log(req.path);
         const fileName = `${dataDir}/${course}-kalender.xml`;
         if (!fs.existsSync(fileName)) {
@@ -62,7 +62,7 @@ export module Handlers {
                 const tmpobj = tmp.fileSync();
                 fs.writeFile(tmpobj.fd, eventsToXml(eventResults), () => {
                     res.contentType('text/html');
-                    if (format == "timeline") res.send(xmlEventsToHtmlTimelineView(tmpobj.name));
+                    if (timeline) res.send(xmlEventsToHtmlTimelineView(tmpobj.name));
                     else res.send(xmlEventsToHtmlGridView(tmpobj.name));
                 });
 

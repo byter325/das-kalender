@@ -35,14 +35,14 @@ function initTooltips() {
 
 function insertCourseEvents(course, from, to) {
     $.ajax({
-        url: `/api/getRaplaEvents/${course}?from=${from}&to=${to}`,
+        url: `/api/calendar/course/${course}?from=${from}&to=${to}`,
         xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#eventGrid').after(data);
         adjustDays();
     });
     $.ajax({
-        url: `/api/getRaplaEvents/${course}?format=timeline&from=${from}&to=${to}`,
+        url: `/api/calendar/course/${course}?timeline=true&from=${from}&to=${to}`,
         xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#timelines').replaceWith(data);
@@ -68,6 +68,7 @@ function updateSite() {
     clearEvents();
     let weekRange = getWeekRange(window.calweek, window.calyear);
     $('#calweek').text('KW ' + window.calweek + " (" + weekRange.startDay.toLocaleDateString() + " - " + weekRange.endDay.toLocaleDateString() + ")");
+    // TODO: use user's group
     insertCourseEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
     insertUserEvents($(window.activeUser).find("uid").text(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
 }

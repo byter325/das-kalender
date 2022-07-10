@@ -97,10 +97,6 @@ app.post("/register", (req: express.Request, res: express.Response) => {
     }
 })
 
-app.get("/api/getRaplaEvents/:course", (req: express.Request, res: express.Response) => {
-    Handlers.getRaplaEvents(req, res);
-});
-
 const swaggerDocument = YAML.load('./openapi.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
