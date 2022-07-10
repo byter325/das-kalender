@@ -43,7 +43,7 @@ function initTooltips() {
 
 function insertCourseEvents(course, from, to) {
     $.get({
-        url: `/api/calendar/${course}?type=HTML&from=${from}&to=${to}`,
+        url: `/api/calendar/${course}?type=HTML&start=${from}&end=${to}`,
         xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#eventGrid').after(data);
