@@ -202,6 +202,10 @@ $(() => {
         updateSite();
     });
     $('#logout-button').click(doLogout);
+    $('#switchDarkMode').change(function() {
+        setCookie('DarkMode', this.checked);
+        handleDarkMode();
+    });
 
     $('#userSettingsForm').submit(function () {
         submitUserSettingsChange();
@@ -351,8 +355,10 @@ function doLogin(uid, password) {
                 setTimeout(() => {
                     checkTokenCredentials();
                     $('#loginMessage').hide();
+                    document.forms['loginForm'].reset();
+                    document.forms['registrationForm'].reset();
                 }, 1000);
-                
+
                 $.ajax({
                     type: 'GET',
                     url: '/api/getActiveUser', // TODO: change, getActiveUser does not exist
@@ -404,9 +410,13 @@ async function submitRegistration() {
         statusCode: {
             200: () => {
                 doLogin(email, password);
+                document.forms['loginForm'].reset();
+                document.forms['registrationForm'].reset();
             }
         }
     });
+    document.forms["loginForm"].reset();
+    registrationForm.reset();
 }
 
 function submitUserSettingsChange() {
@@ -417,4 +427,15 @@ function submitUserSettingsChange() {
     const lastName = userSettingsForm["userSettingsLastName"].value;
     console.log("user settings changed to", email, password, firstName, lastName);
     // TODO: userSettings process
+}
+
+function setDarkMode(isDarkModeEnabled) {
+    $('link[title="Light mode"]').prop('disabled', isDarkModeEnabled);
+    $('link[title="Dark mode"]').prop('disabled', !isDarkModeEnabled);
+}
+
+function handleDarkMode() {
+    var darkMode = getCookie("DarkMode") === "true";
+    $("#switchDarkMode").prop("checked", darkMode);
+    setDarkMode(darkMode);
 }
