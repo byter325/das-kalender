@@ -246,7 +246,7 @@ export module XMLManager {
         return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
     }
 
-    export function getWeekEventsAsHTML(uid: string, startdate: string, enddate: string) {
+    export function getWeekEventsAsHTML(uid: string, startdate: string, enddate: string, timeline:boolean) {
         //fetch
         let boundaryStartDate = new Date(startdate);
         let boundaryEndDate = new Date(enddate);
@@ -270,7 +270,13 @@ export module XMLManager {
 
             let path = PATH_DATA_EVENTS + "tmp_" + Utils.GenSHA256Hash(uid) + ".xml";
             writeFileSync(path, xmlEvents)
-            let htmlString = Handlers.xmlEventsToHtmlGridView(path);
+            let htmlString = ""
+            console.log("PATH:" + path);
+            
+            if(timeline)
+                htmlString = Handlers.xmlEventsToHtmlTimelineView(path)
+            else 
+                htmlString = Handlers.xmlEventsToHtmlGridView(path);
             fs.rmSync(path)
             return htmlString
         } else {

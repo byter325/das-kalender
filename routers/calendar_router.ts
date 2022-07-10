@@ -13,17 +13,14 @@ calendarRouter.use((req, res, next) => {
 
 //Die Query hierfür könnte folgendermaßen aussehen: localhost:8080/api/calendar/:uid?type=HTML&start=2022-01-01T10:00:00.000Z&end=2022-01-01T14:00:00.000Z
 calendarRouter.get('/:uid', (request:express.Request, response:express.Response) => {
-    if (!(
-        request.user.uid == request.params.uid ||
-        request.user.group.uid == request.params.uid ||
-        request.user.editableGroup.uid == request.params.uid ||
-        request.user.isAdministrator)) return response.sendStatus(401)
+    
 
     let eventID:string|undefined = request.query.eventID?.toString()
     let uid: string = request.params.uid
     let type:string | undefined = request.query.type?.toString()
     let start:string | undefined = request.query.start?.toString()
     let end:string | undefined = request.query.end?.toString()
+    let timeline: boolean | undefined = Boolean(request.query.timeline?.toString())
 
     if (type == 'XML'){
         if(eventID == undefined)
@@ -35,7 +32,9 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
             //return response.json(XMLManager.getAllEvents(uid))
             if(start == undefined || end == undefined)
                 return response.sendStatus(404)
-            return response.send(XMLManager.getWeekEventsAsHTML(uid, start, end))
+            if(timeline == undefined || timeline == false)
+                return response.send(XMLManager.getWeekEventsAsHTML(uid, start, end, false))
+            else return response.send(XMLManager.getWeekEventsAsHTML(uid, start, end, true))
         } else {
             //return response.json(XMLManager.getEvent(uid, eventID))
             return response.send(XMLManager.getEvent(uid, eventID))
@@ -63,6 +62,11 @@ calendarRouter.post('/:uid', (request: express.Request, response) => {
     }
     response.status(400)
     return response.send("Body is malformed")
+})
+
+calendarRouter.put('/:uid', (request: express.Request, response) => {
+    response.status(405)
+    return response.send("This is not available. Please delete the event in question and then insert the changed version.")
 })
 
 calendarRouter.delete('/:uid', (request:express.Request, response:express.Response) => {
