@@ -35,14 +35,14 @@ table {
 /* calendar */
 .ki-heading {
     text-align: center;
-    background-color: #ffffff;
+    background-color: var(--bs-body-bg);
     font-weight: bold;
     font-size: 12pt;
     padding: 0.2em;
 }
 
 .border-left {
-    border-left: 1px solid #000000;
+    border-left: 1px solid var(--bs-body-color);
 }
 
 .kalendergrid {
@@ -50,13 +50,13 @@ table {
     grid-template-rows: 4em repeat(48, 1em);
     grid-template-columns: 4em repeat(7, auto);
     grid-gap: 0px;
-    border: 1px solid #000000;
+    border: 1px solid var(--bs-body-color);
     margin-bottom: 1rem;
 }
 
 .kalenderitem {
-    border: 1px solid #000000;
-    background-color: var(--kalenderitem-bg);
+    border: 1px solid var(--bs-body-color);
+    background-color: var(--bs-body-bg);
     font-size: 9pt;
 }
 
@@ -79,11 +79,11 @@ table {
 }
 
 .ki-wrow {
-    border-top: 1px solid #c0c0c0;
+    border-top: 1px solid var(--bs-gray-500);
 }
 
 .ki-wcolumn {
-    border-left: 1px solid #000000;
+    border-left: 1px solid var(--bs-body-color);
 }
 
 .ki-zeile-vs,
@@ -99,7 +99,7 @@ table {
 .ki-row-37,
 .ki-row-41,
 .ki-row-45 {
-    border-top: 1px solid #000000;
+    border-top: 1px solid var(--bs-body-color);
 }
 
 .ki-col-1 {
@@ -864,6 +864,10 @@ table {
 }
 
 /* hide components by default */
-#loggedin-bar, #kalender, #button-row, #timelines, #login-and-registration {
+#loggedin-bar,
+#kalender,
+#button-row,
+#timelines,
+#login-and-registration {
     display: none;
 }
