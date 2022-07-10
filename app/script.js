@@ -177,6 +177,7 @@ $(() => {
 
 
     initTooltips();
+    handleDarkMode();
 
     $('#thisweek').click(() => {
         window.calweek = getCurrentKw();
@@ -204,6 +205,8 @@ $(() => {
     $('#logout-button').click(doLogout);
     $('#switchDarkMode').change(function() {
         setCookie('DarkMode', this.checked);
+        // TODO: entweder Cookie auf Server ändern oder Cookie weglassen und nur über JS steuern
+        // je nach API-Funktionalität
         handleDarkMode();
     });
 
@@ -434,7 +437,7 @@ function setDarkMode(isDarkModeEnabled) {
     $('link[title="Dark mode"]').prop('disabled', !isDarkModeEnabled);
 }
 
-function handleDarkMode() {
+async function handleDarkMode() {
     var darkMode = getCookie("DarkMode") === "true";
     $("#switchDarkMode").prop("checked", darkMode);
     setDarkMode(darkMode);
