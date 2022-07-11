@@ -211,7 +211,7 @@ $(() => {
         updateSite();
     });
     $('#logout-button').click(doLogout);
-    $('#switchDarkMode').change(function() {
+    $('#switchDarkMode').change(function () {
         setCookie('DarkMode', this.checked);
         // TODO: entweder Cookie auf Server ändern oder Cookie weglassen und nur über JS steuern
         // je nach API-Funktionalität
@@ -242,11 +242,16 @@ $(() => {
         submitDeleteEvent();
         return false;
     });
+    $('#adminManageGroupsButton').click(openAdminManageGroups);
+    $('#adminManageGroupsForm').submit(function () {
+        submitAdminManageGroups();
+        return false;
+    })
 });
 
 /* UI events */
 function editEvent(buttonClicked) {
-    const eventId = buttonClicked.getAttribute("data-event-id");
+    const eventId = buttonClicked.getAttribute("data-event-id"); // TODO: 'Anführungszeichen' oder "Anführungszeichen"
     const eventOwnerId = buttonClicked.getAttribute("data-event-owner-id");
     // TODO: get event information
     const editEventForm = document.forms["editEventForm"];
@@ -430,7 +435,7 @@ async function submitRegistration() {
     registrationForm.reset();
 }
 
-function submitUserSettingsChange() {
+async function submitUserSettingsChange() {
     const userSettingsForm = document.forms["userSettingsForm"];
     const email = userSettingsForm["userSettingsMail"].value;
     const password = userSettingsForm["userSettingsPassword"].value;
@@ -438,6 +443,34 @@ function submitUserSettingsChange() {
     const lastName = userSettingsForm["userSettingsLastName"].value;
     console.log("user settings changed to", email, password, firstName, lastName);
     // TODO: userSettings process
+}
+
+async function openAdminManageGroups() {
+    $.get('/api/groups')
+        .done(function (data) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'application/xml');
+            var adminManageGroupsGroupsList = '';
+            const groups = doc.getElementsByTagName('groups')[0].getElementsByTagName('group');
+            for (let i = 0; i < groups.length; i++) {
+                const name = groups[i].getElementsByTagName('name')[0].textContent;
+                const url = groups[i].getElementsByTagName('url')[0]?.textContent;
+                adminManageGroupsGroupsList += url
+                    ? `<li class="list-group-item">${name} (${url})</li>`
+                    : `<li class="list-group-item">${name}</li>`;
+            }
+            $('#adminManageGroupsGroupsList').html(adminManageGroupsGroupsList);
+        });
+}
+
+async function submitAdminManageGroups() {
+    const adminManageGroupsForm = document.forms["adminManageGroupsForm"];
+    const name = adminManageGroupsForm["adminManageGroupsName"].value;
+    const uid = name;
+    const url = adminManageGroupsForm["adminManageGroupsRaplaUrl"].value;
+    console.log(name, url);
+    $.post('/api/groups', { uid, name, url })
+        .always(openAdminManageGroups);
 }
 
 function setDarkMode(isDarkModeEnabled) {

@@ -7,8 +7,8 @@
 	<title>das kalender</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
 		title="Light mode">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-night.min.css"
-		rel="stylesheet" title="Dark mode" disabled="disabled">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-night.min.css" rel="stylesheet"
+		title="Dark mode" disabled="disabled">
 	<link rel="stylesheet" type="text/css"
 		href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
 	<link rel="stylesheet" type="text/css" href="./style.css">
@@ -32,9 +32,7 @@
 		</h1>
 
 		<div class="mb-3">
-			<div id="statusInfo" class="d-none">
-
-			</div>
+			<div id="statusInfo"></div>
 			<div class="btn-group" id="loggedin-bar">
 				<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
 					data-bs-target="#userSettigsModal">
@@ -213,102 +211,31 @@
 					<div class="ki-heading ki-row-41 ki-col-1 ki-rowspan-4">18:00</div>
 					<div class="ki-heading ki-row-45 ki-col-1 ki-rowspan-4">19:00</div>
 					<span id="eventGrid"></span>
-					<!-- 			
-			<div class="kalenderitem kalenderitem-vorlesung ki-colspan-4 ki-day-monday ki-hour-900 ki-duration-90">
-				<span class="fw-bold">Web-Engineering I (nur
-					AI/INF)</span>
-				<br>
-				<i class="bi bi-clock-fill me-1"></i>9:00-10:30
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="A268 Hörsaal">
-					<i class="bi bi-geo-alt-fill me-1"></i>A268
-				</span>
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="Röthig, Jürgen (jr@test.example.com)"><i
-						class="bi bi-person-square me-1"></i> J.R.</span>
-			</div>
-			<div class="kalenderitem kalenderitem-vorlesung ki-colspan-2 ki-day-tuesday ki-hour-1500 ki-duration-195">
-				<span class="fw-bold">Marketing (nur AI/INF)</span>
-				<br>
-				<i class="bi bi-clock-fill me-1"></i>15:00-18:15
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="XOnline-Veranstaltung Virtueller Raum"><i
-						class="bi bi-geo-alt-fill me-1"></i>XOnline</span>
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="Rudolf, Sabine (sr@test.example.com)"><i
-						class="bi bi-person-square me-1"></i> S.R.</span>
-			</div>
-			<div class="kalenderitem kalenderitem-vorlesung ki-colspan-2 ki-col-8 ki-hour-1630 ki-duration-90">
-				<span class="fw-bold">Medizinisches Grundwissen II (MI)</span>
-				<br>
-				<i class="bi bi-clock-fill me-1"></i>16:30-18:00
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="XOnline-Veranstaltung Virtueller Raum"><i
-						class="bi bi-geo-alt-fill me-1"></i>XOnline</span>
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="Matlacz, Anna (am@test.example.com)"><i
-						class="bi bi-person-square me-1"></i> A.M.</span>
-			</div>
-			<div class="kalenderitem kalenderitem-vorlesung ki-colspan-4 ki-day-wednesday ki-hour-1630 ki-duration-90">
-				<span class="fw-bold">Medizinisches Grundwissen II (MI)</span>
-				<br>
-				<i class="bi bi-clock-fill me-1"></i>16:30-18:00
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="XOnline-Veranstaltung Virtueller Raum"><i
-						class="bi bi-geo-alt-fill me-1"></i>XOnline</span>
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="Matlacz, Anna (am@test.example.com)"><i
-						class="bi bi-person-square me-1"></i> A.M.</span>
-			</div>
-			<div class="kalenderitem kalenderitem-klausur ki-colspan-4 ki-day-thursday ki-hour-1000 ki-duration-90">
-				<span class="fw-bold">Nachklausur Techn. Info I/Digitaltechnik (90 min)</span>
-				<br>
-				<i class="bi bi-clock-fill me-1"></i>10:00-11:30
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="A268 Hörsaal"><i
-						class="bi bi-geo-alt-fill me-1"></i>A268</span>
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="Senger, Markus (ms@test.example.com)"><i
-						class="bi bi-person-square me-1"></i> M.S.</span>
-			</div>
-			<div class="kalenderitem kalenderitem-vorlesung ki-colspan-4 ki-day-thursday ki-hour-1415 ki-duration-90" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="<i class=&quot;bi bi-person-square me-1&quot;></i> Max Mustermann (mm@test.example.com)<br><i class=&quot;bi bi-geo-alt-fill me-1&quot;></i> XOnline-Veranstaltung Virtueller Raum">
-				<span class="fw-bold">Medizinische Physik</span>
-				<br>
-				<i class="bi bi-clock-fill me-1"></i>14:15-15:45
-				<br>
-				<span><i
-						class="bi bi-geo-alt-fill me-1"></i>XOnline</span>
-				<br>
-				<span><i
-						class="bi bi-person-square me-1"></i> A.M.</span>
-			</div>
-			<div class="kalenderitem kalenderitem-vorlesung ki-colspan-4 ki-day-friday ki-hour-800 ki-duration-255">
-				<span class="fw-bold">Mathematik-Analysis</span>
-				<br>
-				<i class="bi bi-clock-fill me-1"></i>8:00-12:15
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="A268 Hörsaal">
-					<i class="bi bi-geo-alt-fill me-1"></i>A268
-				</span>
-				<br>
-				<span data-bs-toggle="tooltip" data-bs-placement="left" title="Gröll, Lutz (lg@test.example.com)"><i
-						class="bi bi-person-square me-1"></i> L.G.</span>
-			</div> -->
 				</div>
 			</div>
 		</article>
 
 		<article id="button-row" class="mb-3">
-			<button type="button" class="btn btn-primary me-2 mb-1" data-bs-toggle="modal"
+			<button type="button" class="btn btn-primary me-1 mb-1" data-bs-toggle="modal"
 				data-bs-target="#selectGroupModal">
 				<i class="bi bi-funnel-fill me-1"></i>
 				Gruppen auswählen
 			</button>
-			<buttont type="button" class="btn btn-success mb-1" data-bs-toggle="modal" data-bs-target="#newEvent"
+			<button type="button" class="btn btn-success me-1 mb-1" data-bs-toggle="modal" data-bs-target="#newEvent"
 				onclick="newEvent()">
 				<i class="bi bi-plus-circle me-1"></i>
 				Neuer Termin
-				</button>
+			</button>
+			<button type="button" class="btn btn-dark me-1 mb-1" data-bs-toggle="modal"
+				data-bs-target="#adminUserManagement">
+				<i class="bi bi-wrench"></i>
+				Benutzerverwaltung
+			</button>
+			<button type="button" class="btn btn-dark mb-1" data-bs-toggle="modal" data-bs-target="#adminManageGroups"
+				id="adminManageGroupsButton">
+				<i class="bi bi-wrench"></i>
+				Neue Gruppe
+			</button>
 		</article>
 
 		<article id="timelines">
@@ -741,6 +668,56 @@
 		</div>
 	</div>
 
+	<!-- Modal: adminUserManagement TODO -->
+	<div class="modal fade" id="adminUserManagement" tabindex="-1" aria-labelledby="adminUserManagementLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="adminUserManagementLabel">Benutzerverwaltung</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+				</div>
+				<div class="modal-body">
+					Noch nicht implementiert
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+					<button type="submit" class="btn btn-primary">Ändern</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal: adminManageGroups -->
+	<div class="modal fade" id="adminManageGroups" tabindex="-1" aria-labelledby="adminManageGroupsLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form id="adminManageGroupsForm">
+					<div class="modal-header">
+						<h5 class="modal-title" id="adminManageGroupsLabel">Gruppenverwaltung</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+					</div>
+					<div class="modal-body">
+						<div class="row row-cols-sm-2">
+							<div class="mb-2">
+								<label for="adminManageGroupsName" class="form-label">Name</label>
+								<input type="text" class="form-control" id="adminManageGroupsName" required="required">
+								<!-- TODO: HTML-Tags korrekt schließen -->
+							</div>
+							<div class="mb-2">
+								<label for="adminManageGroupsRaplaUrl" class="form-label">Rapla-URL (optional)</label>
+								<input type="url" class="form-control" id="adminManageGroupsRaplaUrl">
+							</div>
+						</div>
+						<button type="submit" class="btn btn-success mb-4">Gruppe hinzufügen</button>
+						<h6>Liste bisheriger Gruppen:</h6>
+						<ul id="adminManageGroupsGroupsList" class="list-group list-group-flush"></ul>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 
 </body>
 
