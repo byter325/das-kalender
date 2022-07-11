@@ -2,7 +2,7 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xsl:output method="html" />
 	<xsl:template match="/">
-		<article id="timelines" style="display: block;">
+		<article id="timelines">
 			<xsl:call-template name="printweekday">
 				<xsl:with-param name="weekdayE" select="'monday'" />
 				<xsl:with-param name="weekdayD" select="'Montag'" />
