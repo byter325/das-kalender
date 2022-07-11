@@ -1,10 +1,10 @@
 import * as path from "path";
-import {Request, Response} from "express";
-import {json2xml, xml2json} from "xml-js";
+import { Request, Response } from "express";
+import { json2xml, xml2json } from "xml-js";
 import * as ical from "node-ical";
 import * as fs from "fs";
 import * as tmp from "tmp";
-import {Utils} from "./utils";
+import { Utils } from "./utils";
 import * as https from "https";
 
 export module Handlers {
@@ -29,6 +29,7 @@ export module Handlers {
      */
     export function getRaplaEvents(req: Request, res: Response) {
         const course: string = req.params.course;
+        const timeline: string | undefined = req.query.timeline?.toString();
         console.log(req.path);
         const fileName = `${dataDir}/${course}-kalender.xml`;
         if (!fs.existsSync(fileName)) {
@@ -42,7 +43,7 @@ export module Handlers {
                 to = req.query.to.toString();
             }
             fs.readFile(fileName, "utf-8", (err, eventData) => {
-                let jsdata = JSON.parse(xml2json(eventData, {compact: true}));
+                let jsdata = JSON.parse(xml2json(eventData, { compact: true }));
                 let eventResults = new Array();
                 let elements: any[] = jsdata.events.event;
                 elements.forEach(element => {
@@ -61,7 +62,8 @@ export module Handlers {
                 const tmpobj = tmp.fileSync();
                 fs.writeFile(tmpobj.fd, eventsToXml(eventResults), () => {
                     res.contentType('text/html');
-                    res.send(xmlEventsToHtmlGridView(tmpobj.name));
+                    if (timeline) res.send(xmlEventsToHtmlTimelineView(tmpobj.name));
+                    else res.send(xmlEventsToHtmlGridView(tmpobj.name));
                 });
 
             });
@@ -211,7 +213,7 @@ export module Handlers {
      * @returns {string} xmlString
      */
     export function eventsToXml(jsObj: Object): string {
-        return json2xml(JSON.stringify({"events": {"event": jsObj}}), {compact: true})
+        return json2xml(JSON.stringify({ "events": { "event": jsObj } }), { compact: true })
     }
 
     /**
@@ -229,11 +231,20 @@ export module Handlers {
     }
 
     /**
-     * transforms xml event data to html
+     * transforms xml event data to html grid view
      * @param {string} xmlFile
      * @returns {string} htmlString
      */
     export function xmlEventsToHtmlGridView(xmlFile: string) {
-        return xslTransform(xmlFile, "b2f-events.sef.json")
+        return xslTransform(xmlFile, "b2f-events2grid.sef.json")
+    }
+
+    /**
+     * transforms xml event data to html timeline view
+     * @param {string} xmlFile
+     * @returns {string} htmlString
+     */
+    export function xmlEventsToHtmlTimelineView(xmlFile: string) {
+        return xslTransform(xmlFile, "b2f-events2timeline.sef.json")
     }
 }
