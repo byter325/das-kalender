@@ -3,15 +3,8 @@ import {Utils} from '../lib/utils';
 import {XMLManager} from '../lib/xml_manager';
 import {AuthManager} from "../lib/authManager";
 import {XMLBuilder} from "fast-xml-parser";
-import {Token} from "../lib/classes/token";
 
 const usersRouter = express.Router();
-
-usersRouter.use((req, res, next) => {
-    const authToken = req.cookies['AuthToken'] || req.headers["AuthToken"]
-    req.user = AuthManager.getUserFromToken(authToken);
-    next();
-})
 
 usersRouter.get('/:uid', (request: express.Request, response: express.Response) => {
     if (request.user.uid == request.params.uid || request.user.isAdministrator) {
@@ -23,8 +16,9 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
         if (value != undefined) {
             value.passwordHash = ""
             const xmlDataStr = builder.build(value)
+            response.status(200)
             response.send(xmlDataStr)
-            response.sendStatus(200)
+            // response.sendStatus(200)
         } else return response.sendStatus(404)
     } else return response.sendStatus(401)
 });

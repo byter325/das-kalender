@@ -3,6 +3,7 @@ import { AuthManager } from "./lib/authManager"
 import usersRouter from "./routers/user_router"
 import groupsRouter from "./routers/group_router"
 import calendarRouter from "./routers/calendar_router"
+import tokenRouter from "./routers/token_router"
 import { Server } from 'http'
 import { Handlers } from './lib/handlers'
 import * as cron from "node-cron"
@@ -43,6 +44,8 @@ const options = {
 };
 
 const server: Server = https.createServer(options, app).listen(port, () => {
+    AuthManager.loadUsers()
+    AuthManager.loadTokens()
     console.log(`Success! Your application is running on port ${port}.`)
     console.log(`You can open Swagger-UI here:  http://localhost:${port}/docs`)
     console.log(server.address())
@@ -54,9 +57,17 @@ app.use(bodyParser.urlencoded())
 app.use(xmlparser())
 
 const routes = express.Router()
+routes.use((req, res, next) => {
+    const authToken = req.cookies['AuthToken'] || req.headers["AuthToken"]
+    req.user = AuthManager.getUserFromToken(authToken)
+    if (req.user != null) console.log("Successfully authenticated user: " + req.user.uid)
+    // if (req.user == null) res.sendStatus(401)
+    next()
+})
 routes.use('/api/users', usersRouter)
 routes.use('/api/groups', groupsRouter)
 routes.use('/api/calendar', calendarRouter)
+routes.use('/api/token', tokenRouter)
 app.use(routes)
 
 app.use(express.static(path.join(__dirname, "app")))
@@ -71,8 +82,8 @@ app.post("/login", (req: express.Request, res: express.Response) => {
     const pass = req.body.loginPassword
     const userObject = AuthManager.login(user, pass)
     if (userObject != null) {
-        res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid))
-        res.cookie('UID', userObject.uid)
+        res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid), {sameSite: 'strict', expires: new Date(Date.now() + 12 * 60 * 60 * 1000), secure: true})
+        res.cookie('UID', userObject.uid, {sameSite: 'strict', expires: new Date(Date.now() + 12 * 60 * 60 * 1000), secure: true})
         res.redirect("/")
         // res.sendFile(path.join(__dirname, "app", "index.html"))
     } else {

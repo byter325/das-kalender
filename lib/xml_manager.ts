@@ -39,8 +39,11 @@ export module XMLManager {
                 attributesGroupName: "group"
             })
             const path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml"
+            console.log("Reading file of user " + uid + " from " + path)
+            if (!fs.existsSync(path)) throw new Error("File for user '" + uid + "' does not exist")
             const data = fs.readFileSync(path, "utf-8")
             const person = parser.parse(data)["person"]
+            console.log("parsed person: " + person)
             return new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
                 person.group, person.editableGroup, person.darkMode, person.isAdministrator)
         } catch (e) {
@@ -128,6 +131,8 @@ export module XMLManager {
 
             let xmlDataStr: string = builder.build(json);
             createFoldersIfNotExist();
+
+            console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml")
 
             const usersPath = PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(user.uid) + ".xml"
@@ -293,8 +298,8 @@ export module XMLManager {
      */
     function getAllEventsJSON(uid:string):any{
         const parser = new XMLParser({isArray(tagName, jPath, isLeafNode, isAttribute) {
-            if(tagName == "event") return true
-            return false
+            return tagName == "event";
+
         },})
         var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", { encoding: "utf-8" })
         var events = parser.parse(data)["events"]
@@ -487,20 +492,14 @@ export module XMLManager {
         const parser = new XMLParser()
         try {
             const data = fs.readFileSync(PATH_TOKEN_FILE, {encoding: "utf-8"})
-            return parser.parse(data)["tokens"]
+            return parser.parse(data)["Tokens"]["Token"]
         } catch {
             return []
         }
     }
 
-    export function saveTokens(tokens: any) {
-        const builder = new XMLBuilder({
-            ignoreAttributes: false,
-            attributesGroupName: "token"
-        })
-        const xmlDataStr = builder.build(tokens)
-        console.log(xmlDataStr);
-        writeFileSync(PATH_TOKEN_FILE, xmlDataStr, {flag: "w+"})
+    export function saveTokens(xmlString: string) {
+        writeFileSync(PATH_TOKEN_FILE, xmlString, {flag: "w+", encoding: "utf-8"})
     }
 
     function createFoldersIfNotExist() {
