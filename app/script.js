@@ -446,6 +446,8 @@ async function submitUserSettingsChange() {
 }
 
 async function openAdminManageGroups() {
+    const groupsList = $('#adminManageGroupsGroupsList');
+    groupsList.html('<li class="list-group-item">Gruppen werden geladen...</li>');
     $.get('/api/groups')
         .done(function (data) {
             const parser = new DOMParser();
@@ -459,7 +461,10 @@ async function openAdminManageGroups() {
                     ? `<li class="list-group-item">${name} (${url})</li>`
                     : `<li class="list-group-item">${name}</li>`;
             }
-            $('#adminManageGroupsGroupsList').html(adminManageGroupsGroupsList);
+            groupsList.html(adminManageGroupsGroupsList);
+        })
+        .fail(function() {
+            groupsList.html('<li class="list-group-item">Gruppen konnten nicht geladen werden.</li>')
         });
 }
 
