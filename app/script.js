@@ -49,6 +49,12 @@ function insertCourseEvents(course, from, to) {
         $('#eventGrid').after(data);
         adjustDays();
     });
+    $.ajax({
+        url: `/api/calendar/course/${course}?timeline=true&from=${from}&to=${to}`,
+        xhrFields: { withCredentials: true }
+    }).done(function (data) {
+        $('#timelines').replaceWith(data);
+    });
 }
 
 function insertUserEvents(uid, from, to) {
@@ -63,12 +69,14 @@ function insertUserEvents(uid, from, to) {
 
 function clearEvents() {
     $('.kalenderitem').remove();
+    $('#timelines').html("");
 }
 
 function updateSite() {
     clearEvents();
     let weekRange = getWeekRange(window.calweek, window.calyear);
     $('#calweek').text('KW ' + window.calweek + " (" + weekRange.startDay.toLocaleDateString() + " - " + weekRange.endDay.toLocaleDateString() + ")");
+    // TODO: use user's group
     insertCourseEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
     insertUserEvents(getCookie("UID"), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
     // insertUserEvents($(window.activeUser).find("uid").text(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());

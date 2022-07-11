@@ -7,9 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run compile && node app.js",
     "clean": "./clean.sh",
-    "compile": "tsc -p ./",
+    "compile": "npm run compile-xslt & tsc -p ./",
     "certificate": "mkdir security && openssl req -nodes -new -x509 -keyout security/server.key -out security/server.cert",
-    "compile-xslt": "xslt3 -xsl:transformations/rapla2kalender.xslt -export:transformations/rapla2kalender.sef.json ; xslt3 -xsl:transformations/b2f-events.xslt -export:transformations/b2f-events.sef.json"
+    "compile-xslt": "xslt3 -xsl:transformations/rapla2kalender.xslt -export:transformations/rapla2kalender.sef.json & xslt3 -xsl:transformations/b2f-events2grid.xslt -export:transformations/b2f-events2grid.sef.json & xslt3 -xsl:transformations/b2f-events2timeline.xslt -export:transformations/b2f-events2timeline.sef.json"
   },
   "repository": {
     "type": "git",
