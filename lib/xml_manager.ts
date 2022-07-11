@@ -266,17 +266,21 @@ export module XMLManager {
             let x = {event: filteredEvents};
             let xmlEvents = "<events>";
             xmlEvents += builder.build(x) + "</events>"
-            console.log(xmlEvents);
 
             let path = PATH_DATA_EVENTS + "tmp_" + Utils.GenSHA256Hash(uid) + ".xml";
             writeFileSync(path, xmlEvents)
             let htmlString = ""
-            console.log("PATH:" + path);
-            
-            if(timeline)
+            console.log(timeline);
+            if(timeline){
+                console.log("timeline");
+                
                 htmlString = Handlers.xmlEventsToHtmlTimelineView(path)
-            else 
+            }
+            else {
+                console.log("grid");
+                
                 htmlString = Handlers.xmlEventsToHtmlGridView(path);
+            }
             fs.rmSync(path)
             return htmlString
         } else {
