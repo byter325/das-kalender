@@ -35,7 +35,7 @@ function initTooltips() {
 
 function insertCourseEvents(course, start, end) {
     $.ajax({
-        url: `/api/calendar/${course}?from=${start}&to=${end}&type=HTML`,
+        url: `/api/calendar/${course}?start=${start}&end=${end}&type=HTML`,
         xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#eventGrid').after(data);
@@ -145,7 +145,7 @@ function getWeekRange(w, y) {
 function checkTokenCredentials() {
     console.log("Token is being checked.");
     const token = getCookie('token');
-    const ALWAYS_AUTHENTICATED_DEBUG = true;
+    const ALWAYS_AUTHENTICATED_DEBUG = false;
     if (token.length > 0 || ALWAYS_AUTHENTICATED_DEBUG) {
         $('#loggedin-bar').show();
         $('#kalender').show(500);

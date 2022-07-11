@@ -12,13 +12,9 @@ calendarRouter.use((req, res, next) => {
     next();
 })
 
-calendarRouter.get('/course/:course', (request: express.Request, response: express.Response) => {
-    Handlers.getRaplaEvents(request, response);
-});
-
 //Die Query hierfür könnte folgendermaßen aussehen: localhost:8080/api/calendar/:uid?type=HTML&start=2022-01-01T10:00:00.000Z&end=2022-01-01T14:00:00.000Z
-calendarRouter.get('/:uid', (request:express.Request, response:express.Response) => {
-    
+calendarRouter.get('/:uid', (request: express.Request, response: express.Response) => {
+
     //Removed checks for testability
     // if (!(
     //     request.user.uid == request.params.uid ||
@@ -28,9 +24,9 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
 
     let eventID: string | undefined = request.query.eventID?.toString()
     let uid: string = request.params.uid
-    let type:string | undefined = request.query.type?.toString()
-    let start:string | undefined = request.query.start?.toString()
-    let end:string | undefined = request.query.end?.toString()
+    let type: string | undefined = request.query.type?.toString()
+    let start: string | undefined = request.query.start?.toString()
+    let end: string | undefined = request.query.end?.toString()
     let timeline: string | undefined = request.query.timeline?.toString()
 
     if (type == 'XML') {
@@ -44,8 +40,8 @@ calendarRouter.get('/:uid', (request:express.Request, response:express.Response)
             if (start == undefined || end == undefined)
                 return response.sendStatus(404)
             console.log("got this " + timeline);
-            
-            if(timeline == undefined || timeline == "false")
+
+            if (timeline == undefined || timeline == "false")
                 return response.send(XMLManager.getWeekEventsAsHTML(uid, start, end, false))
             else return response.send(XMLManager.getWeekEventsAsHTML(uid, start, end, true))
         } else {
@@ -83,9 +79,9 @@ calendarRouter.put('/:uid', (request: express.Request, response) => {
     return response.send("This is not available. Please delete the event in question and then insert the changed version.")
 })
 
-calendarRouter.delete('/:uid', (request:express.Request, response:express.Response) => {
-    var eventID:string|undefined = request.query.eventID?.toString()
-    if(eventID != undefined ){
+calendarRouter.delete('/:uid', (request: express.Request, response: express.Response) => {
+    var eventID: string | undefined = request.query.eventID?.toString()
+    if (eventID != undefined) {
         var b = XMLManager.deleteEvent(request.params.uid, eventID)
         if (b) return response.sendStatus(200)
     }
