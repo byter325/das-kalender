@@ -33,16 +33,16 @@ function initTooltips() {
     });
 };
 
-function insertCourseEvents(course, from, to) {
+function insertCourseEvents(course, start, end) {
     $.ajax({
-        url: `/api/calendar/course/${course}?from=${from}&to=${to}`,
+        url: `/api/calendar/${course}?from=${start}&to=${end}&type=HTML`,
         xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#eventGrid').after(data);
         adjustDays();
     });
     $.ajax({
-        url: `/api/calendar/course/${course}?timeline=true&from=${from}&to=${to}`,
+        url: `/api/calendar/${course}?timeline=true&start=${start}&end=${end}&type=HTML`,
         xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#timelines').replaceWith(data);
