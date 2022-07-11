@@ -89,22 +89,18 @@
 						)
 					</span>
 				</p>
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="" data-bs-original-title="{location}">
+				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="{location}">
 					<i class="bi bi-geo-alt-fill me-1"></i>
 					<xsl:value-of select="location" />
 				</span>
 				<br />
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="" data-bs-original-title="jr@test.example.com">
-					<!-- <i class="bi bi-person-square me-1"></i>
-								<xsl:if test="presenters/presenter">
-									<xsl:value-of select="presenters/presenter/lastName" />
-									,
-									<xsl:value-of select="presenters/presenter/firstName" />
-									(
-									<xsl:value-of select="presenters/presenter/mail" />
-									)
-								</xsl:if> -->
-				</span>
+
+				<xsl:if test="presenters/presenter">
+					<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="{presenters/presenter/lastName}">
+						<i class=" bi bi-person-square me-1" />
+						<xsl:value-of select="presenters/presenter/lastName" />
+					</span>
+				</xsl:if>
 			</li>
 		</xsl:if>
 	</xsl:template>

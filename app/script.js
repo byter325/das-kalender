@@ -46,6 +46,7 @@ function insertCourseEvents(course, start, end) {
         xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#timelines').replaceWith(data);
+        $('#timelines').show();
     });
 }
 
@@ -145,14 +146,14 @@ function getWeekRange(w, y) {
 function checkTokenCredentials() {
     console.log("Token is being checked.");
     const token = getCookie('token');
-    const ALWAYS_AUTHENTICATED_DEBUG = false;
+    const ALWAYS_AUTHENTICATED_DEBUG = true;
     if (token.length > 0 || ALWAYS_AUTHENTICATED_DEBUG) {
         $('#loggedin-bar').show();
         $('#kalender').show(500);
         $('#button-row').show(500);
         $('#timelines').show(500);
-
         $('#login-and-registration').hide();
+        return true;
     } else {
         $('#loggedin-bar').hide();
         $('#kalender').hide();
@@ -160,20 +161,21 @@ function checkTokenCredentials() {
         $('#timelines').hide();
 
         $('#login-and-registration').show();
+        return false;
     }
 }
 
 $(() => {
-    checkTokenCredentials();
-
     if (!window.hasOwnProperty("calweek")) {
         window.calweek = getCurrentKw();
     }
     if (!window.hasOwnProperty("calyear")) {
         window.calyear = new Date().getFullYear();
     }
-    updateSite();
 
+    if (checkTokenCredentials()) {
+        updateSite();
+    }
 
     initTooltips();
 

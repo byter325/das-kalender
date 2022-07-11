@@ -74,6 +74,10 @@ table {
     --kalenderitem-hover-bg: #e5c7ca
 } */
 
+#timelines {
+    display: none;
+}
+
 .ki-heading {
     grid-row-start: 1;
 }

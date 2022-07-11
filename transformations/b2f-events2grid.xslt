@@ -13,31 +13,45 @@
 		<xsl:variable name="startHour" select="number(format-dateTime(start,'[H]'))" />
 		<xsl:variable name="startDay" select="format-dateTime(start,'[Fn]')" />
 		<div class="kalenderitem ki-colspan-4 ki-day-{$startDay} ki-hour-{format-number($startHour,'#')}{format-number($startMinute - ($startMinute mod 15),'00')} ki-duration-{$duration - ($duration mod 15)}" data-uid="{uid}" data-day="{$startDay}" data-colspan="4" data-duration="{$duration}" data-starthour="{$startHour}" data-startminute="{$startMinute}">
-			<span class="fw-bold">
+			<span class="fw-bold" data-bs-toggle="tooltip" data-bs-placement="left">
+				<xsl:attribute name="title">
+					<xsl:value-of select="description" />
+				</xsl:attribute>
 				<xsl:value-of select="title" />
 			</span>
 			<br />
-			<!-- <xsl:value-of select="description" />
-						<br /> -->
 			<xsl:value-of select="category" />
 			<br />
-			<i class="bi bi-clock-fill me-1" />
-			<xsl:value-of select="format-dateTime(start,'[D].[M].[Y]')" />
-			,
-			<xsl:value-of select="format-dateTime(start,'[H]:[m]')" />
-			-
-			<xsl:value-of select="format-dateTime(end,'[H]:[m]')" />
+			<span data-bs-toggle="tooltip" data-bs-placement="left">
+				<xsl:attribute name="title">
+					<xsl:value-of select="format-dateTime(start,'[D].[M].[Y], [H]:[m]')" />
+				</xsl:attribute>
+				<i class="bi bi-clock-fill me-1" />
+				<xsl:value-of select="format-dateTime(start,'[D].[M].[Y]')" />
+				,
+				<xsl:value-of select="format-dateTime(start,'[H]:[m]')" />
+				-
+				<xsl:value-of select="format-dateTime(end,'[H]:[m]')" />
+			</span>
 			<br />
-			<i class="bi bi-geo-alt-fill me-1" />
-			<xsl:value-of select="location" />
+
+			<span data-bs-toggle="tooltip" data-bs-placement="left">
+				<xsl:attribute name="title">
+					<xsl:value-of select="location" />
+				</xsl:attribute>
+				<i class="bi bi-geo-alt-fill me-1" />
+				<xsl:value-of select="location" />
+			</span>
 			<br />
-			<!-- <i class="bi bi-person-square me-1" /> -->
-			<!-- <xsl:if test="presenters/presenter">
-							<xsl:value-of select="presenters/presenter/lastName" />
-,							<xsl:value-of select="presenters/presenter/firstName" />
- (							<xsl:value-of select="presenters/presenter/mail" />
-)
-						</xsl:if> -->
+			<xsl:if test="presenters/presenter">
+				<span data-bs-toggle="tooltip" data-bs-placement="left">
+					<xsl:attribute name="title">
+						<xsl:value-of select="presenters/presenter/lastName" />
+					</xsl:attribute>
+					<i class=" bi bi-person-square me-1" />
+					<xsl:value-of select="presenters/presenter/lastName" />
+				</span>
+			</xsl:if>
 		</div>
 	</xsl:template>
 </xsl:stylesheet>
