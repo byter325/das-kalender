@@ -158,10 +158,18 @@ function checkTokenCredentials() {
     if (token.length > 0) {
         $('#loggedin-bar').show();
         $('#kalender').show(500);
-        $('#button-row').show(500);
+        $('#button-row').show();
         $('#timelines').show(500);
 
         $('#login-and-registration').hide();
+
+        const ADMIN_DEBUG = true;
+        const isAdmin = true;
+        if (isAdmin) {
+            $('#admin-tools').show();
+        } else {
+            $('#admin-tools').hide();
+        }
     } else {
         $('#loggedin-bar').hide();
         $('#kalender').hide();
@@ -169,6 +177,8 @@ function checkTokenCredentials() {
         $('#timelines').hide();
 
         $('#login-and-registration').show(500);
+
+        $('#admin-tools').hide();
     }
 }
 
@@ -246,7 +256,12 @@ $(() => {
     $('#adminManageGroupsForm').submit(function () {
         submitAdminManageGroups();
         return false;
-    })
+    });
+    $('#adminManageUsersButton').click(openAdminManageUsers);
+    $('#adminManageUsersForm').submit(function () {
+        submitAdminManageUsers();
+        return false;
+    });
 });
 
 /* UI events */
@@ -410,7 +425,6 @@ async function submitRegistration() {
     const password = registrationForm["registrationPassword"].value;
     const firstName = registrationForm["registrationFirstName"].value;
     const lastName = registrationForm["registrationLastName"].value;
-    console.log("user settings changed to", email, firstName, lastName);
     $.ajax({
         type: 'POST',
         url: '/register',
@@ -475,7 +489,21 @@ async function submitAdminManageGroups() {
     const url = adminManageGroupsForm["adminManageGroupsRaplaUrl"].value;
     console.log(name, url);
     $.post('/api/groups', { uid, name, url })
+        .done(() => adminManageGroupsForm.reset())
         .always(openAdminManageGroups);
+}
+
+async function openAdminManageUsers() {
+    $.get('/api/users')
+        .done(function(data) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'application/xml');
+            console.log(data);
+        });
+}
+
+async function submitAdminManageUsers() {
+    // TODO
 }
 
 function setDarkMode(isDarkModeEnabled) {

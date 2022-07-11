@@ -226,16 +226,18 @@
 				<i class="bi bi-plus-circle me-1"></i>
 				Neuer Termin
 			</button>
-			<button type="button" class="btn btn-dark me-1 mb-1" data-bs-toggle="modal"
-				data-bs-target="#adminUserManagement">
-				<i class="bi bi-wrench"></i>
-				Benutzerverwaltung
-			</button>
-			<button type="button" class="btn btn-dark mb-1" data-bs-toggle="modal" data-bs-target="#adminManageGroups"
-				id="adminManageGroupsButton">
-				<i class="bi bi-wrench"></i>
-				Gruppenverwaltung
-			</button>
+			<div id="admin-tools">
+				<button type="button" class="btn btn-dark me-1 mb-1" data-bs-toggle="modal"
+					data-bs-target="#adminManageUsers" id="adminManageUsersButton">
+					<i class="bi bi-wrench"></i>
+					Benutzerverwaltung
+				</button>
+				<button type="button" class="btn btn-dark mb-1" data-bs-toggle="modal" data-bs-target="#adminManageGroups"
+					id="adminManageGroupsButton">
+					<i class="bi bi-wrench"></i>
+					Gruppenverwaltung
+				</button>
+			</div>
 		</article>
 
 		<article id="timelines">
@@ -668,21 +670,29 @@
 		</div>
 	</div>
 
-	<!-- Modal: adminUserManagement TODO -->
-	<div class="modal fade" id="adminUserManagement" tabindex="-1" aria-labelledby="adminUserManagementLabel"
+	<!-- Modal: adminManageUsers TODO -->
+	<div class="modal fade" id="adminManageUsers" tabindex="-1" aria-labelledby="adminManageUsersLabel"
 		aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="adminUserManagementLabel">Benutzerverwaltung</h5>
+					<h5 class="modal-title" id="adminManageUsersLabel">Benutzerverwaltung</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
 				</div>
 				<div class="modal-body">
-					Noch nicht implementiert
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-					<button type="submit" class="btn btn-primary">Ändern</button>
+					<table class="table">
+						<thead>
+							<th>
+								<td>Name</td>
+								<td>Email</td>
+								<td>Gruppen</td>
+								<td>Admin</td>
+								<td></td>
+							</th>
+						</thead>
+						<tbody id="adminManageUsersTableBody">
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
