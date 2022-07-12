@@ -370,46 +370,34 @@ async function submitLogin() {
 }
 
 function doLogin(uid, password) {
-    $.ajax({
-        type: 'POST',
-        url: '/login',
-        data: {
-            loginMail: uid,
-            loginPassword: password
-        },
-        xhrFields: {
-            withCredentials: true
-        },
-        statusCode: {
-            200: () => {
-                $('#loginMessage').removeClass("alert-danger").addClass("alert-success").text("Login erfolgreich!").show();
-                setTimeout(() => {
-                    checkTokenCredentials();
-                    $('#loginMessage').hide();
-                    document.forms['loginForm'].reset();
-                    document.forms['registrationForm'].reset();
-                }, 1000);
+    $.post('/login', {
+        loginMail: uid,
+        loginPassword: password
+    })
+        .done(function () {
+            $('#loginMessage').removeClass("alert-danger").addClass("alert-success").text("Login erfolgreich!").show();
+            setTimeout(() => {
+                checkTokenCredentials();
+                $('#loginMessage').hide();
+                document.forms['loginForm'].reset();
+                document.forms['registrationForm'].reset();
+            }, 1000);
 
-                $.ajax({
-                    type: 'GET',
-                    url: '/api/getActiveUser', // TODO: change, getActiveUser does not exist
-                    xhrFields: {
-                        withCredentials: true
-                    }
-                }).done(function (data) {
-                    var domParser = new DOMParser();
-                    window.activeUser = domParser.parseFromString(data, "text/xml");
-                    $('#statusInfo').removeClass("d-none").addClass("d-inline-block").html("Hallo, " + $(window.activeUser).find("firstName").text()).show();
-                });
-            },
-            401: () => {
-                $('#loginMessage').removeClass("alert-success d-none").addClass("alert-danger").html("Login fehlgeschlagen!");
-            },
-            500: () => {
-                $('#loginMessage').removeClass("alert-success d-none").addClass("alert-danger").html("Login fehlgeschlagen!");
-            }
-        }
-    });
+            $.ajax({
+                type: 'GET',
+                url: '/api/getActiveUser', // TODO: change, getActiveUser does not exist
+                xhrFields: {
+                    withCredentials: true
+                }
+            }).done(function (data) {
+                var domParser = new DOMParser();
+                window.activeUser = domParser.parseFromString(data, "text/xml");
+                $('#statusInfo').text("Hallo, " + $(window.activeUser).find("firstName").text()).show();
+            });
+        })
+        .fail(function () {
+            $('#loginMessage').removeClass("alert-success").addClass("alert-danger").text("Login fehlgeschlagen!").show();
+        });
 }
 
 function doLogout() {
@@ -477,7 +465,7 @@ async function openAdminManageGroups() {
             }
             groupsList.html(adminManageGroupsGroupsList);
         })
-        .fail(function() {
+        .fail(function () {
             groupsList.html('<li class="list-group-item">Gruppen konnten nicht geladen werden.</li>')
         });
 }
@@ -495,10 +483,48 @@ async function submitAdminManageGroups() {
 
 async function openAdminManageUsers() {
     $.get('/api/users')
-        .done(function(data) {
+        .done(function (data) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(data, 'application/xml');
             console.log(data);
+            console.log(doc);
+            const users = doc.getElementsByTagName('user');
+            var tableContent = '';
+            for (let i = 0; i < users.length; i++) {
+                const uid = users[i].getElementsByTagName('uid')[0].textContent;
+                const firstName = users[i].getElementsByTagName('firstName')[0].textContent;
+                const lastName = users[i].getElementsByTagName('lastName')[0].textContent;
+                const initials = users[i].getElementsByTagName('initials')[0].textContent;
+                const mail = users[i].getElementsByTagName('mail')[0].textContent;
+                const passwordHash = users[i].getElementsByTagName('passwordHash')[0].textContent;
+                const isAdministrator = users[i].getElementsByTagName('isAdministrator')[0].textContent;
+                // console.log(firstName, lastName, initials, mail, isAdministrator);
+                const tableRow = `<tr>
+                    <td>${lastName}, ${firstName} (${initials})</td>
+                    <td>${mail}</td>
+                    <td>Gruppe TBD</td>
+                    <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
+                    data-uid="${uid}" data-first-name="${firstName}" data-last-name="${lastName}" data-mail="${mail}"
+                    data-password-hash="${passwordHash}"\></td>
+                    </tr>`;
+                tableContent += tableRow;
+            }
+            $('#adminManageUsersTableBody').html(tableContent);
+
+            $('.checkbox-admin').change(function () {
+                const uid = this.getAttribute('data-uid');
+                const firstName = this.getAttribute('data-first-name');
+                const lastName = this.getAttribute('data-last-name');
+                const mail = this.getAttribute('data-mail');
+                const passwordHash = this.getAttribute('data-password-hash');
+                const isAdministrator = this.checked ? 'true' : 'false';
+                $.ajax({
+                    url: `/api/users/${uid}`,
+                    method: 'PUT',
+                    data: { uid, firstName, lastName, mail, passwordHash, isAdministrator }
+                })
+                    .done(openAdminManageUsers);
+            });
         });
 }
 
