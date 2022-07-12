@@ -40,10 +40,10 @@ usersRouter.post("/", (request: express.Request, response) => {
     if (request.user.isAdministrator) {
         let correctness: number = Utils.isBodyForUserCorrect(body, true)
         if (correctness == Utils.BODY_PARTIALLY_CORRECT) {
-            let b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false)
+            let b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false, true)
             if (b) return response.sendStatus(200)
         } else if (correctness == Utils.BODY_FULLY_CORRECT) {
-            let b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false)
+            let b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false, true)
             if (b) return response.sendStatus(200)
         }
         return response.sendStatus(400)
@@ -66,27 +66,13 @@ usersRouter.delete("/:uid", (request: express.Request, response) => {
 usersRouter.put("/:uid", (request: express.Request, response: express.Response) => {
     let originalUser = AuthManager.users.get(request.params.uid)
     if (originalUser != undefined) {
-        if (request.user.uid == request.params.uid || request.user.isAdministrator) {
-
-            //Removed checks for testability
-            // if (!request.user.isAdministrator) {
-            //     request.body.group = originalUser.group
-            //     request.body.editableGroup = originalUser.editableGroup
-            //     request.body.isAdministrator = originalUser.isAdministrator
-            // }
-            // DAS IST SOWIESO EIN FEHLERHAFTES IF STATEMENT
-
-            let correctness: number = Utils.isBodyForUserCorrect(request.body, true)
-            if (correctness == Utils.BODY_PARTIALLY_CORRECT) {
-                let b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(request.body), true)
-                if (b) return response.sendStatus(200)
-            } else if (correctness == Utils.BODY_FULLY_CORRECT) {
-                let b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(request.body), true)
-                if (b) return response.sendStatus(200)
-            }
-            return response.sendStatus(400)
-        } else return response.sendStatus(401)
-    } else return response.sendStatus(404)
+        if (request.user.isAdministrator) {
+            return response.sendStatus(XMLManager.updateUserAsAdmin(request.params.uid, request.body))
+        } else if (request.user.uid == request.params.uid)
+            return response.sendStatus(XMLManager.updateUser(request.params.uid, request.body))
+        return response.sendStatus(401)
+    }
+    return response.send(404)
 })
 
 export default usersRouter;

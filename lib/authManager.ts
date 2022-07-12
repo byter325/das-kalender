@@ -19,7 +19,7 @@ export module AuthManager {
             let uid = "" + getNextUID()
             let user = new User(uid, "Administrator", "Benutzer", "AB", "test@test.example", GenSHA256Hash("changeMe"), [], [], false, true)
             users.set(uid, user)
-            insertUser(user, false)
+            insertUser(user, false, true)
             console.log("No users available. Created admin user with eMail: 'test@test.example' and password: 'changeMe'")
         }
     }
@@ -68,7 +68,7 @@ export module AuthManager {
     export function register(mail: string, password: string, firstName: string, lastName: string) {
         let user = new User("U" + users.size + 1, firstName, lastName, firstName.substring(0, 1), mail, Utils.GenSHA256Hash(password), [], [], false, false)
         users.set(user.uid, user)
-        XMLManager.insertUser(user, false)
+        XMLManager.insertUser(user, false, true)
         return user
     }
 
