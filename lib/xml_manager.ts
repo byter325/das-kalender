@@ -495,6 +495,7 @@ export module XMLManager {
         let users : User[] = getAllUsers()
         let friendlyArray : any[] = []
         users.forEach(user => {
+            user.passwordHash = ""
             friendlyArray.push(user)
         });
         console.log(friendlyArray);
