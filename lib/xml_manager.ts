@@ -487,6 +487,18 @@ export module XMLManager {
         return result
     }
 
+    export function getAllUsersAsXML():string{
+        let builder = new XMLBuilder({})
+        let users : User[] = getAllUsers()
+        let friendlyArray : any[] = []
+        users.forEach(user => {
+            friendlyArray.push(user)
+        });
+        console.log(friendlyArray);
+        let xmlString: string = builder.build({ user: friendlyArray })
+        return "<users>" + xmlString + "</users>"
+    }
+
     export function getTokens() {
         const parser = new XMLParser()
         try {
