@@ -55,7 +55,7 @@ calendarRouter.get('/:uid', (request: express.Request, response: express.Respons
 })
 
 calendarRouter.put('/:uid', (request: express.Request, response) => {
-    response.status(404)
+    response.status(405)
     return response.send("This is not available yet. Please delete the event in question and then post the changed version.")
 })
 
