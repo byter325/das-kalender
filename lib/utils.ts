@@ -1,44 +1,25 @@
 import * as crypto from "crypto-js";
 import {User} from "./classes/user";
 import {CalendarEvent} from "./classes/userEvent";
-import {randomBytes} from "crypto";
-import join from 'path';
 import fs from 'fs';
 import path from "path";
-import { Console } from "console";
 
 export module Utils {
     export const BODY_PARTIALLY_CORRECT = 0;
     export const BODY_FULLY_CORRECT = 1;
     export const BODY_INCORRECT = -1;
-    
+
     let currUID = 0;
     let idFetched = false;
-    const idDataPath = path.join(__dirname, ".." , "data", "utils");
+    const idDataPath = path.join(__dirname, "..", "data", "utils");
     const idDataFile = path.join(idDataPath, "id.json");
 
     export function GenSHA256Hash(message: string): string {
         return crypto.SHA256(message).toString();
     }
 
-    export function GenSHA512Hash(message: string): string {
-        return crypto.SHA512(message).toString();
-    }
-
-    export function Hex2Word(message: string): crypto.lib.WordArray {
-        return crypto.enc.Base64.parse(message);
-    }
-
-    export function Word2Hex(words: crypto.lib.WordArray): string {
-        return crypto.enc.Utf8.stringify(words);
-    }
-
     export function isBodyForGroupCorrect(body: any): boolean {
         return body.name != undefined && body.uid != undefined && body.url != undefined;
-    }
-
-    export function generateAuthToken(): String {
-        return randomBytes(64).toString("hex")
     }
 
     /**
@@ -47,7 +28,7 @@ export module Utils {
      * @export
      * @param {*} body The body received by a POST or PUT request
      * @param {boolean} allowPartialCorrectness Whether or not all fields have to be correct
-     * @return {*}  {number} 0: For partiall correctness, 1: for full correctness, -1: for bad format
+     * @return {*}  {number} 0: For partial correctness, 1: for full correctness, -1: for bad format
      */
     export function isBodyForEventCorrect(body: any, allowPartialCorrectness: boolean): number {
 
@@ -72,7 +53,7 @@ export module Utils {
     }
 
     export function convertFullPostBodyToEvent(body: any): CalendarEvent {
-        var o = new CalendarEvent(body.uid, body.title, body.description, body.presenter, body.category, body.start, body.end,
+        let o = new CalendarEvent(body.uid, body.title, body.description, body.presenter, body.category, body.start, body.end,
             body.location, body.modified, body.modifiedBy)
         console.log(o);
 
@@ -90,7 +71,7 @@ export module Utils {
      * @export
      * @param {*} body The body received by a POST or PUT request
      * @param {boolean} allowPartialCorrectness Whether or not all fields have to be correct
-     * @return {*}  {number} 0: For partiall correctness, 1: for full correctness, -1: for bad format
+     * @return {*}  {number} 0: For partial correctness, 1: for full correctness, -1: for bad format
      */
     export function isBodyForUserCorrect(body: any, allowPartialCorrectness: boolean): number {
 
@@ -126,7 +107,7 @@ export module Utils {
     }
 
     export function getNextUID(): number {
-        if (!idFetched){
+        if (!idFetched) {
             currUID = getLastUID();
             idFetched = true;
         }
@@ -136,35 +117,24 @@ export module Utils {
     }
 
     function createDirectoryIfNotExists(path: string): void {
-        if (!fs.existsSync(path)){
+        if (!fs.existsSync(path)) {
             fs.mkdirSync(path);
         }
     }
 
-    function saveUID(uid: number){
+    function saveUID(uid: number) {
         createDirectoryIfNotExists(idDataPath);
-        
-        let data = {"uid": uid, "last_time": new Date().toISOString() };
+
+        let data = {"uid": uid, "last_time": new Date().toISOString()};
         fs.writeFileSync(idDataFile, JSON.stringify(data));
     }
 
     function getLastUID(): number {
         createDirectoryIfNotExists(idDataPath);
-        if (fs.existsSync(idDataFile)){
+        if (fs.existsSync(idDataFile)) {
             let data = JSON.parse(fs.readFileSync(idDataFile, "utf8"));
             return data.uid;
         }
         return 0;
     }
-
-    /*public uid:string
-    public title:string
-    public description:string
-    public presenter:object
-    public category:string
-    public start:string
-    public end:string
-    public location:string
-    public modified:string
-    public modifiedBy:object */
 }

@@ -156,7 +156,7 @@ export module AuthManager {
      * @param validUntil    The date until the token is valid.
      */
     export function createToken(uid: string, unlimited: boolean, validUntil: string): string {
-        let token = Utils.GenSHA256Hash(uid + new Date())
+        let token = Utils.GenSHA256Hash(uid + new Date() + crypto.randomUUID())
         authTokens.set(Utils.GenSHA256Hash(token), new Token(uid, unlimited, validUntil))
         saveTokens()
         console.log("Created new token " + new Token(uid, unlimited, validUntil) + " for user " + uid)
