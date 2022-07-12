@@ -1,22 +1,35 @@
 import * as express from 'express'
 import {AuthManager} from "../lib/authManager";
-import {XMLBuilder} from "fast-xml-parser";
-import {Token} from "../lib/classes/token";
 
 const tokenRouter = express.Router();
 
-tokenRouter.use((req, res, next) => {
-    const authToken = req.cookies['AuthToken'] || req.headers["AuthToken"]
-    req.user = AuthManager.getUserFromToken(authToken);
-    next();
-})
+// tokenRouter.use((req, res, next) => {
+//     const authToken = req.cookies['AuthToken'] || req.headers["AuthToken"]
+//     req.user = AuthManager.getUserFromToken(authToken)
+//     console.log(req.user)
+//     // if (req.user == null) res.sendStatus(401)
+//     next()
+// })
 
 tokenRouter.post("/", (request: express.Request, response) => {
-    if (request.user.uid == request.body.uid && request.body.uid != undefined && request.body.unlimited != undefined && request.body.validUntil != undefined) {
-        let token = AuthManager.createToken(request.body.uid, request.body.unlimited, request.body.validUntil)
-        if (token != null) {
-            response.send(token)
-            response.sendStatus(201)
+    let body = request.body.token
+    var token
+    const requestType = request.headers['content-type']
+    if (requestType == "application/xml" || requestType == "text/html") {
+        token = {
+            uid: body.uid[0],
+            unlimited: body.unlimited[0],
+            validUntil: body.validuntil[0]
+        }
+    }
+    console.log("Token to be generated: " + token)
+
+    if (token != undefined && token.uid != undefined && (request.user.uid == token.uid || request.user.isAdministrator) && token.unlimited != undefined && token.validUntil != undefined) {
+        let authToken = AuthManager.createToken(token.uid, token.unlimited, token.validUntil)
+        if (authToken != null) {
+            response.status(201)
+            response.send(authToken)
+            // response.sendStatus(201)
         }
     } else if (request.user.uid == request.body.uid) {
         response.sendStatus(401)
@@ -24,23 +37,11 @@ tokenRouter.post("/", (request: express.Request, response) => {
 })
 
 tokenRouter.get("/", (request: express.Request, response) => {
-    if (request.user.uid == request.query.uid) {
+    if (request.user.uid == request.query.uid || request.user.isAdministrator) {
         if (AuthManager.authTokens.size > 0) {
-            const builder = new XMLBuilder({
-                ignoreAttributes: false,
-                attributesGroupName: "token"
-            })
-
-            let values: Token[] = []
-            //get Value from AuthManager.authTokens where value.uid == request.user.uid
-            AuthManager.authTokens.forEach((value) => {
-                if (value.uid == request.user.uid) {
-                    values.push(value)
-                }
-            })
-            const xmlDataStr = builder.build(values)
-            response.send(xmlDataStr)
-            response.sendStatus(200)
+            response.status(200)
+            response.send(AuthManager.getTokensByUid(<string>request.query.uid))
+            // response.sendStatus(200)
         } else {
             response.sendStatus(404)
         }
@@ -50,10 +51,12 @@ tokenRouter.get("/", (request: express.Request, response) => {
 tokenRouter.delete("/", (request: express.Request, response) => {
     let token = <string>request.query.token
     let tokenValue = AuthManager.authTokens.get(token)
-    if (tokenValue != undefined) {
+    if (tokenValue != undefined && (request.user.uid == tokenValue.uid || request.user.isAdministrator)) {
         if (request.user.uid == tokenValue.uid) {
             AuthManager.deleteToken(token)
             response.sendStatus(204)
         } else response.sendStatus(401)
     } else response.sendStatus(400)
 })
+
+export default tokenRouter;
