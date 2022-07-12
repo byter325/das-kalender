@@ -13,6 +13,10 @@ usersRouter.use((req, res, next) => {
     next();
 })
 
+usersRouter.get("/", (request: express.Request, response: express.Response) => {
+    return response.send(XMLManager.getAllUsersAsXML())
+});
+
 usersRouter.get('/:uid', (request: express.Request, response: express.Response) => {
     if (request.user.uid == request.params.uid || request.user.isAdministrator) {
         const builder = new XMLBuilder({
