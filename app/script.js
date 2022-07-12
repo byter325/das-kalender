@@ -394,6 +394,10 @@ function doLogin(uid, password) {
 
 function doLogout() {
     console.log("User logout");
+    $.ajax({
+        url: `/api/token?token=${getCookie('AuthToken')}`,
+        method: 'DELETE'
+    });
     setCookie('AuthToken', '', 0);
     setCookie('UID', '', 0);
     checkTokenCredentials();

@@ -31,9 +31,13 @@
 			<img src="./favicon.svg" width="50rem" height="50rem"> das kalender
 		</h1>
 
-		<div class="mb-3">
+		<div class="mb-3 row row-cols-auto">
 			<div id="statusInfo" class="d-none">
 
+			</div>
+			<div class="form-check form-switch">
+				<input class="form-check-input" type="checkbox" id="switchDarkMode">
+				<label class="form-check-label" for="switchDarkMode">Dark Mode</label>
 			</div>
 			<div class="btn-group" id="loggedin-bar">
 				<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
@@ -43,10 +47,6 @@
 				<button type="button" class="btn btn-outline-primary" id="logout-button">
 					<i class="bi bi-box-arrow-right"></i> Abmelden
 				</button>
-			</div>
-			<div class="form-check form-switch">
-				<input class="form-check-input" type="checkbox" id="switchDarkMode">
-				<label class="form-check-label" for="switchDarkMode">Dark Mode</label>
 			</div>
 		</div>
 	</header>
