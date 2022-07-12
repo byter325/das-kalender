@@ -44,12 +44,17 @@ const options = {
 };
 
 const server: Server = https.createServer(options, app).listen(port, () => {
+    Handlers.updateRaplaEvents("freudenmann", "TINF21B1")
     AuthManager.loadUsers()
     AuthManager.loadTokens()
+
+    console.log()
+    console.log("\x1b[1m\x1b[5m\x1b[33m%s\x1b[0m\x1b[1m", '--------------------------------------------------------------------------------')
     console.log(`Success! Your application is running on port ${port}.`)
     console.log(`You can open Swagger-UI here:  http://localhost:${port}/docs`)
-    console.log(server.address())
-    Handlers.updateRaplaEvents("freudenmann", "TINF21B1")
+    console.log(`You can open the web UI here:  http://localhost:${port}/`)
+    console.log("\x1b[1m\x1b[5m\x1b[33m%s\x1b[0m", '--------------------------------------------------------------------------------')
+    console.log()
 })
 
 app.use(cookieParser())
@@ -57,13 +62,20 @@ app.use(bodyParser.urlencoded())
 app.use(xmlparser())
 
 const routes = express.Router()
+
+/**
+ * @description This checks if the user is logged in.
+ */
 routes.use((req, res, next) => {
     const authToken = req.cookies['AuthToken'] || req.headers["AuthToken"]
     req.user = AuthManager.getUserFromToken(authToken)
     if (req.user != null) console.log("Successfully authenticated user: " + req.user.uid)
-    // if (req.user == null) res.sendStatus(401)
     next()
 })
+
+/**
+ * @description This links the routers of the API to the application.
+ */
 routes.use('/api/users', usersRouter)
 routes.use('/api/groups', groupsRouter)
 routes.use('/api/calendar', calendarRouter)
@@ -71,12 +83,13 @@ routes.use('/api/token', tokenRouter)
 app.use(routes)
 
 app.use(express.static(path.join(__dirname, "app")))
-
 app.get("/", (req: express.Request, res: express.Response) => {
     res.sendFile(path.join(__dirname, "app", "index.html"))
 })
 
-// login handler
+/**
+ * @description This handles the login of the user on the website. If the credentials are correct, the uid and the AuthToken are returned as cookies.
+ */
 app.post("/login", (req: express.Request, res: express.Response) => {
     const user = req.body.loginMail
     const pass = req.body.loginPassword
@@ -93,13 +106,14 @@ app.post("/login", (req: express.Request, res: express.Response) => {
             secure: true
         })
         res.redirect("/")
-        // res.sendFile(path.join(__dirname, "app", "index.html"))
     } else {
         res.sendStatus(400)
     }
 })
 
-// register handler
+/**
+ * @description This handles the registration of the user on the website. The uid and the AuthToken are returned as cookies.
+ */
 app.post("/register", (req: express.Request, res: express.Response) => {
     const mail = req.body.registrationMail
     const pass = req.body.registrationPassword
@@ -110,12 +124,14 @@ app.post("/register", (req: express.Request, res: express.Response) => {
         res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid))
         res.cookie('UID', userObject.uid)
         res.redirect("/")
-        // res.sendFile(path.join(__dirname, "app", "index.html"))
     } else {
         res.sendStatus(400)
     }
 })
 
+/**
+ * @description This handles the Swagger-UI.
+ */
 const swaggerDocument = YAML.load('./openapi.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
