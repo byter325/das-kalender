@@ -11,6 +11,7 @@ import * as https from "https"
 import * as fs from "fs"
 
 const path = require('path')
+const RateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const xmlparser = require('express-xml-bodyparser')
@@ -29,7 +30,6 @@ if (!fs.existsSync(securityPath)) {
 
 let key: Buffer;
 let cert: Buffer;
-
 try {
     key = fs.readFileSync(path.join(securityPath, "server.key"));
     cert = fs.readFileSync(path.join(securityPath, "server.cert"));
@@ -37,7 +37,6 @@ try {
     console.log("There is no certificate. If you want to create a certificate, look at the README under 'Security'. The server will close now...");
     process.exit(-1);
 }
-
 const options = {
     key: key,
     cert: cert
@@ -57,6 +56,11 @@ const server: Server = https.createServer(options, app).listen(port, () => {
     console.log()
 })
 
+const limiter = new RateLimit({
+    windowMs: 1000, // 1 second
+    max: 3 // limit each IP to 3 requests per second
+});
+app.use(limiter);
 app.use(cookieParser())
 app.use(bodyParser.urlencoded())
 app.use(xmlparser())
