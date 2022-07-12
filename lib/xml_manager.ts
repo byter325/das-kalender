@@ -105,9 +105,10 @@ export module XMLManager {
      * @export
      * @param {User} user The user to be added
      * @param {boolean} allowOverride Set to true to allow overriding existing users
+     * @param {boolean} createOrOverrideEvents Whether the events file should be created or not
      * @return {boolean}  Returns if the operation was successful or not
      */
-    export function insertUser(user: User, allowOverride: boolean): boolean {
+    export function insertUser(user: User, allowOverride: boolean, createOrOverrideEvents:boolean): boolean {
         try {
             let json = {
                 person: {
@@ -144,8 +145,10 @@ export module XMLManager {
 
             if (!allowOverride && fs.existsSync(eventsPath))
                 return false;
-            else
-                writeFileSync(eventsPath, "<events></events>", {flag: "w+"})
+            else{
+                if(createOrOverrideEvents)
+                    writeFileSync(eventsPath, "<events></events>", { flag: "w+" })
+            }
 
             return true
         } catch (e) {
@@ -544,7 +547,7 @@ export module XMLManager {
         if(json.darkMode != undefined)
             user.darkMode = json.darkMode
 
-        if (insertUser(user, true)) 
+        if (insertUser(user, true, false)) 
             return 200
 
         return 400
@@ -576,7 +579,7 @@ export module XMLManager {
         if(json.isAdministrator != undefined)
             user.isAdministrator = json.isAdministrator
 
-        if (insertUser(user, true))
+        if (insertUser(user, true, false))
             return 200
 
         return 400      

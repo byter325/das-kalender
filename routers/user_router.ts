@@ -40,10 +40,10 @@ usersRouter.post("/", (request: express.Request, response) => {
     if (request.user.isAdministrator) {
         let correctness: number = Utils.isBodyForUserCorrect(body, true)
         if (correctness == Utils.BODY_PARTIALLY_CORRECT) {
-            let b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false)
+            let b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false, true)
             if (b) return response.sendStatus(200)
         } else if (correctness == Utils.BODY_FULLY_CORRECT) {
-            let b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false)
+            let b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false, true)
             if (b) return response.sendStatus(200)
         }
         return response.sendStatus(400)
@@ -66,12 +66,10 @@ usersRouter.delete("/:uid", (request: express.Request, response) => {
 usersRouter.put("/:uid", (request: express.Request, response: express.Response) => {
     let originalUser = AuthManager.users.get(request.params.uid)
     if (originalUser != undefined) {
-        if (request.user.uid == request.params.uid || request.user.isAdministrator) {
-            let admin: string | undefined = request.query.admin?.toString()
-            if (admin == "true")
-                return response.sendStatus(XMLManager.updateUserAsAdmin(request.params.uid, request.body))
+        if (request.user.isAdministrator) {
+            return response.sendStatus(XMLManager.updateUserAsAdmin(request.params.uid, request.body))
+        } else if (request.user.uid == request.params.uid)
             return response.sendStatus(XMLManager.updateUser(request.params.uid, request.body))
-        }
         return response.sendStatus(401)
     }
     return response.send(404)

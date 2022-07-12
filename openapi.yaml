@@ -284,14 +284,6 @@ paths:
           explode: false
           schema:
             type: string
-        - name: admin
-          in: query
-          description: Whether you're an admin or not
-          required: false
-          style: simple
-          explode: false
-          schema:
-            type: boolean
       requestBody:
         description: Updated XML document of the user
         content:
