@@ -3,15 +3,8 @@ import {Utils} from '../lib/utils';
 import {XMLManager} from '../lib/xml_manager';
 import {AuthManager} from "../lib/authManager";
 import {XMLBuilder} from "fast-xml-parser";
-import {Token} from "../lib/classes/token";
 
 const usersRouter = express.Router();
-
-usersRouter.use((req, res, next) => {
-    const authToken = req.cookies['AuthToken'] || req.headers["AuthToken"]
-    req.user = AuthManager.getUserFromToken(authToken);
-    next();
-})
 
 usersRouter.get("/", (request: express.Request, response: express.Response) => {
     return response.send(XMLManager.getAllUsersAsXML())
@@ -27,8 +20,9 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
         if (value != undefined) {
             value.passwordHash = ""
             const xmlDataStr = builder.build(value)
+            response.status(200)
             response.send(xmlDataStr)
-            response.sendStatus(200)
+            // response.sendStatus(200)
         } else return response.sendStatus(404)
     } else return response.sendStatus(401)
 });
@@ -41,15 +35,15 @@ usersRouter.post("/", (request: express.Request, response) => {
         body = XMLManager.convertXMLResponseJSONToCorrectJSONForUser(body.person)
     }
     console.log(body);
-    
+
     //Removed checks for testability
-    if (true/*request.user.isAdministrator*/) {
+    if (request.user.isAdministrator) {
         let correctness: number = Utils.isBodyForUserCorrect(body, true)
         if (correctness == Utils.BODY_PARTIALLY_CORRECT) {
-            var b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false)
+            let b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false)
             if (b) return response.sendStatus(200)
         } else if (correctness == Utils.BODY_FULLY_CORRECT) {
-            var b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false)
+            let b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false)
             if (b) return response.sendStatus(200)
         }
         return response.sendStatus(400)
@@ -58,18 +52,29 @@ usersRouter.post("/", (request: express.Request, response) => {
 
 usersRouter.delete("/:uid", (request: express.Request, response) => {
     //Removed checks for testability
-    if (true /*request.user.uid == request.params.uid || request.user.isAdministrator*/) {
-        var deleted: boolean = XMLManager.deleteUser(request.params.uid)
-        if (deleted) return response.sendStatus(200)
+    if (request.user.uid == request.params.uid || request.user.isAdministrator) {
+        let deleted: boolean = XMLManager.deleteUser(request.params.uid)
+        if (deleted) {
+            AuthManager.deleteTokensOfUser(request.params.uid)
+            AuthManager.loadUsers()
+            return response.sendStatus(200)
+        }
         return response.sendStatus(404)
     } else return response.sendStatus(401)
 });
 
 usersRouter.put("/:uid", (request: express.Request, response: express.Response) => {
-    let admin :string | undefined = request.query.admin?.toString()
-    if(admin == "true")
-        return response.sendStatus(XMLManager.updateUserAsAdmin(request.params.uid, request.body))
-    return response.sendStatus(XMLManager.updateUser(request.params.uid, request.body))
+    let originalUser = AuthManager.users.get(request.params.uid)
+    if (originalUser != undefined) {
+        if (request.user.uid == request.params.uid || request.user.isAdministrator) {
+            let admin: string | undefined = request.query.admin?.toString()
+            if (admin == "true")
+                return response.sendStatus(XMLManager.updateUserAsAdmin(request.params.uid, request.body))
+            return response.sendStatus(XMLManager.updateUser(request.params.uid, request.body))
+        }
+        return response.sendStatus(401)
+    }
+    return response.send(404)
 })
 
 export default usersRouter;

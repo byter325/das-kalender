@@ -868,6 +868,8 @@ table {
 #kalender,
 #button-row,
 #timelines,
-#login-and-registration {
+#login-and-registration,
+#admin-tools,
+#statusInfo {
     display: none;
 }
