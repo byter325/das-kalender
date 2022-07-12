@@ -37,13 +37,13 @@ usersRouter.post("/", (request: express.Request, response) => {
     console.log(body);
 
     //Removed checks for testability
-    if (true/*request.user.isAdministrator*/) {
+    if (request.user.isAdministrator) {
         let correctness: number = Utils.isBodyForUserCorrect(body, true)
         if (correctness == Utils.BODY_PARTIALLY_CORRECT) {
-            var b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false)
+            let b: boolean = XMLManager.insertUser(Utils.convertPartialPostBodyToUser(body), false)
             if (b) return response.sendStatus(200)
         } else if (correctness == Utils.BODY_FULLY_CORRECT) {
-            var b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false)
+            let b: boolean = XMLManager.insertUser(Utils.convertFullPostBodyToUser(body), false)
             if (b) return response.sendStatus(200)
         }
         return response.sendStatus(400)
@@ -52,9 +52,13 @@ usersRouter.post("/", (request: express.Request, response) => {
 
 usersRouter.delete("/:uid", (request: express.Request, response) => {
     //Removed checks for testability
-    if (true /*request.user.uid == request.params.uid || request.user.isAdministrator*/) {
-        var deleted: boolean = XMLManager.deleteUser(request.params.uid)
-        if (deleted) return response.sendStatus(200)
+    if (request.user.uid == request.params.uid || request.user.isAdministrator) {
+        let deleted: boolean = XMLManager.deleteUser(request.params.uid)
+        if (deleted) {
+            AuthManager.deleteTokensOfUser(request.params.uid)
+            AuthManager.loadUsers()
+            return response.sendStatus(200)
+        }
         return response.sendStatus(404)
     } else return response.sendStatus(401)
 });

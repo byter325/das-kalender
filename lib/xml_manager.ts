@@ -200,22 +200,22 @@ export module XMLManager {
      * @param {CalendarEvent} event The event to be added
      * @return {boolean} Returns if the operation was successful or not
      */
-    export function insertEvent(uid:string, event:CalendarEvent):boolean{
-        try{
+    export function insertEvent(uid: string, event: CalendarEvent): boolean {
+        try {
             var events = getAllEventsJSON(uid)
-            
+
             const builder = new XMLBuilder({
                 ignoreAttributes: false,
                 attributesGroupName: "event",
             })
             console.log(events);
-            
+
             events.event.push(event)
             events = {events: events}
-            
+
             var xmlDataStr: string = builder.build(events)
             console.log(xmlDataStr);
-            
+
             writeFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
@@ -251,7 +251,7 @@ export module XMLManager {
         return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
     }
 
-    export function getWeekEventsAsHTML(uid: string, startdate: string, enddate: string, timeline:boolean) {
+    export function getWeekEventsAsHTML(uid: string, startdate: string, enddate: string, timeline: boolean) {
         //fetch
         let boundaryStartDate = new Date(startdate);
         let boundaryEndDate = new Date(enddate);
@@ -274,16 +274,15 @@ export module XMLManager {
 
             let path = PATH_DATA_EVENTS + "tmp_" + Utils.GenSHA256Hash(uid) + ".xml";
             writeFileSync(path, xmlEvents)
-            let htmlString = ""
+            let htmlString: string
             console.log(timeline);
-            if(timeline){
+            if (timeline) {
                 console.log("timeline");
-                
+
                 htmlString = Handlers.xmlEventsToHtmlTimelineView(path)
-            }
-            else {
+            } else {
                 console.log("grid");
-                
+
                 htmlString = Handlers.xmlEventsToHtmlGridView(path);
             }
             fs.rmSync(path)
@@ -300,15 +299,17 @@ export module XMLManager {
      * @param {string} uid The uid of the user or group
      * @return {*}  {*} Returns null or >= 1 event
      */
-    function getAllEventsJSON(uid:string):any{
-        const parser = new XMLParser({isArray(tagName, jPath, isLeafNode, isAttribute) {
-            return tagName == "event";
+    function getAllEventsJSON(uid: string): any {
+        const parser = new XMLParser({
+            isArray(tagName) {
+                return tagName == "event";
 
-        },})
-        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", { encoding: "utf-8" })
+            },
+        })
+        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
         var events = parser.parse(data)["events"]
-        if(events == undefined || events == "")
-            events = {event:[]}
+        if (events == undefined || events == "")
+            events = {event: []}
         return events
     }
 
@@ -402,7 +403,7 @@ export module XMLManager {
         }
     }
 
-    export function convertXMLResponseJSONToCorrectJSONForEvent(xmlJSON:any){
+    export function convertXMLResponseJSONToCorrectJSONForEvent(xmlJSON: any) {
         return {
             uid: xmlJSON.uid[0],
             presenter: {
@@ -463,7 +464,7 @@ export module XMLManager {
 
     export function convertXMLResponseJSONToCorrectJSONForGroup(xmlJSON: any) {
         return {
-            uid:xmlJSON.uid[0],
+            uid: xmlJSON.uid[0],
             name: xmlJSON.name[0],
             url: xmlJSON.url[0],
         }
@@ -492,15 +493,15 @@ export module XMLManager {
         return result
     }
 
-    export function getAllUsersAsXML():string{
+    export function getAllUsersAsXML(): string {
         let builder = new XMLBuilder({})
-        let users : User[] = getAllUsers()
-        let friendlyArray : any[] = []
+        let users: User[] = getAllUsers()
+        let friendlyArray: any[] = []
         users.forEach(user => {
             friendlyArray.push(user)
         });
         console.log(friendlyArray);
-        let xmlString: string = builder.build({ user: friendlyArray })
+        let xmlString: string = builder.build({user: friendlyArray})
         return "<users>" + xmlString + "</users>"
     }
 

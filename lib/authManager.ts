@@ -15,7 +15,7 @@ export module AuthManager {
         getAllUsers().forEach(user => {
             users.set(user.uid, user)
         })
-        if(users.size == 0) {
+        if (users.size == 0) {
             let uid = "" + getNextUID()
             let user = new User(uid, "Administrator", "Benutzer", "AB", "test@test.example", GenSHA256Hash("changeMe"), [], [], false, true)
             users.set(uid, user)
@@ -30,7 +30,7 @@ export module AuthManager {
 
         //iterate over all elements of the array and add them as Token to the map
         for (var i = 0; i < rawTokens.length; i++) {
-            if (new Date(rawTokens[i].validUntil) > new Date()){
+            if (new Date(rawTokens[i].validUntil) > new Date()) {
                 authTokens.set(
                     rawTokens[i].tokenString,
                     new Token(rawTokens[i].uid, rawTokens[i].unlimited, rawTokens[i].validUntil))
@@ -141,5 +141,16 @@ export module AuthManager {
         authTokens.delete(token)
         saveTokens()
         console.log("Deleted token " + token)
+    }
+
+    // deletes all tokens of a user
+    export function deleteTokensOfUser(uid: string) {
+        authTokens.forEach((value, key) => {
+            if (value.uid == uid) {
+                authTokens.delete(key)
+            }
+        })
+        saveTokens()
+        console.log("Deleted all tokens of user " + uid)
     }
 }

@@ -1,11 +1,11 @@
-import express, { Application } from 'express'
-import { AuthManager } from "./lib/authManager"
+import express, {Application} from 'express'
+import {AuthManager} from "./lib/authManager"
 import usersRouter from "./routers/user_router"
 import groupsRouter from "./routers/group_router"
 import calendarRouter from "./routers/calendar_router"
 import tokenRouter from "./routers/token_router"
-import { Server } from 'http'
-import { Handlers } from './lib/handlers'
+import {Server} from 'http'
+import {Handlers} from './lib/handlers'
 import * as cron from "node-cron"
 import * as https from "https"
 import * as fs from "fs"
@@ -82,8 +82,16 @@ app.post("/login", (req: express.Request, res: express.Response) => {
     const pass = req.body.loginPassword
     const userObject = AuthManager.login(user, pass)
     if (userObject != null) {
-        res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid), {sameSite: 'strict', expires: new Date(Date.now() + 12 * 60 * 60 * 1000), secure: true})
-        res.cookie('UID', userObject.uid, {sameSite: 'strict', expires: new Date(Date.now() + 12 * 60 * 60 * 1000), secure: true})
+        res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid), {
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
+            secure: true
+        })
+        res.cookie('UID', userObject.uid, {
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
+            secure: true
+        })
         res.redirect("/")
         // res.sendFile(path.join(__dirname, "app", "index.html"))
     } else {

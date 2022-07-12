@@ -17,14 +17,6 @@ function getCookie(cname) {
     return "";
 }
 
-// https://www.w3schools.com/js/js_cookies.asp
-function setCookie(cname, cvalue, exdays) {
-    const d = new Date();
-    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    let expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
-
 function getCurrentKw() {
     var date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -44,14 +36,14 @@ function initTooltips() {
 function insertCourseEvents(course, start, end) {
     $.ajax({
         url: `/api/calendar/${course}?start=${start}&end=${end}&type=HTML`,
-        xhrFields: { withCredentials: true }
+        xhrFields: {withCredentials: true}
     }).done(function (data) {
         $('#eventGrid').after(data);
         adjustDays();
     });
     $.ajax({
         url: `/api/calendar/${course}?timeline=true&start=${start}&end=${end}&type=HTML`,
-        xhrFields: { withCredentials: true }
+        xhrFields: {withCredentials: true}
     }).done(function (data) {
         $('#timelines').replaceWith(data);
     });
@@ -60,7 +52,7 @@ function insertCourseEvents(course, start, end) {
 function insertUserEvents(uid, from, to) {
     $.ajax({
         url: `/api/calendar/${uid}?type=HTML&start=${from}&end=${to}`,
-        xhrFields: { withCredentials: true }
+        xhrFields: {withCredentials: true}
     }).done(function (data) {
         $('#eventGrid').after(data);
         adjustDays();
@@ -140,8 +132,7 @@ function getWeekRange(w, y) {
     var ISOweekEnd;
     if (dow <= 4) {
         ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
-    }
-    else {
+    } else {
         ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
     }
     ISOweekEnd = addDays(ISOweekStart, 6);
@@ -476,7 +467,7 @@ async function submitAdminManageGroups() {
     const uid = name;
     const url = adminManageGroupsForm["adminManageGroupsRaplaUrl"].value;
     console.log(name, url);
-    $.post('/api/groups', { uid, name, url })
+    $.post('/api/groups', {uid, name, url})
         .done(() => adminManageGroupsForm.reset())
         .always(openAdminManageGroups);
 }
@@ -521,7 +512,7 @@ async function openAdminManageUsers() {
                 $.ajax({
                     url: `/api/users/${uid}`,
                     method: 'PUT',
-                    data: { uid, firstName, lastName, mail, passwordHash, isAdministrator }
+                    data: {uid, firstName, lastName, mail, passwordHash, isAdministrator}
                 })
                     .done(openAdminManageUsers);
             });
