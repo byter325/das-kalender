@@ -145,7 +145,7 @@ function getWeekRange(w, y) {
 function checkTokenCredentials() {
     console.log("Token is being checked.");
     const token = getCookie('token');
-    const ALWAYS_AUTHENTICATED_DEBUG = false;
+    const ALWAYS_AUTHENTICATED_DEBUG = true;
     if (token.length > 0 || ALWAYS_AUTHENTICATED_DEBUG) {
         $('#loggedin-bar').show();
         $('#kalender').show(500);

@@ -6,6 +6,10 @@ import {XMLBuilder} from "fast-xml-parser";
 
 const usersRouter = express.Router();
 
+usersRouter.get("/", (request: express.Request, response: express.Response) => {
+    return response.send(XMLManager.getAllUsersAsXML())
+});
+
 usersRouter.get('/:uid', (request: express.Request, response: express.Response) => {
     if (request.user.uid == request.params.uid || request.user.isAdministrator) {
         const builder = new XMLBuilder({
@@ -31,7 +35,7 @@ usersRouter.post("/", (request: express.Request, response) => {
         body = XMLManager.convertXMLResponseJSONToCorrectJSONForUser(body.person)
     }
     console.log(body);
-    
+
     //Removed checks for testability
     if (true/*request.user.isAdministrator*/) {
         let correctness: number = Utils.isBodyForUserCorrect(body, true)
@@ -59,7 +63,7 @@ usersRouter.put("/:uid", (request: express.Request, response: express.Response) 
     let originalUser = AuthManager.users.get(request.params.uid)
     if (originalUser != undefined) {
         if (request.user.uid == request.params.uid || request.user.isAdministrator) {
-            
+
             //Removed checks for testability
             // if (!request.user.isAdministrator) {
             //     request.body.group = originalUser.group
