@@ -1,23 +1,15 @@
 import * as path from "path";
-import { Request, Response } from "express";
-import { json2xml, xml2json } from "xml-js";
+import {Request, Response} from "express";
+import {json2xml, xml2json} from "xml-js";
 import * as ical from "node-ical";
 import * as fs from "fs";
 import * as tmp from "tmp";
-import { Utils } from "./utils";
+import {Utils} from "./utils";
 import * as https from "https";
 
 export module Handlers {
-    // const https = require('https');
     const SaxonJs = require("saxon-js");
-
-    // TODO: Change folder structure to /events/
     const dataDir: string = path.resolve(__dirname, '..', 'data');
-    const dataUsers: string = `${dataDir}/users`;
-    const dataUserEvents: string = `${dataDir}/userEvents`;
-    const dataGroups: string = `${dataDir}/groups`;
-    const dataGroupEvents: string = `${dataDir}/groupEvents`;
-
     const xsltDir: string = path.resolve(__dirname, '..', 'transformations');
     const raplaUrl: string = "https://rapla.dhbw-karlsruhe.de/rapla?page=@@page@@&user=@@lecturer@@&file=@@course@@";
 
@@ -43,7 +35,7 @@ export module Handlers {
                 to = req.query.to.toString();
             }
             fs.readFile(fileName, "utf-8", (err, eventData) => {
-                let jsdata = JSON.parse(xml2json(eventData, { compact: true }));
+                let jsdata = JSON.parse(xml2json(eventData, {compact: true}));
                 let eventResults = new Array();
                 let elements: any[] = jsdata.events.event;
                 elements.forEach(element => {
@@ -114,7 +106,7 @@ export module Handlers {
                     }
                 }
                 let xmldata: string = eventsToXml(eventResults);
-                if (checkCache(outfile, xmldata) == false) {
+                if (!checkCache(outfile, xmldata)) {
                     fs.writeFile(outfile, xmldata, () => {
                         /**
                          * transform events to xml
@@ -143,48 +135,6 @@ export module Handlers {
         // fs.writeFileSync(outfile, xmldata)
     }
 
-    // /**
-    //  * Authenticate User based on req.headers.authorization
-    //  * @param req
-    //  * @param res
-    //  * @returns {boolean} True if authentication success, false otherwise
-    //  */
-    // export function authenticate(req: Request, res: Response) {
-    // 	/**
-    // 	 * check if authorization header is sent
-    // 	 * respond "401 www-authenticate" otherwise
-    // 	 */
-    // 	if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
-    // 		res.status(401).setHeader("WWW-Authenticate", "Basic realm=\"Geschuetzter Bereich\", charset=\"UTF-8\"").send();
-    // 	} else {
-    // 		const creds64: string = req.headers.authorization.split(' ')[1];
-    // 		const credentials: string = Utils.Word2Hex(Utils.Hex2Word(creds64));
-    // 		/**
-    // 		 * public user for testing purposes only
-    // 		 */
-    // 		if (credentials == 'public:public') {
-    // 			return true;
-    // 		} else {
-    // 			/**
-    // 			 * get uid and pw from login request
-    // 			 */
-    // 			const uid = credentials.split(':')[0];
-    // 			const pwHash = Utils.GenSHA256Hash(credentials.split(':')[1]);
-    // 			var path = `${dataUsers}/${Utils.GenSHA256Hash(uid)}.xml`
-    // 			if (!fs.existsSync(path)) {
-    // 				return false;
-    // 			} else {
-    // 				var user: null | User = XMLManager.getUserByUid(uid);
-    // 				if (user && pwHash == user.passwordHash) {
-    // 					return true;
-    // 				} else {
-    // 					return false;
-    // 				}
-    // 			}
-    // 		}
-    // 	}
-    // }
-
     /**
      *
      * @param outfile File with the old data
@@ -198,10 +148,7 @@ export module Handlers {
             let oldDataHash = Utils.GenSHA256Hash(oldData);
             let newDataHash = Utils.GenSHA256Hash(newData);
             console.log(`${oldDataHash}==${newDataHash}`);
-            if (oldDataHash == newDataHash) {
-                return true;
-            }
-            return false;
+            return oldDataHash == newDataHash;
         } else {
             return false;
         }
@@ -213,7 +160,7 @@ export module Handlers {
      * @returns {string} xmlString
      */
     export function eventsToXml(jsObj: Object): string {
-        return json2xml(JSON.stringify({ "events": { "event": jsObj } }), { compact: true })
+        return json2xml(JSON.stringify({"events": {"event": jsObj}}), {compact: true})
     }
 
     /**

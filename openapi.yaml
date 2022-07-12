@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: Das Kalender - API
-  description: "This is a instance of 'Das Kalender'. To learn more about this project visit [Github](https://github.com/maxomnia/pm_project_rapla)."
+  title: das kalender - API
+  description: "This is a instance of 'das kalender'. To learn more about this project visit [Github](https://github.com/maxomnia/pm_project_rapla)."
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.1.0
+  version: 1.1.1
 tags:
   - name: Calendar
     description: Access to calendar data
@@ -79,6 +79,14 @@ paths:
           schema:
             type: string
             enum: ["HTML", "XML"]
+        - name: timeline
+          in: query
+          description: Should the result be the timeline. Requires type to be 'HTML' (optional)
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: boolean
         - name: start
           in: query
           description: ISO time string of the start of the output range (optional)
@@ -103,58 +111,14 @@ paths:
           content:
             application/xml:
               schema:
+                xml:
+                  name: Events
+                  wrapped: true
                 type: array
                 items:
                   $ref: '#/components/schemas/Event'
-                x-content-type: application/xml
         "400":
-          description: Invalid UID supplied
-        "404":
-          description: Event not found
-        "405":
-          description: Validation exception
-      security:
-        - auth_token_header: []
-        - auth_token_cookie: []
-    put:
-      tags:
-        - Calendar
-      summary: Update an existing event
-      description: "You must either own this calendar, have the associated group set as editableGroup or be an administrator to perform this action."
-      operationId: updateEvent
-      parameters:
-        - name: uid
-          in: path
-          description: UID of the user or group that owns the calendar
-          required: true
-          style: simple
-          explode: false
-          schema:
-            type: string
-        - name: eventID
-          in: query
-          description: UID of the event that should get updated
-          required: true
-          style: form
-          explode: true
-          schema:
-            type: string
-      requestBody:
-        description: Event that needs to be updated in the calendar
-        content:
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Event'
-        required: true
-      responses:
-        "200":
-          description: Successfully updated event
-        "400":
-          description: Invalid UID supplied
-        "404":
-          description: Event not found
-        "405":
-          description: Validation exception
+          description: Invalid input
       security:
         - auth_token_header: []
         - auth_token_cookie: []
@@ -182,12 +146,10 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        "204":
           description: Successfully deleted event
         "400":
           description: Invalid UID supplied
-        "404":
-          description: Event not found
       security:
         - auth_token_header: []
         - auth_token_cookie: []
@@ -204,7 +166,7 @@ paths:
         content:
           application/xml:
             schema:
-              $ref: '#/components/schemas/Person'
+              $ref: '#/components/schemas/User'
         required: true
       responses:
         "201":
@@ -226,13 +188,12 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/PersonInfo'
-        "400":
-          description: Invalid UID supplied
-        "404":
-          description: User not found
-        "405":
-          description: Validation exception
+                type: array
+                xml:
+                  name: Users
+                  wrapped: true
+                items:
+                  $ref: '#/components/schemas/User'
       security:
         - auth_token_header: []
         - auth_token_cookie: []
@@ -260,12 +221,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Person'
-        "400":
-          description: Invalid UID supplied
         "404":
           description: User not found
-        "405":
-          description: Validation exception
       security:
         - auth_token_header: []
         - auth_token_cookie: []
@@ -292,14 +249,12 @@ paths:
               $ref: '#/components/schemas/Person'
         required: true
       responses:
-        "200":
+        "204":
           description: Successfully updated user
         "400":
           description: Invalid UID supplied
         "404":
           description: User not found
-        "405":
-          description: Validation exception
       security:
         - auth_token_header: []
         - auth_token_cookie: []
@@ -319,10 +274,8 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        "204":
           description: Successfully deleted user
-        "400":
-          description: Invalid UID supplied
         "404":
           description: User not found
       security:
@@ -364,17 +317,31 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Group'
-        "400":
-          description: Invalid UID supplied
         "404":
-          description: Group not found
-        "405":
-          description: Validation exception
+          description: No groups found
       security:
         - auth_token_header: []
         - auth_token_cookie: []
 
   /api/groups/{uid}:
+    get:
+      tags:
+        - Groups
+      summary: Get all group info
+      description: "You must be an administrator to perform this action."
+      operationId: getGroup
+      responses:
+        "200":
+          description: "XML document of the group"
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Group'
+        "404":
+          description: Group not found
+      security:
+        - auth_token_header: [ ]
+        - auth_token_cookie: [ ]
     put:
       tags:
         - Groups
@@ -398,14 +365,10 @@ paths:
               $ref: '#/components/schemas/Group'
         required: true
       responses:
-        "200":
+        "204":
           description: Successfully updated group
         "400":
           description: Invalid UID supplied
-        "404":
-          description: Group not found
-        "405":
-          description: Validation exception
       security:
         - auth_token_header: []
         - auth_token_cookie: []
@@ -425,10 +388,8 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        "204":
           description: Successfully deleted group
-        "400":
-          description: Invalid UID supplied
         "404":
           description: Group not found
       security:
@@ -565,6 +526,8 @@ components:
         - title
         - uid
       type: object
+      xml:
+        name: Event
       properties:
         uid:
           type: string
@@ -599,7 +562,7 @@ components:
           format: date-time
         modifiedBy:
           $ref: '#/components/schemas/PersonInfo'
-    Person:
+    User:
       required:
         - darkMode
         - firstName
@@ -610,6 +573,8 @@ components:
         - passwordHash
         - uid
       type: object
+      xml:
+        name: User
       properties:
         uid:
           type: string
