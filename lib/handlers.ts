@@ -9,7 +9,6 @@ import * as https from "https";
 
 export module Handlers {
     const SaxonJs = require("saxon-js");
-    
     const dataDir: string = path.resolve(__dirname, '..', 'data');
     const xsltDir: string = path.resolve(__dirname, '..', 'transformations');
     const raplaUrl: string = "https://rapla.dhbw-karlsruhe.de/rapla?page=@@page@@&user=@@lecturer@@&file=@@course@@";
@@ -37,7 +36,7 @@ export module Handlers {
             }
             fs.readFile(fileName, "utf-8", (err, eventData) => {
                 let jsdata = JSON.parse(xml2json(eventData, {compact: true}));
-                let eventResults = [];
+                let eventResults = new Array();
                 let elements: any[] = jsdata.events.event;
                 elements.forEach(element => {
                     let add = true;
@@ -100,7 +99,7 @@ export module Handlers {
                  * parse ics
                  */
                 let jsdata = ical.sync.parseICS(caldata);
-                let eventResults = [];
+                let eventResults = new Array();
                 for (const key in jsdata) {
                     if (jsdata[key].type == "VEVENT") {
                         eventResults.push(jsdata[key]);
