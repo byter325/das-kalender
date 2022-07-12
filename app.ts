@@ -98,12 +98,14 @@ app.post("/login", (req: express.Request, res: express.Response) => {
         res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid), {
             sameSite: 'strict',
             expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
-            secure: true
+            secure: true,
+            httpOnly: true
         })
         res.cookie('UID', userObject.uid, {
             sameSite: 'strict',
             expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
-            secure: true
+            secure: true,
+            httpOnly: true
         })
         res.redirect("/")
     } else {
@@ -121,8 +123,18 @@ app.post("/register", (req: express.Request, res: express.Response) => {
     const lastname = req.body.registrationLastName
     const userObject = AuthManager.register(mail, pass, firstname, lastname)
     if (userObject != null) {
-        res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid))
-        res.cookie('UID', userObject.uid)
+        res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid), {
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
+            secure: true,
+            httpOnly: true
+        })
+        res.cookie('UID', userObject.uid, {
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
+            secure: true,
+            httpOnly: true
+        })
         res.redirect("/")
     } else {
         res.sendStatus(400)
