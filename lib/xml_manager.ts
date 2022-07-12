@@ -424,33 +424,36 @@ export module XMLManager {
 
     export function convertXMLResponseJSONToCorrectJSONForUser(xmlJSON: any) {
         let person = {
-            uid: xmlJSON.uid[0],
-            firstName: xmlJSON.firstname[0],
-            lastName: xmlJSON.lastname[0],
-            initials: xmlJSON.initials[0],
-            mail: xmlJSON.mail[0],
-            passwordHash: xmlJSON.passwordhash[0],
-            group: [xmlJSON.group.length],
-            editableGroup: [xmlJSON.group.length],
-            darkMode: xmlJSON.darkmode[0],
-            isAdministrator: xmlJSON.isadministrator[0]
+            uid: xmlJSON.uid != undefined ? xmlJSON.uid[0] : undefined,
+            firstName: xmlJSON.firstname != undefined ? xmlJSON.firstname[0] : undefined,
+            lastName: xmlJSON.lastname != undefined ? xmlJSON.lastname[0] : undefined,
+            initials: xmlJSON.initials != undefined ? xmlJSON.initials[0] : undefined,
+            mail: xmlJSON.mail != undefined ? xmlJSON.mail[0] : undefined,
+            passwordHash: xmlJSON.passwordhash != undefined ? xmlJSON.passwordhash[0] : undefined,
+            group: xmlJSON.group != undefined ? [xmlJSON.group.length] : undefined,
+            editableGroup: xmlJSON.editablegroup != undefined ? [xmlJSON.editablegroup.length] : undefined,
+            darkMode: xmlJSON.darkmode != undefined ? xmlJSON.darkmode[0] : undefined,
+            isAdministrator: xmlJSON.isadministrator != undefined ? xmlJSON.isadministrator[0] : undefined
         }
-        for (let index = 0; index < xmlJSON.group.length; index++) {
-            const element = xmlJSON.group[index];
-            let group: any = {
-                uid: element.uid[0],
-                name: element.name[0]
+        if (person.group != undefined){
+            for (let index = 0; index < xmlJSON.group.length; index++) {
+                const element = xmlJSON.group[index];
+                let group = {
+                    uid: element.uid[0],
+                    name: element.name[0]
+                };
+                person.group.push(group);
             }
-            person.group.push(group)
         }
-
-        for (let index = 0; index < xmlJSON.editablegroup.length; index++) {
-            const element = xmlJSON.editablegroup[index];
-            let group: any = {
-                uid: element.uid[0],
-                name: element.name[0]
+        if (person.editableGroup != undefined) {
+            for (let index = 0; index < xmlJSON.editablegroup.length; index++) {
+                const element = xmlJSON.editablegroup[index];
+                let group = {
+                    uid: element.uid[0],
+                    name: element.name[0]
+                };
+                person.editableGroup.push(group);
             }
-            person.editableGroup.push(group)
         }
 
         return person
@@ -517,6 +520,65 @@ export module XMLManager {
         const xmlDataStr = builder.build(tokens)
         console.log(xmlDataStr);
         writeFileSync(PATH_TOKEN_FILE, xmlDataStr, {flag: "w+"})
+    }
+
+    export function updateUser(uid:string, requestBody:any):number{
+        let json = convertXMLResponseJSONToCorrectJSONForUser(requestBody.user)
+        let user : User | null = getUserByUid(uid)
+
+        if(user == undefined)
+            return 404;
+
+        if(json.isAdministrator != undefined || json.group != undefined || json.editableGroup != undefined || json.passwordHash != undefined)
+            return 401
+
+        if(json.firstName != undefined)
+            user.firstName = json.firstName
+        if(json.lastName != undefined)
+            user.lastName = json.lastName
+        if(json.initials != undefined)
+            user.initials = json.initials
+        if(json.mail != undefined)
+            user.mail = json.mail
+        if(json.darkMode != undefined)
+            user.darkMode = json.darkMode
+
+        if (insertUser(user, true)) 
+            return 200
+
+        return 400
+    }
+    
+    export function updateUserAsAdmin(uid:string, requestBody:any):number{
+        let json = convertXMLResponseJSONToCorrectJSONForUser(requestBody.user)
+        let user : User | null = getUserByUid(uid)
+
+        if(user == undefined || json == undefined)
+            return 404;
+
+        if(json.firstName != undefined)
+            user.firstName = json.firstName
+        if(json.lastName != undefined)
+            user.lastName = json.lastName
+        if(json.initials != undefined)
+            user.initials = json.initials
+        if(json.mail != undefined)
+            user.mail = json.mail
+        if(json.darkMode != undefined)
+            user.darkMode = json.darkMode
+        if (json.group != undefined)
+            user.group = json.group
+        if (json.editableGroup != undefined)
+            user.editableGroup = json.editableGroup
+        if(json.passwordHash != undefined)
+            user.passwordHash = json.passwordHash
+        if(json.isAdministrator != undefined)
+            user.isAdministrator = json.isAdministrator
+
+        if (insertUser(user, true))
+            return 200
+
+        return 400      
     }
 
     function createFoldersIfNotExist() {
