@@ -60,7 +60,7 @@ table {
     font-size: 9pt;
 }
 
-.kalenderitem:hover {
+/* .kalenderitem:hover {
     background-color: var(--kalenderitem-hover-bg);
 }
 
@@ -72,6 +72,10 @@ table {
 .kalenderitem-klausur {
     --kalenderitem-bg: #f8d7da;
     --kalenderitem-hover-bg: #e5c7ca
+} */
+
+#timelines {
+    display: none;
 }
 
 .ki-heading {
