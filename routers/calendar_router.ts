@@ -1,7 +1,7 @@
 import * as express from 'express'
-import {Utils} from '../lib/utils';
-import {XMLManager} from '../lib/xml_manager';
-import {Handlers} from '../lib/handlers';
+import { Utils } from '../lib/utils';
+import { XMLManager } from '../lib/xml_manager';
+import { Handlers } from '../lib/handlers';
 
 const calendarRouter = express.Router();
 

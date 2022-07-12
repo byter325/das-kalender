@@ -46,6 +46,7 @@ function insertCourseEvents(course, start, end) {
         xhrFields: {withCredentials: true}
     }).done(function (data) {
         $('#timelines').replaceWith(data);
+        $('#timelines').show();
     });
 }
 
@@ -151,9 +152,7 @@ function checkTokenCredentials() {
         $('#kalender').show(500);
         $('#button-row').show();
         $('#timelines').show(500);
-
         $('#login-and-registration').hide();
-
         const ADMIN_DEBUG = true;
         const isAdmin = true;
         if (isAdmin) {
@@ -161,29 +160,29 @@ function checkTokenCredentials() {
         } else {
             $('#admin-tools').hide();
         }
+        return true;
     } else {
         $('#loggedin-bar').hide();
         $('#kalender').hide();
         $('#button-row').hide();
         $('#timelines').hide();
-
         $('#login-and-registration').show(500);
-
         $('#admin-tools').hide();
+        return false;
     }
 }
 
 $(() => {
-    checkTokenCredentials();
-
     if (!window.hasOwnProperty("calweek")) {
         window.calweek = getCurrentKw();
     }
     if (!window.hasOwnProperty("calyear")) {
         window.calyear = new Date().getFullYear();
     }
-    updateSite();
 
+    if (checkTokenCredentials()) {
+        updateSite();
+    }
 
     initTooltips();
     handleDarkMode();
