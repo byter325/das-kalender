@@ -108,7 +108,7 @@ export module XMLManager {
      * @param {boolean} createOrOverrideEvents Whether the events file should be created or not
      * @return {boolean}  Returns if the operation was successful or not
      */
-    export function insertUser(user: User, allowOverride: boolean, createOrOverrideEvents:boolean): boolean {
+    export function insertUser(user: User, allowOverride: boolean, createOrOverrideEvents: boolean): boolean {
         try {
             let json = {
                 person: {
@@ -145,9 +145,9 @@ export module XMLManager {
 
             if (!allowOverride && fs.existsSync(eventsPath))
                 return false;
-            else{
-                if(createOrOverrideEvents)
-                    writeFileSync(eventsPath, "<events></events>", { flag: "w+" })
+            else {
+                if (createOrOverrideEvents)
+                    writeFileSync(eventsPath, "<events></events>", {flag: "w+"})
             }
 
             return true
@@ -444,7 +444,7 @@ export module XMLManager {
             darkMode: xmlJSON.darkmode != undefined ? xmlJSON.darkmode[0] : undefined,
             isAdministrator: xmlJSON.isadministrator != undefined ? xmlJSON.isadministrator[0] : undefined
         }
-        if (person.group != undefined){
+        if (person.group != undefined) {
             for (let index = 0; index < xmlJSON.group.length; index++) {
                 const element = xmlJSON.group[index];
                 let group = {
@@ -526,65 +526,42 @@ export module XMLManager {
         writeFileSync(PATH_TOKEN_FILE, xmlString, {flag: "w+", encoding: "utf-8"})
     }
 
-    export function updateUser(uid:string, requestBody:any):number{
+    export function updateUser(uid: string, requestBody: any): number {
         let json = convertXMLResponseJSONToCorrectJSONForUser(requestBody.user)
-        let user : User | null = getUserByUid(uid)
+        let user: User | null = getUserByUid(uid)
 
-        if(user == undefined)
-            return 404;
+        if (user == undefined) return 404;
 
-        if(json.isAdministrator != undefined || json.group != undefined || json.editableGroup != undefined)
-            return 401
+        if (json.isAdministrator != undefined || json.group != undefined || json.editableGroup != undefined) return 401
+        if (json.firstName != undefined) user.firstName = json.firstName
+        if (json.lastName != undefined) user.lastName = json.lastName
+        if (json.initials != undefined) user.initials = json.initials
+        if (json.mail != undefined) user.mail = json.mail
+        if (json.darkMode != undefined) user.darkMode = json.darkMode
+        if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
 
-        if(json.firstName != undefined)
-            user.firstName = json.firstName
-        if(json.lastName != undefined)
-            user.lastName = json.lastName
-        if(json.initials != undefined)
-            user.initials = json.initials
-        if(json.mail != undefined)
-            user.mail = json.mail
-        if(json.darkMode != undefined)
-            user.darkMode = json.darkMode
-        if(json.passwordHash != undefined)
-            user.passwordHash = json.passwordHash
-
-        if (insertUser(user, true, false)) 
-            return 200
-
+        if (insertUser(user, true, false)) return 204
         return 400
     }
-    
-    export function updateUserAsAdmin(uid:string, requestBody:any):number{
+
+    export function updateUserAsAdmin(uid: string, requestBody: any): number {
         let json = convertXMLResponseJSONToCorrectJSONForUser(requestBody.user)
-        let user : User | null = getUserByUid(uid)
+        let user: User | null = getUserByUid(uid)
 
-        if(user == undefined || json == undefined)
-            return 404;
+        if (user == undefined || json == undefined) return 404;
 
-        if(json.firstName != undefined)
-            user.firstName = json.firstName
-        if(json.lastName != undefined)
-            user.lastName = json.lastName
-        if(json.initials != undefined)
-            user.initials = json.initials
-        if(json.mail != undefined)
-            user.mail = json.mail
-        if(json.darkMode != undefined)
-            user.darkMode = json.darkMode
-        if (json.group != undefined)
-            user.group = json.group
-        if (json.editableGroup != undefined)
-            user.editableGroup = json.editableGroup
-        if(json.passwordHash != undefined)
-            user.passwordHash = json.passwordHash
-        if(json.isAdministrator != undefined)
-            user.isAdministrator = json.isAdministrator
+        if (json.firstName != undefined) user.firstName = json.firstName
+        if (json.lastName != undefined) user.lastName = json.lastName
+        if (json.initials != undefined) user.initials = json.initials
+        if (json.mail != undefined) user.mail = json.mail
+        if (json.darkMode != undefined) user.darkMode = json.darkMode
+        if (json.group != undefined) user.group = json.group
+        if (json.editableGroup != undefined) user.editableGroup = json.editableGroup
+        if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
+        if (json.isAdministrator != undefined) user.isAdministrator = json.isAdministrator
 
-        if (insertUser(user, true, false))
-            return 200
-
-        return 400      
+        if (insertUser(user, true, false)) return 204
+        return 400
     }
 
     function createFoldersIfNotExist() {

@@ -1,13 +1,28 @@
 import * as express from 'express'
 import {Utils} from '../lib/utils';
 import {XMLManager} from '../lib/xml_manager';
-import {Handlers} from '../lib/handlers';
 
 const calendarRouter = express.Router();
 
-calendarRouter.get('/course/:course', (request: express.Request, response: express.Response) => {
-    Handlers.getRaplaEvents(request, response);
-});
+calendarRouter.post('/:uid', (request: express.Request, response) => {
+    if (!(
+        request.user.uid == request.params.uid ||
+        request.user.editableGroup.uid == request.params.uid ||
+        request.user.isAdministrator)) return response.sendStatus(401)
+
+    let body = request.body
+    const requestType = request.headers['content-type']
+    if (requestType == "application/xml" || requestType == "text/html") {
+        body = XMLManager.convertXMLResponseJSONToCorrectJSONForEvent(body.event)
+    }
+
+    if (Utils.isBodyForEventCorrect(request.body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
+        let b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body))
+        if (b) return response.sendStatus(201)
+    }
+    response.status(400)
+    return response.send("Body is malformed")
+})
 
 calendarRouter.get('/:uid', (request: express.Request, response: express.Response) => {
     let eventID: string | undefined = request.query.eventID?.toString()
@@ -37,37 +52,17 @@ calendarRouter.get('/:uid', (request: express.Request, response: express.Respons
         }
     } else
         return response.sendStatus(400)
-});
-
-calendarRouter.post('/:uid', (request: express.Request, response) => {
-    if (!(
-        request.user.uid == request.params.uid ||
-        request.user.editableGroup.uid == request.params.uid ||
-        request.user.isAdministrator)) return response.sendStatus(401)
-
-    let body = request.body
-    const requestType = request.headers['content-type']
-    if (requestType == "application/xml" || requestType == "text/html") {
-        body = XMLManager.convertXMLResponseJSONToCorrectJSONForEvent(body.event)
-    }
-
-    if (Utils.isBodyForEventCorrect(request.body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
-        var b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body))
-        if (b) return response.sendStatus(201)
-    }
-    response.status(400)
-    return response.send("Body is malformed")
 })
 
 calendarRouter.put('/:uid', (request: express.Request, response) => {
-    response.status(405)
-    return response.send("This is not available. Please delete the event in question and then insert the changed version.")
+    response.status(404)
+    return response.send("This is not available yet. Please delete the event in question and then post the changed version.")
 })
 
 calendarRouter.delete('/:uid', (request: express.Request, response: express.Response) => {
-    var eventID: string | undefined = request.query.eventID?.toString()
+    let eventID: string | undefined = request.query.eventID?.toString()
     if (eventID != undefined) {
-        var b = XMLManager.deleteEvent(request.params.uid, eventID)
+        let b = XMLManager.deleteEvent(request.params.uid, eventID)
         if (b) return response.sendStatus(200)
     }
     return response.sendStatus(400)
