@@ -533,7 +533,7 @@ export module XMLManager {
         if(user == undefined)
             return 404;
 
-        if(json.isAdministrator != undefined || json.group != undefined || json.editableGroup != undefined || json.passwordHash != undefined)
+        if(json.isAdministrator != undefined || json.group != undefined || json.editableGroup != undefined)
             return 401
 
         if(json.firstName != undefined)
@@ -546,6 +546,8 @@ export module XMLManager {
             user.mail = json.mail
         if(json.darkMode != undefined)
             user.darkMode = json.darkMode
+        if(json.passwordHash != undefined)
+            user.passwordHash = json.passwordHash
 
         if (insertUser(user, true, false)) 
             return 200
