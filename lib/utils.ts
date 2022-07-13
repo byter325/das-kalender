@@ -15,7 +15,7 @@ export module Utils {
     const idDataPath = path.join(__dirname, "..", "data", "utils");
     const idDataFile = path.join(idDataPath, "id.json");
 
-    export function GenerateHash(message: string): string {
+    export function GenSHA256Hash(message: string): string {
         return crypto.SHA512(message).toString()
     }
 
