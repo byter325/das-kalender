@@ -220,7 +220,7 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/Person'
+                $ref: '#/components/schemas/User'
         "404":
           description: User not found
       security:
