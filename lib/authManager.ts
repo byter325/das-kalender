@@ -6,9 +6,10 @@ import {randomUUID} from "crypto";
 
 export module AuthManager {
     import getAllUsers = XMLManager.getAllUsers;
-    import GenSHA256Hash = Utils.GenSHA256Hash;
     import getNextUID = Utils.getNextUID;
     import insertUser = XMLManager.insertUser;
+    import VerifyHash = Utils.VerifyHash;
+    import GenerateHash = Utils.GenerateHash;
     export let authTokens: Map<string, Token> = new Map<string, Token>()
     export let users: Map<string, User> = new Map<string, User>()
 
@@ -21,7 +22,7 @@ export module AuthManager {
         })
         if (users.size == 0) {
             let uid = "" + getNextUID()
-            let user = new User(uid, "Administrator", "Benutzer", "AB", "test@test.example", GenSHA256Hash("changeMe"), [], [], false, true)
+            let user = new User(uid, "Administrator", "User", "AB", "test@test.example", GenerateHash("changeMe"), [], [], false, true)
             users.set(uid, user)
             insertUser(user, false, true)
             console.log("No users available. Created admin user with eMail: 'test@test.example' and password: 'changeMe'")
@@ -74,7 +75,7 @@ export module AuthManager {
         loadUsers()
         var result = null
         users.forEach(user => {
-            if ((user.mail == username || user.uid == username) && user.passwordHash === GenSHA256Hash(password)) {
+            if ((user.mail == username || user.uid == username) && VerifyHash(password, user.passwordHash)) {
                 console.log(`User ${user.uid} logged in`)
                 result = users.get(user.uid)
             }
@@ -90,26 +91,26 @@ export module AuthManager {
      * @param lastName  The last name of the user.
      */
     export function register(mail: string, password: string, firstName: string, lastName: string) {
-        let user = new User("" + getNextUID(), firstName, lastName, firstName.substring(0, 1), mail, Utils.GenSHA256Hash(password), [], [], false, false)
+        let user = new User("" + getNextUID(), firstName, lastName, firstName.substring(0, 1), mail, Utils.GenerateHash(password), [], [], false, false)
         users.set(user.uid, user)
         XMLManager.insertUser(user, false, true)
         return user
     }
 
     /**
-     * @description hecks if the given token is valid and returns a boolean.
+     * @description checks if the given token is valid and returns a boolean.
      * @param token         The token to check.
      * @param requiresAdmin If true, the token must be an admin token.
      */
     export function isTokenValid(token: string, requiresAdmin: boolean = false): boolean {
         loadTokens()
-        const t = authTokens.get(Utils.GenSHA256Hash(token))
+        const t = authTokens.get(Utils.GenerateHash(token))
         if (t != undefined) {
             const user = users.get(t.uid)
             if (new Date(t.validUntil) > new Date() && user != undefined) {
                 return user.isAdministrator || !requiresAdmin
             } else {
-                authTokens.delete(Utils.GenSHA256Hash(token))
+                authTokens.delete(Utils.GenerateHash(token))
                 saveTokens()
                 return false
             }
@@ -124,7 +125,7 @@ export module AuthManager {
      */
     export function getUserFromToken(token: string): User | undefined {
         if (isTokenValid(token)) {
-            const t = authTokens.get(Utils.GenSHA256Hash(token))
+            const t = authTokens.get(Utils.GenerateHash(token))
             if (t != undefined) {
                 return users.get(t.uid)
             }
@@ -157,8 +158,8 @@ export module AuthManager {
      * @param validUntil    The date until the token is valid.
      */
     export function createToken(uid: string, unlimited: boolean, validUntil: string): string {
-        let token = Utils.GenSHA256Hash(uid + new Date() + randomUUID())
-        authTokens.set(Utils.GenSHA256Hash(token), new Token(uid, unlimited, validUntil))
+        let token = Utils.GenerateHash(uid + new Date() + randomUUID())
+        authTokens.set(Utils.GenerateHash(token), new Token(uid, unlimited, validUntil))
         saveTokens()
         console.log("Created new token " + new Token(uid, unlimited, validUntil) + " for user " + uid)
         return token
@@ -177,7 +178,7 @@ export module AuthManager {
      * @param token The token to delete.
      */
     export function deleteToken(token: string) {
-        authTokens.delete(Utils.GenSHA256Hash(token))
+        authTokens.delete(Utils.GenerateHash(token))
         saveTokens()
         console.log("Deleted token " + token)
     }
@@ -195,5 +196,4 @@ export module AuthManager {
         saveTokens()
         console.log("Deleted all tokens of user " + uid)
     }
-
 }

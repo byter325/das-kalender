@@ -49,7 +49,7 @@ tokenRouter.get("/", (request: express.Request, response) => {
  */
 tokenRouter.delete("/", (request: express.Request, response) => {
     let token = <string>request.query.token
-    let tokenValue = AuthManager.authTokens.get(Utils.GenSHA256Hash(token))
+    let tokenValue = AuthManager.authTokens.get(Utils.GenerateHash(token))
     if (tokenValue != undefined && (request.user.uid == tokenValue.uid || request.user.isAdministrator)) {
         if (request.user.uid == tokenValue.uid) {
             AuthManager.deleteToken(token)

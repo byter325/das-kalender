@@ -11,6 +11,7 @@ import * as https from "https"
 import * as fs from "fs"
 
 const path = require('path')
+const RateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const xmlparser = require('express-xml-bodyparser')
@@ -29,7 +30,6 @@ if (!fs.existsSync(securityPath)) {
 
 let key: Buffer;
 let cert: Buffer;
-
 try {
     key = fs.readFileSync(path.join(securityPath, "server.key"));
     cert = fs.readFileSync(path.join(securityPath, "server.cert"));
@@ -37,7 +37,6 @@ try {
     console.log("There is no certificate. If you want to create a certificate, look at the README under 'Security'. The server will close now...");
     process.exit(-1);
 }
-
 const options = {
     key: key,
     cert: cert
@@ -57,6 +56,10 @@ const server: Server = https.createServer(options, app).listen(port, () => {
     console.log()
 })
 
+app.use(RateLimit({
+    windowMs: 1000, // 1 second
+    max: 5 // limit each IP to 5 requests per second
+    }));
 app.use(cookieParser())
 app.use(bodyParser.urlencoded())
 app.use(xmlparser())
@@ -121,8 +124,18 @@ app.post("/register", (req: express.Request, res: express.Response) => {
     const lastname = req.body.registrationLastName
     const userObject = AuthManager.register(mail, pass, firstname, lastname)
     if (userObject != null) {
-        res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid))
-        res.cookie('UID', userObject.uid)
+        res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid), {
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
+            secure: true,
+            httpOnly: true
+        })
+        res.cookie('UID', userObject.uid, {
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
+            secure: true,
+            httpOnly: true
+        })
         res.redirect("/")
     } else {
         res.sendStatus(400)
