@@ -17,14 +17,6 @@ function getCookie(cname) {
     return "";
 }
 
-// https://www.w3schools.com/js/js_cookies.asp
-function setCookie(cname, cvalue, exdays) {
-    const d = new Date();
-    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    let expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
-
 function getCurrentKw() {
     var date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -44,23 +36,24 @@ function initTooltips() {
 function insertCourseEvents(course, start, end) {
     $.ajax({
         url: `/api/calendar/${course}?start=${start}&end=${end}&type=HTML`,
-        xhrFields: { withCredentials: true }
+        xhrFields: {withCredentials: true}
     }).done(function (data) {
         $('#eventGrid').after(data);
         adjustDays();
     });
     $.ajax({
         url: `/api/calendar/${course}?timeline=true&start=${start}&end=${end}&type=HTML`,
-        xhrFields: { withCredentials: true }
+        xhrFields: {withCredentials: true}
     }).done(function (data) {
         $('#timelines').replaceWith(data);
+        $('#timelines').show();
     });
 }
 
 function insertUserEvents(uid, from, to) {
     $.ajax({
         url: `/api/calendar/${uid}?type=HTML&start=${from}&end=${to}`,
-        xhrFields: { withCredentials: true }
+        xhrFields: {withCredentials: true}
     }).done(function (data) {
         $('#eventGrid').after(data);
         adjustDays();
@@ -140,8 +133,7 @@ function getWeekRange(w, y) {
     var ISOweekEnd;
     if (dow <= 4) {
         ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
-    }
-    else {
+    } else {
         ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
     }
     ISOweekEnd = addDays(ISOweekStart, 6);
@@ -158,31 +150,39 @@ function checkTokenCredentials() {
     if (token.length > 0) {
         $('#loggedin-bar').show();
         $('#kalender').show(500);
-        $('#button-row').show(500);
+        $('#button-row').show();
         $('#timelines').show(500);
-
         $('#login-and-registration').hide();
+        const ADMIN_DEBUG = true;
+        const isAdmin = true;
+        if (isAdmin) {
+            $('#admin-tools').show();
+        } else {
+            $('#admin-tools').hide();
+        }
+        return true;
     } else {
         $('#loggedin-bar').hide();
         $('#kalender').hide();
         $('#button-row').hide();
         $('#timelines').hide();
-
         $('#login-and-registration').show(500);
+        $('#admin-tools').hide();
+        return false;
     }
 }
 
 $(() => {
-    checkTokenCredentials();
-
     if (!window.hasOwnProperty("calweek")) {
         window.calweek = getCurrentKw();
     }
     if (!window.hasOwnProperty("calyear")) {
         window.calyear = new Date().getFullYear();
     }
-    updateSite();
 
+    if (checkTokenCredentials()) {
+        updateSite();
+    }
 
     initTooltips();
     handleDarkMode();
@@ -211,7 +211,7 @@ $(() => {
         updateSite();
     });
     $('#logout-button').click(doLogout);
-    $('#switchDarkMode').change(function() {
+    $('#switchDarkMode').change(function () {
         setCookie('DarkMode', this.checked);
         // TODO: entweder Cookie auf Server ändern oder Cookie weglassen und nur über JS steuern
         // je nach API-Funktionalität
@@ -242,11 +242,21 @@ $(() => {
         submitDeleteEvent();
         return false;
     });
+    $('#adminManageGroupsButton').click(openAdminManageGroups);
+    $('#adminManageGroupsForm').submit(function () {
+        submitAdminManageGroups();
+        return false;
+    });
+    $('#adminManageUsersButton').click(openAdminManageUsers);
+    $('#adminManageUsersForm').submit(function () {
+        submitAdminManageUsers();
+        return false;
+    });
 });
 
 /* UI events */
 function editEvent(buttonClicked) {
-    const eventId = buttonClicked.getAttribute("data-event-id");
+    const eventId = buttonClicked.getAttribute("data-event-id"); // TODO: 'Anführungszeichen' oder "Anführungszeichen"
     const eventOwnerId = buttonClicked.getAttribute("data-event-owner-id");
     // TODO: get event information
     const editEventForm = document.forms["editEventForm"];
@@ -350,46 +360,34 @@ async function submitLogin() {
 }
 
 function doLogin(uid, password) {
-    $.ajax({
-        type: 'POST',
-        url: '/login',
-        data: {
-            loginMail: uid,
-            loginPassword: password
-        },
-        xhrFields: {
-            withCredentials: true
-        },
-        statusCode: {
-            200: () => {
-                $('#loginMessage').removeClass("alert-danger").addClass("alert-success").text("Login erfolgreich!").show();
-                setTimeout(() => {
-                    checkTokenCredentials();
-                    $('#loginMessage').hide();
-                    document.forms['loginForm'].reset();
-                    document.forms['registrationForm'].reset();
-                }, 1000);
+    $.post('/login', {
+        loginMail: uid,
+        loginPassword: password
+    })
+        .done(function () {
+            $('#loginMessage').removeClass("alert-danger").addClass("alert-success").text("Login erfolgreich!").show();
+            setTimeout(() => {
+                checkTokenCredentials();
+                $('#loginMessage').hide();
+                document.forms['loginForm'].reset();
+                document.forms['registrationForm'].reset();
+            }, 1000);
 
-                $.ajax({
-                    type: 'GET',
-                    url: '/api/getActiveUser', // TODO: change, getActiveUser does not exist
-                    xhrFields: {
-                        withCredentials: true
-                    }
-                }).done(function (data) {
-                    var domParser = new DOMParser();
-                    window.activeUser = domParser.parseFromString(data, "text/xml");
-                    $('#statusInfo').removeClass("d-none").addClass("d-inline-block").html("Hallo, " + $(window.activeUser).find("firstName").text()).show();
-                });
-            },
-            401: () => {
-                $('#loginMessage').removeClass("alert-success d-none").addClass("alert-danger").html("Login fehlgeschlagen!");
-            },
-            500: () => {
-                $('#loginMessage').removeClass("alert-success d-none").addClass("alert-danger").html("Login fehlgeschlagen!");
-            }
-        }
-    });
+            $.ajax({
+                type: 'GET',
+                url: '/api/getActiveUser', // TODO: change, getActiveUser does not exist
+                xhrFields: {
+                    withCredentials: true
+                }
+            }).done(function (data) {
+                var domParser = new DOMParser();
+                window.activeUser = domParser.parseFromString(data, "text/xml");
+                $('#statusInfo').text("Hallo, " + $(window.activeUser).find("firstName").text()).show();
+            });
+        })
+        .fail(function () {
+            $('#loginMessage').removeClass("alert-success").addClass("alert-danger").text("Login fehlgeschlagen!").show();
+        });
 }
 
 function doLogout() {
@@ -409,7 +407,6 @@ async function submitRegistration() {
     const password = registrationForm["registrationPassword"].value;
     const firstName = registrationForm["registrationFirstName"].value;
     const lastName = registrationForm["registrationLastName"].value;
-    console.log("user settings changed to", email, firstName, lastName);
     $.ajax({
         type: 'POST',
         url: '/register',
@@ -434,7 +431,7 @@ async function submitRegistration() {
     registrationForm.reset();
 }
 
-function submitUserSettingsChange() {
+async function submitUserSettingsChange() {
     const userSettingsForm = document.forms["userSettingsForm"];
     const email = userSettingsForm["userSettingsMail"].value;
     const password = userSettingsForm["userSettingsPassword"].value;
@@ -442,6 +439,91 @@ function submitUserSettingsChange() {
     const lastName = userSettingsForm["userSettingsLastName"].value;
     console.log("user settings changed to", email, password, firstName, lastName);
     // TODO: userSettings process
+}
+
+async function openAdminManageGroups() {
+    const groupsList = $('#adminManageGroupsGroupsList');
+    groupsList.html('<li class="list-group-item">Gruppen werden geladen...</li>');
+    $.get('/api/groups')
+        .done(function (data) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'application/xml');
+            var adminManageGroupsGroupsList = '';
+            const groups = doc.getElementsByTagName('groups')[0].getElementsByTagName('group');
+            for (let i = 0; i < groups.length; i++) {
+                const name = groups[i].getElementsByTagName('name')[0].textContent;
+                const url = groups[i].getElementsByTagName('url')[0]?.textContent;
+                adminManageGroupsGroupsList += url
+                    ? `<li class="list-group-item">${name} (${url})</li>`
+                    : `<li class="list-group-item">${name}</li>`;
+            }
+            groupsList.html(adminManageGroupsGroupsList);
+        })
+        .fail(function () {
+            groupsList.html('<li class="list-group-item">Gruppen konnten nicht geladen werden.</li>')
+        });
+}
+
+async function submitAdminManageGroups() {
+    const adminManageGroupsForm = document.forms["adminManageGroupsForm"];
+    const name = adminManageGroupsForm["adminManageGroupsName"].value;
+    const uid = name;
+    const url = adminManageGroupsForm["adminManageGroupsRaplaUrl"].value;
+    console.log(name, url);
+    $.post('/api/groups', {uid, name, url})
+        .done(() => adminManageGroupsForm.reset())
+        .always(openAdminManageGroups);
+}
+
+async function openAdminManageUsers() {
+    $.get('/api/users')
+        .done(function (data) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'application/xml');
+            console.log(data);
+            console.log(doc);
+            const users = doc.getElementsByTagName('user');
+            var tableContent = '';
+            for (let i = 0; i < users.length; i++) {
+                const uid = users[i].getElementsByTagName('uid')[0].textContent;
+                const firstName = users[i].getElementsByTagName('firstName')[0].textContent;
+                const lastName = users[i].getElementsByTagName('lastName')[0].textContent;
+                const initials = users[i].getElementsByTagName('initials')[0].textContent;
+                const mail = users[i].getElementsByTagName('mail')[0].textContent;
+                const passwordHash = users[i].getElementsByTagName('passwordHash')[0].textContent;
+                const isAdministrator = users[i].getElementsByTagName('isAdministrator')[0].textContent;
+                // console.log(firstName, lastName, initials, mail, isAdministrator);
+                const tableRow = `<tr>
+                    <td>${lastName}, ${firstName} (${initials})</td>
+                    <td>${mail}</td>
+                    <td>Gruppe TBD</td>
+                    <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
+                    data-uid="${uid}" data-first-name="${firstName}" data-last-name="${lastName}" data-mail="${mail}"
+                    data-password-hash="${passwordHash}"\></td>
+                    </tr>`;
+                tableContent += tableRow;
+            }
+            $('#adminManageUsersTableBody').html(tableContent);
+
+            $('.checkbox-admin').change(function () {
+                const uid = this.getAttribute('data-uid');
+                const firstName = this.getAttribute('data-first-name');
+                const lastName = this.getAttribute('data-last-name');
+                const mail = this.getAttribute('data-mail');
+                const passwordHash = this.getAttribute('data-password-hash');
+                const isAdministrator = this.checked ? 'true' : 'false';
+                $.ajax({
+                    url: `/api/users/${uid}`,
+                    method: 'PUT',
+                    data: {uid, firstName, lastName, mail, passwordHash, isAdministrator}
+                })
+                    .done(openAdminManageUsers);
+            });
+        });
+}
+
+async function submitAdminManageUsers() {
+    // TODO
 }
 
 function setDarkMode(isDarkModeEnabled) {
