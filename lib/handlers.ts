@@ -1,9 +1,7 @@
 import * as path from "path";
-import {Request, Response} from "express";
-import {json2xml, xml2json} from "xml-js";
+import {json2xml} from "xml-js";
 import * as ical from "node-ical";
 import * as fs from "fs";
-import * as tmp from "tmp";
 import {Utils} from "./utils";
 import * as https from "https";
 
@@ -13,54 +11,54 @@ export module Handlers {
     const xsltDir: string = path.resolve(__dirname, '..', 'transformations');
     const raplaUrl: string = "https://rapla.dhbw-karlsruhe.de/rapla?page=@@page@@&user=@@lecturer@@&file=@@course@@";
 
-    /**
-     * HTTP handler for displaying events
-     * GET params: from, to
-     * @param {Request} req
-     * @param {Response} res
-     */
-    export function getRaplaEvents(req: Request, res: Response) {
-        const course: string = req.params.course;
-        const timeline: string | undefined = req.query.timeline?.toString();
-        console.log(req.path);
-        const fileName = `${dataDir}/${course}-kalender.xml`;
-        if (!fs.existsSync(fileName)) {
-            res.status(500);
-        } else {
-            let from: string, to: string;
-            if (typeof req.query.from != 'undefined' && req.query.from) {
-                from = req.query.from.toString();
-            }
-            if (typeof req.query.to != 'undefined' && req.query.to) {
-                to = req.query.to.toString();
-            }
-            fs.readFile(fileName, "utf-8", (err, eventData) => {
-                let jsdata = JSON.parse(xml2json(eventData, {compact: true}));
-                let eventResults = new Array();
-                let elements: any[] = jsdata.events.event;
-                elements.forEach(element => {
-                    let add = true;
-                    if (typeof from != 'undefined' && from && element.start._text < from) {
-                        add = false;
-                    }
-                    if (typeof to != 'undefined' && to && element.end._text > to) {
-                        add = false;
-                    }
-                    if (add) {
-                        eventResults.push(element);
-                    }
-                });
-
-                const tmpobj = tmp.fileSync();
-                fs.writeFile(tmpobj.fd, eventsToXml(eventResults), () => {
-                    res.contentType('text/html');
-                    if (timeline) res.send(xmlEventsToHtmlTimelineView(tmpobj.name));
-                    else res.send(xmlEventsToHtmlGridView(tmpobj.name));
-                });
-
-            });
-        }
-    }
+    // /**
+    //  * HTTP handler for displaying events
+    //  * GET params: from, to
+    //  * @param {Request} req
+    //  * @param {Response} res
+    //  */
+    // export function getRaplaEvents(req: Request, res: Response) {
+    //     const course: string = req.params.course;
+    //     const timeline: string | undefined = req.query.timeline?.toString();
+    //     console.log(req.path);
+    //     const fileName = `${dataDir}/${course}-kalender.xml`;
+    //     if (!fs.existsSync(fileName)) {
+    //         res.status(500);
+    //     } else {
+    //         let from: string, to: string;
+    //         if (typeof req.query.from != 'undefined' && req.query.from) {
+    //             from = req.query.from.toString();
+    //         }
+    //         if (typeof req.query.to != 'undefined' && req.query.to) {
+    //             to = req.query.to.toString();
+    //         }
+    //         fs.readFile(fileName, "utf-8", (err, eventData) => {
+    //             let jsdata = JSON.parse(xml2json(eventData, {compact: true}));
+    //             let eventResults = new Array();
+    //             let elements: any[] = jsdata.events.event;
+    //             elements.forEach(element => {
+    //                 let add = true;
+    //                 if (typeof from != 'undefined' && from && element.start._text < from) {
+    //                     add = false;
+    //                 }
+    //                 if (typeof to != 'undefined' && to && element.end._text > to) {
+    //                     add = false;
+    //                 }
+    //                 if (add) {
+    //                     eventResults.push(element);
+    //                 }
+    //             });
+    //
+    //             const tmpobj = tmp.fileSync();
+    //             fs.writeFile(tmpobj.fd, eventsToXml(eventResults), () => {
+    //                 res.contentType('text/html');
+    //                 if (timeline) res.send(xmlEventsToHtmlTimelineView(tmpobj.name));
+    //                 else res.send(xmlEventsToHtmlGridView(tmpobj.name));
+    //             });
+    //
+    //         });
+    //     }
+    // }
 
     /**
      * Fetch events from RAPLA

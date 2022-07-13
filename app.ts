@@ -56,11 +56,10 @@ const server: Server = https.createServer(options, app).listen(port, () => {
     console.log()
 })
 
-const limiter = new RateLimit({
+app.use(RateLimit({
     windowMs: 1000, // 1 second
     max: 5 // limit each IP to 5 requests per second
-});
-app.use(limiter);
+    }));
 app.use(cookieParser())
 app.use(bodyParser.urlencoded())
 app.use(xmlparser())
@@ -102,14 +101,12 @@ app.post("/login", (req: express.Request, res: express.Response) => {
         res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid), {
             sameSite: 'strict',
             expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
-            secure: true,
-            httpOnly: true
+            secure: true
         })
         res.cookie('UID', userObject.uid, {
             sameSite: 'strict',
             expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
-            secure: true,
-            httpOnly: true
+            secure: true
         })
         res.redirect("/")
     } else {
