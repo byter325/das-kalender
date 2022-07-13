@@ -10,6 +10,7 @@ import * as cron from "node-cron"
 import * as https from "https"
 import * as fs from "fs"
 import * as fsPromises from "fs/promises"
+import { Utils } from './lib/utils'
 
 const path = require('path')
 const cookieParser = require('cookie-parser')
@@ -25,17 +26,18 @@ let key: Buffer;
 let cert: Buffer;
 
 async function loadCertificates() {
-    let securityFolderExists: Boolean;
-    fsPromises.stat(securityPath).then((stat: fs.Stats) => {
-        securityFolderExists = stat.isDirectory();
-    }).catch((err: Error) => {
-        fsPromises.mkdir(securityPath).then(() => {
-            securityFolderExists = true;
-        }).catch((err: Error) => {
-            console.log(err);
-            process.exit(-1);
-        });
-    });
+    // let securityFolderExists: Boolean;
+    // fsPromises.stat(securityPath).then((stat: fs.Stats) => {
+    //     securityFolderExists = stat.isDirectory();
+    // }).catch((err: Error) => {
+    //     fsPromises.mkdir(securityPath).then(() => {
+    //         securityFolderExists = true;
+    //     }).catch((err: Error) => {
+    //         console.log(err);
+    //         process.exit(-1);
+    //     });
+    // });
+    await Utils.createDirectoryIfNotExists(securityPath);
 
     let keyPromis = fsPromises.readFile(path.join(securityPath, "server.key")).catch((err: Error) => {
         console.log("\x1b[31m", "No server.key found. Did you forget to generate one?");

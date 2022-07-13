@@ -2,6 +2,7 @@ import * as crypto from "crypto-js";
 import {User} from "./classes/user";
 import {CalendarEvent} from "./classes/userEvent";
 import fs from 'fs';
+import * as fsPromises from "fs/promises";
 import path from "path";
 
 export module Utils {
@@ -106,9 +107,9 @@ export module Utils {
             [{}], false, false)
     }
 
-    export function getNextUID(): number {
+    export async function getNextUID(): Promise<number> {
         if (!idFetched) {
-            currUID = getLastUID();
+            currUID = await getLastUID();
             idFetched = true;
         }
         currUID++;
@@ -116,23 +117,41 @@ export module Utils {
         return currUID;
     }
 
-    function createDirectoryIfNotExists(path: string): void {
-        if (!fs.existsSync(path)) {
-            fs.mkdirSync(path);
+    export async function createDirectoryIfNotExists(path: string): Promise<void> {
+        if (!directoryExists(path)) {
+            await fsPromises.mkdir(path);
         }
     }
 
-    function saveUID(uid: number) {
-        createDirectoryIfNotExists(idDataPath);
+    export async function fileExists(path: string): Promise<boolean> {
+        try {
+            await fsPromises.access(path);
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
+
+    export async function directoryExists(path: string): Promise<boolean> {
+        return (await fsPromises.stat(path)).isDirectory();
+    }
+
+    export async function readFile(path: string): Promise<string> {
+        return await fsPromises.readFile(path, "utf8");
+    }
+
+    async function saveUID(uid: number) {
+        await createDirectoryIfNotExists(idDataPath);
 
         let data = {"uid": uid, "last_time": new Date().toISOString()};
         fs.writeFileSync(idDataFile, JSON.stringify(data));
     }
 
-    function getLastUID(): number {
-        createDirectoryIfNotExists(idDataPath);
-        if (fs.existsSync(idDataFile)) {
-            let data = JSON.parse(fs.readFileSync(idDataFile, "utf8"));
+    async function getLastUID(): Promise<number> {
+        await createDirectoryIfNotExists(idDataPath);
+
+        if (await fileExists(idDataFile)) {
+            let data = JSON.parse(await readFile(idDataFile));
             return data.uid;
         }
         return 0;
