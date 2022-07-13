@@ -287,6 +287,7 @@ export module XMLManager {
             let awaitable = Utils.writeFile(path, xmlEvents);
             let htmlString: string
             console.log(timeline);
+            await awaitable;
             if (timeline) {
                 console.log("timeline");
 
@@ -296,7 +297,6 @@ export module XMLManager {
 
                 htmlString = Handlers.xmlEventsToHtmlGridView(path);
             }
-            await awaitable;
             await Utils.removeFile(path);
 
             return htmlString
