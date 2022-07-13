@@ -37,7 +37,7 @@ export module XMLManager {
                 ignoreAttributes: false,
                 attributesGroupName: "group"
             })
-            const path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml"
+            const path = PATH_DATA_USERS + Utils.GenerateHash(uid) + ".xml"
             console.log("Reading file of user " + uid + " from " + path)
             if (!(await Utils.fileExists(path))) 
                 throw new Error("File for user '" + uid + "' does not exist")
@@ -134,7 +134,7 @@ export module XMLManager {
             let xmlDataStr: string = builder.build(json);
             let awaitable = createFoldersIfNotExist();
 
-            console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml")
+            console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml")
 
             const usersPath = PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(user.uid) + ".xml"
@@ -178,8 +178,8 @@ export module XMLManager {
             let xmlDataStr: string = builder.build({group: {uid: uid, name: name, url: url}});
             let awaitable = createFoldersIfNotExist()
 
-            const groupsPath = PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml"
-            const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml"
+            const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
+            const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml"
 
 
             await awaitable;
@@ -226,7 +226,6 @@ export module XMLManager {
 
             let xmlDataStr: string = builder.build(events)
             console.log(xmlDataStr);
-
             await Utils.writeFile(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
@@ -245,6 +244,7 @@ export module XMLManager {
     export async function getAllEvents(uid: string): Promise<string> {
         try {
             return await Utils.readFile(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+
         } catch (error) {
             console.log(error);
             return "<events></events>"
@@ -259,7 +259,7 @@ export module XMLManager {
      * @return {*}  {string} The HTML string
      */
     export function getAllEventsAsHTML(uid: string): string {
-        return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+        return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml")
     }
 
     export async function getWeekEventsAsHTML(uid: string, startdate: string, enddate: string, timeline: boolean) {

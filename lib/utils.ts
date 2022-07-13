@@ -15,8 +15,12 @@ export module Utils {
     const idDataPath = path.join(__dirname, "..", "data", "utils");
     const idDataFile = path.join(idDataPath, "id.json");
 
-    export function GenSHA256Hash(message: string): string {
-        return crypto.SHA256(message).toString();
+    export function GenerateHash(message: string): string {
+        return crypto.SHA512(message).toString()
+    }
+
+    export function VerifyHash(plain: string, hash: string): boolean {
+        return crypto.SHA512(plain).toString() == hash
     }
 
     export function isBodyForGroupCorrect(body: any): boolean {

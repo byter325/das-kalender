@@ -6,9 +6,10 @@ import {randomUUID} from "crypto";
 
 export module AuthManager {
     import getAllUsers = XMLManager.getAllUsers;
-    import GenSHA256Hash = Utils.GenSHA256Hash;
     import getNextUID = Utils.getNextUID;
     import insertUser = XMLManager.insertUser;
+    import VerifyHash = Utils.VerifyHash;
+    import GenerateHash = Utils.GenerateHash;
     export let authTokens: Map<string, Token> = new Map<string, Token>()
     export let users: Map<string, User> = new Map<string, User>()
 
@@ -74,7 +75,7 @@ export module AuthManager {
         await loadUsers()
         let result = null
         users.forEach(user => {
-            if ((user.mail == username || user.uid == username) && user.passwordHash === GenSHA256Hash(password)) {
+            if ((user.mail == username || user.uid == username) && VerifyHash(password, user.passwordHash)) {
                 console.log(`User ${user.uid} logged in`)
                 result = users.get(user.uid)
             }
@@ -91,19 +92,21 @@ export module AuthManager {
      */
     export async function register(mail: string, password: string, firstName: string, lastName: string) {
         let user = new User("" + await getNextUID(), firstName, lastName, firstName.substring(0, 1), mail, Utils.GenSHA256Hash(password), [], [], false, false)
+
         users.set(user.uid, user)
         XMLManager.insertUser(user, false, true)
         return user
     }
 
     /**
-     * @description hecks if the given token is valid and returns a boolean.
+     * @description checks if the given token is valid and returns a boolean.
      * @param token         The token to check.
      * @param requiresAdmin If true, the token must be an admin token.
-     */
+     
     export async function isTokenValid(token: string, requiresAdmin: boolean = false): Promise<boolean> {
         await loadTokens()
         const t = authTokens.get(Utils.GenSHA256Hash(token))
+
         if (t != undefined) {
             const user = users.get(t.uid)
             if (new Date(t.validUntil) > new Date() && user != undefined) {
@@ -111,6 +114,7 @@ export module AuthManager {
             } else {
                 authTokens.delete(Utils.GenSHA256Hash(token))
                 await saveTokens()
+
                 return false
             }
         } else {
@@ -195,5 +199,4 @@ export module AuthManager {
         await saveTokens()
         console.log("Deleted all tokens of user " + uid)
     }
-
 }
