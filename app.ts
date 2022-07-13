@@ -26,25 +26,14 @@ let key: Buffer;
 let cert: Buffer;
 
 async function loadCertificates() {
-    // let securityFolderExists: Boolean;
-    // fsPromises.stat(securityPath).then((stat: fs.Stats) => {
-    //     securityFolderExists = stat.isDirectory();
-    // }).catch((err: Error) => {
-    //     fsPromises.mkdir(securityPath).then(() => {
-    //         securityFolderExists = true;
-    //     }).catch((err: Error) => {
-    //         console.log(err);
-    //         process.exit(-1);
-    //     });
-    // });
     await Utils.createDirectoryIfNotExists(securityPath);
 
     let keyPromis = fsPromises.readFile(path.join(securityPath, "server.key")).catch((err: Error) => {
-        console.log("\x1b[31m", "No server.key found. Did you forget to generate one?");
+        console.log("\x1b[31m%s\x1b[0m", "No server.key found. Did you forget to generate one?");
         process.exit(-1);
     });
     let certPromis = fsPromises.readFile(path.join(securityPath, "server.cert")).catch((err: Error) => {
-        console.log("\x1b[31m", "No server.cert found. Did you forget to generate one?");
+        console.log("\x1b[31m%s\x1b[0m", "No server.cert found. Did you forget to generate one?");
         process.exit(-1);
     });
     return {"key":await keyPromis, "cert": await certPromis};
@@ -101,17 +90,17 @@ async function startServer() {
     /**
      * @description This handles the login of the user on the website. If the credentials are correct, the uid and the AuthToken are returned as cookies.
      */
-    app.post("/login", (req: express.Request, res: express.Response) => {
-        const user = req.body.loginMail
-        const pass = req.body.loginPassword
-        const userObject = AuthManager.login(user, pass)
+    app.post("/login", async (req: express.Request, res: express.Response) => {
+        const user = req.body.loginMail;
+        const pass = req.body.loginPassword;
+        const userObject = await AuthManager.login(user, pass);
         if (userObject != null) {
-            res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid), {
+            res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject?.uid), {
                 sameSite: 'strict',
                 expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
                 secure: true
             })
-            res.cookie('UID', userObject.uid, {
+            res.cookie('UID', userObject?.uid, {
                 sameSite: 'strict',
                 expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
                 secure: true
@@ -125,15 +114,15 @@ async function startServer() {
     /**
      * @description This handles the registration of the user on the website. The uid and the AuthToken are returned as cookies.
      */
-    app.post("/register", (req: express.Request, res: express.Response) => {
+    app.post("/register", async (req: express.Request, res: express.Response) => {
         const mail = req.body.registrationMail
         const pass = req.body.registrationPassword
         const firstname = req.body.registrationFirstName
         const lastname = req.body.registrationLastName
         const userObject = AuthManager.register(mail, pass, firstname, lastname)
         if (userObject != null) {
-            res.cookie('AuthToken', AuthManager.createTokenFor12H(userObject.uid))
-            res.cookie('UID', userObject.uid)
+            res.cookie('AuthToken', AuthManager.createTokenFor12H((await userObject).uid))
+            res.cookie('UID', (await userObject).uid)
             res.redirect("/")
         } else {
             res.sendStatus(400)

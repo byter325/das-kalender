@@ -82,35 +82,35 @@ export module Handlers {
             .replace("@@page@@", "ical")
             .replace("@@lecturer@@", lecturer)
             .replace("@@course@@", course);
-        fs.opendir(
-            `${dataDir}`,
-            (err: NodeJS.ErrnoException | null, dir: fs.Dir) => {
-                if (err) {
-                    // dir.close();
-                    fs.mkdir(
-                        `${dataDir}`,
-                        (err: NodeJS.ErrnoException | null) => {
-                            if (err) {
-                                throw err;
-                            }
-                        }
-                    );
-                } else {
-                    dir.close();
-                }
-            }
-        );
+        // fs.opendir(
+        //     `${dataDir}`,
+        //     (err: NodeJS.ErrnoException | null, dir: fs.Dir) => {
+        //         if (err) {
+        //             // dir.close();
+        //             fs.mkdir(
+        //                 `${dataDir}`,
+        //                 (err: NodeJS.ErrnoException | null) => {
+        //                     if (err) {
+        //                         throw err;
+        //                     }
+        //                 }
+        //             );
+        //         } else {
+        //             dir.close();
+        //         }
+        //     }
+        // );
 
         /**
          * download ics
          */
-        https.get(icsUrl, (res: any) => {
+        https.get(icsUrl, async(res: any) => {
             let caldata: string;
             res.setEncoding("utf8");
             res.on("data", (chunk: any) => {
                 caldata += chunk;
             });
-            res.on("end", () => {
+            res.on("end", async () => {
                 /**
                  * parse ics
                  */
@@ -123,15 +123,8 @@ export module Handlers {
                 }
                 let xmldata: string = eventsToXml(eventResults);
                 if (!checkCache(outfile, xmldata)) {
-                    fs.writeFile(outfile, xmldata, () => {
-                        /**
-                         * transform events to xml
-                         */
-                        fs.writeFileSync(
-                            outkalfile,
-                            xslTransform(outfile, "rapla2kalender.sef.json")
-                        );
-                    });
+                    await Utils.writeFile(outfile, xmldata);
+                    await Utils.writeFile(outkalfile, xslTransform(outfile, "rapla2kalender.sef.json"));
                 } else {
                     console.log(
                         `No new data for course ${lecturer}/${course}...`

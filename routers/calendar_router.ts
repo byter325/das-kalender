@@ -5,7 +5,7 @@ import {XMLManager} from '../lib/xml_manager';
 
 const calendarRouter = express.Router();
 
-calendarRouter.post('/:uid', (request: express.Request, response) => {
+calendarRouter.post('/:uid', async (request: express.Request, response) => {
     if (!(
         request.user.uid == request.params.uid ||
         request.user.editableGroup.uid == request.params.uid ||
@@ -18,8 +18,8 @@ calendarRouter.post('/:uid', (request: express.Request, response) => {
     }
 
     if (Utils.isBodyForEventCorrect(request.body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
-        let b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body))
-        if (b) return response.sendStatus(201)
+        let b: Promise<boolean> = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body))
+        if (await b) return response.sendStatus(201)
     }
     response.status(400)
     return response.send("Body is malformed")
@@ -60,11 +60,11 @@ calendarRouter.put('/:uid', (request: express.Request, response) => {
     return response.send("This is not available yet. Please delete the event in question and then post the changed version.")
 })
 
-calendarRouter.delete('/:uid', (request: express.Request, response: express.Response) => {
+calendarRouter.delete('/:uid', async (request: express.Request, response: express.Response) => {
     let eventID: string | undefined = request.query.eventID?.toString()
     if (eventID != undefined) {
         let b = XMLManager.deleteEvent(request.params.uid, eventID)
-        if (b) return response.sendStatus(200)
+        if (await b) return response.sendStatus(200)
     }
     return response.sendStatus(400)
 })

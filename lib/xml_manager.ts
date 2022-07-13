@@ -1,5 +1,4 @@
 import * as path from "path";
-import fs, {writeFileSync} from "fs"
 import {User} from "./classes/user"
 import {CalendarEvent} from "./classes/userEvent"
 import {Utils} from "./utils"
@@ -140,20 +139,21 @@ export module XMLManager {
             const usersPath = PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(user.uid) + ".xml"
             
-            
             await awaitable;
-            if (!allowOverride && await Utils.fileExists(usersPath))
+            if (!allowOverride && await Utils.fileExists(usersPath)){
                 return false;
-            else
+            }
+            else{
                 await Utils.writeFile(usersPath, xmlDataStr, {flag: "w+"})
-
+            }
+            
             if (!allowOverride && await Utils.fileExists(eventsPath))
-                return false;
+            return false;
             else {
                 if (createOrOverrideEvents)
-                    await Utils.writeFile(eventsPath, "<events></events>", {flag: "w+"})
+                await Utils.writeFile(eventsPath, "<events></events>", {flag: "w+"})
             }
-
+            
             return true
         } catch (e) {
             console.log(e);
