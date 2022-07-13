@@ -24,7 +24,7 @@ export module XMLManager {
      */
     export function getUser(uid: string): string | null {
         try {
-            const path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml";
+            const path = PATH_DATA_USERS + Utils.GenerateHash(uid) + ".xml";
             return fs.readFileSync(path, "utf-8")
         } catch (e) {
             console.log(e);
@@ -38,7 +38,7 @@ export module XMLManager {
                 ignoreAttributes: false,
                 attributesGroupName: "group"
             })
-            const path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml"
+            const path = PATH_DATA_USERS + Utils.GenerateHash(uid) + ".xml"
             console.log("Reading file of user " + uid + " from " + path)
             if (!fs.existsSync(path)) throw new Error("File for user '" + uid + "' does not exist")
             const data = fs.readFileSync(path, "utf-8")
@@ -61,7 +61,7 @@ export module XMLManager {
      */
     export function getGroup(uid: string): any | null {
         try {
-            let path = PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml"
+            let path = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
             return fs.readFileSync(path, "utf-8")
         } catch (error) {
             console.log(error);
@@ -81,7 +81,7 @@ export module XMLManager {
         try {
             const parser = new XMLParser()
             const builder = new XMLBuilder({})
-            let data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenSHA256Hash(uid) + ".xml");
+            let data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenerateHash(uid) + ".xml");
             let events = parser.parse(data)["events"]
             if (events['event'] == "") {
                 return undefined
@@ -133,10 +133,10 @@ export module XMLManager {
             let xmlDataStr: string = builder.build(json);
             createFoldersIfNotExist();
 
-            console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml")
+            console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml")
 
-            const usersPath = PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml"
-            const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(user.uid) + ".xml"
+            const usersPath = PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml"
+            const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(user.uid) + ".xml"
 
             if (!allowOverride && fs.existsSync(usersPath))
                 return false;
@@ -174,8 +174,8 @@ export module XMLManager {
             let xmlDataStr: string = builder.build({group: {uid: uid, name: name, url: url}});
             createFoldersIfNotExist()
 
-            const groupsPath = PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml"
-            const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml"
+            const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
+            const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml"
 
             if (!allowOverride && fs.existsSync(groupsPath))
                 return false;
@@ -219,7 +219,7 @@ export module XMLManager {
             var xmlDataStr: string = builder.build(events)
             console.log(xmlDataStr);
 
-            writeFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e);
@@ -236,7 +236,7 @@ export module XMLManager {
      */
     export function getAllEvents(uid: string): string {
         try {
-            return fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
+            return fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", {encoding: "utf-8"})
         } catch (error) {
             console.log(error);
             return "<events></events>"
@@ -251,7 +251,7 @@ export module XMLManager {
      * @return {*}  {string} The HTML string
      */
     export function getAllEventsAsHTML(uid: string): string {
-        return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+        return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml")
     }
 
     export function getWeekEventsAsHTML(uid: string, startdate: string, enddate: string, timeline: boolean) {
@@ -275,7 +275,7 @@ export module XMLManager {
             let xmlEvents = "<events>";
             xmlEvents += builder.build(x) + "</events>"
 
-            let path = PATH_DATA_EVENTS + "tmp_" + Utils.GenSHA256Hash(uid) + ".xml";
+            let path = PATH_DATA_EVENTS + "tmp_" + Utils.GenerateHash(uid) + ".xml";
             writeFileSync(path, xmlEvents)
             let htmlString: string
             console.log(timeline);
@@ -309,7 +309,7 @@ export module XMLManager {
 
             },
         })
-        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
+        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", {encoding: "utf-8"})
         var events = parser.parse(data)["events"]
         if (events == undefined || events == "")
             events = {event: []}
@@ -325,8 +325,8 @@ export module XMLManager {
      */
     export function deleteUser(uid: string): boolean {
         try {
-            fs.rmSync(PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml")
-            fs.rmSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+            fs.rmSync(PATH_DATA_USERS + Utils.GenerateHash(uid) + ".xml")
+            fs.rmSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml")
             return true
         } catch (e) {
             console.log(e)
@@ -343,8 +343,8 @@ export module XMLManager {
      */
     export function deleteGroup(uid: string): boolean {
         try {
-            fs.rmSync(PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml")
-            fs.rmSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+            fs.rmSync(PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml")
+            fs.rmSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml")
             return true
         } catch (e) {
             console.log(e)
@@ -373,7 +373,7 @@ export module XMLManager {
             let xmlDataStr = builder.build(data);
             console.log(xmlDataStr);
 
-            writeFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e)

@@ -143,8 +143,8 @@ export module Handlers {
         if (fs.existsSync(outfile)) {
             let oldData: string = fs.readFileSync(outfile, null).toString();
 
-            let oldDataHash = Utils.GenSHA256Hash(oldData);
-            let newDataHash = Utils.GenSHA256Hash(newData);
+            let oldDataHash = Utils.GenerateHash(oldData);
+            let newDataHash = Utils.GenerateHash(newData);
             console.log(`${oldDataHash}==${newDataHash}`);
             return oldDataHash == newDataHash;
         } else {
