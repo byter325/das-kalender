@@ -1,7 +1,7 @@
 import * as crypto from "crypto-js";
 import {User} from "./classes/user";
 import {CalendarEvent} from "./classes/userEvent";
-import fs from 'fs';
+import fs, { PathLike } from 'fs';
 import * as fsPromises from "fs/promises";
 import path from "path";
 
@@ -123,7 +123,7 @@ export module Utils {
         }
     }
 
-    export async function fileExists(path: string): Promise<boolean> {
+    export async function fileExists(path: string | fs.PathLike): Promise<boolean> {
         try {
             await fsPromises.access(path);
             return true;
@@ -132,11 +132,27 @@ export module Utils {
         }
     }
 
+    export function writeFile(path: fs.PathLike | string , data: any, flags: any = {}): Promise<void> {
+        return fsPromises.writeFile(path, data, flags);
+    }
+
     export async function directoryExists(path: string): Promise<boolean> {
         return (await fsPromises.stat(path)).isDirectory();
     }
 
-    export async function readFile(path: string): Promise<string> {
+    export async function removeDirectory(path: string): Promise<void> {
+        await fsPromises.rmdir(path, {recursive: true});
+    }
+
+    export async function removeFile(path: string): Promise<void> {
+        await fsPromises.rm(path);
+    }
+
+    export async function readDirectory(path: string): Promise<string[]> {
+        return await fsPromises.readdir(path);
+    }
+
+    export async function readFile(path: string | PathLike, encoding: any = {}, flags: any = {}): Promise<string> {
         return await fsPromises.readFile(path, "utf8");
     }
 

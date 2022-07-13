@@ -22,17 +22,17 @@ export module XMLManager {
      * @param {string} uid unique user id
      * @return {string} Returns an XML string of a user
      */
-    export function getUser(uid: string): string | null {
+    export async function getUser(uid: string): Promise<string | null> {
         try {
             const path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml";
-            return fs.readFileSync(path, "utf-8")
+            return await Utils.readFile(path);
         } catch (e) {
             console.log(e);
             return null
         }
     }
 
-    export function getUserByUid(uid: string): User | null {
+    export async function getUserByUid(uid: string): Promise<User | null> {
         try {
             const parser = new XMLParser({
                 ignoreAttributes: false,
@@ -40,9 +40,11 @@ export module XMLManager {
             })
             const path = PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml"
             console.log("Reading file of user " + uid + " from " + path)
-            if (!fs.existsSync(path)) throw new Error("File for user '" + uid + "' does not exist")
-            const data = fs.readFileSync(path, "utf-8")
-            const person = parser.parse(data)["person"]
+            if (!(await Utils.fileExists(path))) 
+                throw new Error("File for user '" + uid + "' does not exist")
+
+            const data = Utils.readFile(path);
+            const person = parser.parse(await data)["person"]
             console.log("parsed person: " + person)
             return new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
                 person.group, person.editableGroup, person.darkMode, person.isAdministrator)
@@ -59,10 +61,10 @@ export module XMLManager {
      * @param {string} uid The unique group id
      * @return {string}  Returns an XML string if the group exists
      */
-    export function getGroup(uid: string): any | null {
+    export async function getGroup(uid: string): Promise<string | null> {
         try {
             let path = PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml"
-            return fs.readFileSync(path, "utf-8")
+            return await Utils.readFile(path);
         } catch (error) {
             console.log(error);
             return null
@@ -77,12 +79,12 @@ export module XMLManager {
      * @param {string} eventUid The unique event id
      * @return {string|undefined}  Returns the event as an XML string if found or nothing if not found
      */
-    export function getEvent(uid: string, eventUid: string): string | undefined {
+    export async function getEvent(uid: string, eventUid: string): Promise<string | undefined> {
         try {
             const parser = new XMLParser()
             const builder = new XMLBuilder({})
-            let data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenSHA256Hash(uid) + ".xml");
-            let events = parser.parse(data)["events"]
+            let data = Utils.readFile(PATH_DATA_EVENTS + "/" + Utils.GenSHA256Hash(uid) + ".xml");
+            let events = parser.parse(await data)["events"]
             if (events['event'] == "") {
                 return undefined
             } else {
@@ -108,7 +110,7 @@ export module XMLManager {
      * @param {boolean} createOrOverrideEvents Whether the events file should be created or not
      * @return {boolean}  Returns if the operation was successful or not
      */
-    export function insertUser(user: User, allowOverride: boolean, createOrOverrideEvents: boolean): boolean {
+    export async function insertUser(user: User, allowOverride: boolean, createOrOverrideEvents: boolean): Promise<boolean> {
         try {
             let json = {
                 person: {
@@ -131,23 +133,25 @@ export module XMLManager {
             })
 
             let xmlDataStr: string = builder.build(json);
-            createFoldersIfNotExist();
+            let awaitable = createFoldersIfNotExist();
 
             console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml")
 
             const usersPath = PATH_DATA_USERS + Utils.GenSHA256Hash(user.uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(user.uid) + ".xml"
-
-            if (!allowOverride && fs.existsSync(usersPath))
+            
+            
+            await awaitable;
+            if (!allowOverride && await Utils.fileExists(usersPath))
                 return false;
             else
-                writeFileSync(usersPath, xmlDataStr, {flag: "w+"})
+                await Utils.writeFile(usersPath, xmlDataStr, {flag: "w+"})
 
-            if (!allowOverride && fs.existsSync(eventsPath))
+            if (!allowOverride && await Utils.fileExists(eventsPath))
                 return false;
             else {
                 if (createOrOverrideEvents)
-                    writeFileSync(eventsPath, "<events></events>", {flag: "w+"})
+                    await Utils.writeFile(eventsPath, "<events></events>", {flag: "w+"})
             }
 
             return true
@@ -168,24 +172,26 @@ export module XMLManager {
      * @param {boolean} allowOverride Set to true to allow overriding existing groups
      * @return {boolean} Returns if the operation was successful or not
      */
-    export function insertGroup(uid: string, name: string, url: string, allowOverride: boolean): boolean {
+    export async function insertGroup(uid: string, name: string, url: string, allowOverride: boolean): Promise<boolean> {
         try {
             const builder = new XMLBuilder({})
             let xmlDataStr: string = builder.build({group: {uid: uid, name: name, url: url}});
-            createFoldersIfNotExist()
+            let awaitable = createFoldersIfNotExist()
 
             const groupsPath = PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml"
 
-            if (!allowOverride && fs.existsSync(groupsPath))
-                return false;
-            else
-                writeFileSync(groupsPath, xmlDataStr, {flag: "w+"})
 
-            if (!allowOverride && fs.existsSync(eventsPath))
+            await awaitable;
+            if (!allowOverride && await Utils.fileExists(groupsPath))
                 return false;
             else
-                writeFileSync(eventsPath, "<events></events>", {flag: "w+"})
+                await Utils.writeFile(groupsPath, xmlDataStr, {flag: "w+"})
+
+            if (!allowOverride && await Utils.fileExists(eventsPath))
+                return false;
+            else
+                await Utils.writeFile(eventsPath, "<events></events>", {flag: "w+"})
 
             return true
 
@@ -203,23 +209,25 @@ export module XMLManager {
      * @param {CalendarEvent} event The event to be added
      * @return {boolean} Returns if the operation was successful or not
      */
-    export function insertEvent(uid: string, event: CalendarEvent): boolean {
+    export async function insertEvent(uid: string, event: CalendarEvent): Promise<boolean> {
         try {
-            var events = getAllEventsJSON(uid)
+            let eventsPromise = getAllEventsJSON(uid)
 
             const builder = new XMLBuilder({
                 ignoreAttributes: false,
                 attributesGroupName: "event",
             })
+
+            let events = await eventsPromise;
             console.log(events);
 
             events.event.push(event)
             events = {events: events}
 
-            var xmlDataStr: string = builder.build(events)
+            let xmlDataStr: string = builder.build(events)
             console.log(xmlDataStr);
 
-            writeFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            await Utils.writeFile(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e);
@@ -234,9 +242,9 @@ export module XMLManager {
      * @param {string} uid The unique (user or group) id
      * @return {string} Returns the events as an XML or "<events></events>" if none are found
      */
-    export function getAllEvents(uid: string): string {
+    export async function getAllEvents(uid: string): Promise<string> {
         try {
-            return fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
+            return await Utils.readFile(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
         } catch (error) {
             console.log(error);
             return "<events></events>"
@@ -254,13 +262,13 @@ export module XMLManager {
         return Handlers.xmlEventsToHtmlGridView(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
     }
 
-    export function getWeekEventsAsHTML(uid: string, startdate: string, enddate: string, timeline: boolean) {
+    export async function getWeekEventsAsHTML(uid: string, startdate: string, enddate: string, timeline: boolean) {
         //fetch
         let boundaryStartDate = new Date(startdate);
         let boundaryEndDate = new Date(enddate);
         const builder = new XMLBuilder({attributesGroupName: "event"})
 
-        let events = getAllEventsJSON(uid);
+        let events = await getAllEventsJSON(uid);
         if (events == "") {
             return null
         } else if (Array.isArray(events['event'])) {
@@ -276,7 +284,7 @@ export module XMLManager {
             xmlEvents += builder.build(x) + "</events>"
 
             let path = PATH_DATA_EVENTS + "tmp_" + Utils.GenSHA256Hash(uid) + ".xml";
-            writeFileSync(path, xmlEvents)
+            let awaitable = Utils.writeFile(path, xmlEvents);
             let htmlString: string
             console.log(timeline);
             if (timeline) {
@@ -288,7 +296,9 @@ export module XMLManager {
 
                 htmlString = Handlers.xmlEventsToHtmlGridView(path);
             }
-            fs.rmSync(path)
+            await awaitable;
+            await Utils.removeFile(path);
+
             return htmlString
         } else {
             return "This is an object"
@@ -302,18 +312,18 @@ export module XMLManager {
      * @param {string} uid The uid of the user or group
      * @return {*}  {*} Returns null or >= 1 event
      */
-    function getAllEventsJSON(uid: string): any {
+    async function getAllEventsJSON(uid: string): Promise<any> {
         const parser = new XMLParser({
             isArray(tagName) {
                 return tagName == "event";
 
             },
         })
-        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
-        var events = parser.parse(data)["events"]
+        let data = Utils.readFile(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", {encoding: "utf-8"})
+        let events = parser.parse(await data)["events"]
         if (events == undefined || events == "")
             events = {event: []}
-        return events
+        return events;
     }
 
     /**
@@ -323,10 +333,11 @@ export module XMLManager {
      * @param {string} uid The unique user id
      * @return {boolean}  Returns if the operation was successful or not
      */
-    export function deleteUser(uid: string): boolean {
+    export async function deleteUser(uid: string): Promise<boolean> {
         try {
-            fs.rmSync(PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml")
-            fs.rmSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+            let a = Utils.removeFile(PATH_DATA_USERS + Utils.GenSHA256Hash(uid) + ".xml")
+            let b = Utils.removeFile(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+            await a,b;
             return true
         } catch (e) {
             console.log(e)
@@ -341,10 +352,11 @@ export module XMLManager {
      * @param {string} uid The unique group id
      * @return {boolean} {boolean} Returns if the operation was successful or not
      */
-    export function deleteGroup(uid: string): boolean {
+    export async function deleteGroup(uid: string): Promise<boolean> {
         try {
-            fs.rmSync(PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml")
-            fs.rmSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml")
+            let a = Utils.removeFile(PATH_DATA_GROUPS + Utils.GenSHA256Hash(uid) + ".xml");
+            let b = Utils.removeFile(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml");
+            await a,b;
             return true
         } catch (e) {
             console.log(e)
@@ -359,9 +371,9 @@ export module XMLManager {
      * @param {string} eventUid The unique event id
      * @return {boolean}  Returns if the operation was successful or not
      */
-    export function deleteEvent(uid: string, eventUid: string): boolean {
+    export async function deleteEvent(uid: string, eventUid: string): Promise<boolean> {
         try {
-            let events: any[] = getAllEventsJSON(uid)['event'];
+            let events: any[] = (await getAllEventsJSON(uid))['event'];
             let filteredEvents: any[] = events.filter(event => event.uid != eventUid);
 
             let data = {events: {event: filteredEvents}};
@@ -373,7 +385,7 @@ export module XMLManager {
             let xmlDataStr = builder.build(data);
             console.log(xmlDataStr);
 
-            writeFileSync(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            await Utils.writeFile(PATH_DATA_EVENTS + Utils.GenSHA256Hash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e)
@@ -387,15 +399,16 @@ export module XMLManager {
      * @export
      * @return {string}  {string} The XML string of all groups or just <groups></groups>
      */
-    export function getAllGroups(): string {
+    export async function getAllGroups(): Promise<string> {
         try {
-            const entries: string[] = fs.readdirSync(PATH_DATA_GROUPS);
+            const entriesPromise: Promise<string[]> = Utils.readDirectory(PATH_DATA_GROUPS);
             let xmlStr: string = "<groups>";
+            const entries = await entriesPromise;
             for (const entry in entries) {
                 if (Object.prototype.hasOwnProperty.call(entries, entry)) {
                     const element = entries[entry];
-                    let data = fs.readFileSync(PATH_DATA_GROUPS + "/" + element, "utf-8");
-                    xmlStr = xmlStr.concat(data)
+                    let data = Utils.readFile(PATH_DATA_GROUPS + "/" + element, "utf-8");
+                    xmlStr = xmlStr.concat(await data)
                 }
             }
             xmlStr = xmlStr.concat("</groups>")
@@ -476,10 +489,11 @@ export module XMLManager {
         }
     }
 
-    export function getAllUsers(): User[] {
+    export async function getAllUsers(): Promise<User[]> {
         let result: User[] = [];
         try {
-            const entries: string[] = fs.readdirSync(PATH_DATA_USERS);
+            const entriesPromise: Promise<string[]> = Utils.readDirectory(PATH_DATA_USERS);
+            const entries = await entriesPromise;
             for (const entry in entries) {
                 if (Object.prototype.hasOwnProperty.call(entries, entry)) {
                     const parser = new XMLParser({
@@ -487,8 +501,8 @@ export module XMLManager {
                         attributesGroupName: "group"
                     })
                     const element = entries[entry];
-                    let data = fs.readFileSync(PATH_DATA_USERS + element, "utf-8");
-                    const person = parser.parse(data)["person"]
+                    let data = Utils.readFile(PATH_DATA_USERS + element, "utf-8");
+                    const person = parser.parse(await data)["person"]
                     result.push(new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
                         person.group, person.editableGroup, person.darkMode, person.isAdministrator))
                 }
@@ -499,9 +513,9 @@ export module XMLManager {
         return result
     }
 
-    export function getAllUsersAsXML(): string {
+    export async function getAllUsersAsXML(): Promise<string> {
         let builder = new XMLBuilder({})
-        let users: User[] = getAllUsers()
+        let users: User[] = await getAllUsers()
         let friendlyArray: any[] = []
         users.forEach(user => {
             user.passwordHash = ""
@@ -512,23 +526,23 @@ export module XMLManager {
         return "<users>" + xmlString + "</users>"
     }
 
-    export function getTokens() {
+    export async function getTokens() {
         const parser = new XMLParser()
         try {
-            const data = fs.readFileSync(PATH_TOKEN_FILE, {encoding: "utf-8"})
-            return parser.parse(data)["Tokens"]["Token"]
+            const data = Utils.readFile(PATH_TOKEN_FILE, {encoding: "utf-8"})
+            return parser.parse(await data)["Tokens"]["Token"]
         } catch {
             return []
         }
     }
 
-    export function saveTokens(xmlString: string) {
-        writeFileSync(PATH_TOKEN_FILE, xmlString, {flag: "w+", encoding: "utf-8"})
+    export async function saveTokens(xmlString: string) {
+        await Utils.writeFile(PATH_TOKEN_FILE, xmlString, {flag: "w+", encoding: "utf-8"})
     }
 
-    export function updateUser(uid: string, requestBody: any): number {
+    export async function updateUser(uid: string, requestBody: any): Promise<number> {
         let json = convertXMLResponseJSONToCorrectJSONForUser(requestBody.user)
-        let user: User | null = getUserByUid(uid)
+        let user: User | null = await getUserByUid(uid)
 
         if (user == undefined) return 404;
 
@@ -540,13 +554,13 @@ export module XMLManager {
         if (json.darkMode != undefined) user.darkMode = json.darkMode
         if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
 
-        if (insertUser(user, true, false)) return 204
+        if (await insertUser(user, true, false)) return 204
         return 400
     }
 
-    export function updateUserAsAdmin(uid: string, requestBody: any): number {
+    export async function updateUserAsAdmin(uid: string, requestBody: any): Promise<number> {
         let json = convertXMLResponseJSONToCorrectJSONForUser(requestBody.user)
-        let user: User | null = getUserByUid(uid)
+        let user: User | null = await getUserByUid(uid)
 
         if (user == undefined || json == undefined) return 404;
 
@@ -560,19 +574,16 @@ export module XMLManager {
         if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
         if (json.isAdministrator != undefined) user.isAdministrator = json.isAdministrator
 
-        if (insertUser(user, true, false)) return 204
+        if (await insertUser(user, true, false)) return 204
         return 400
     }
 
-    function createFoldersIfNotExist() {
-        if (!fs.existsSync(PATH_DATA_EVENTS))
-            fs.mkdirSync(PATH_DATA_EVENTS);
+    async function createFoldersIfNotExist() {
+        let a = Utils.createDirectoryIfNotExists(PATH_DATA_USERS);
+        let b = Utils.createDirectoryIfNotExists(PATH_DATA_GROUPS);
+        let c = Utils.createDirectoryIfNotExists(PATH_DATA_EVENTS);
 
-        if (!fs.existsSync(PATH_DATA_USERS))
-            fs.mkdirSync(PATH_DATA_USERS);
-
-        if (!fs.existsSync(PATH_DATA_GROUPS))
-            fs.mkdirSync(PATH_DATA_GROUPS);
+        await a, b, c;
     }
 }
 
