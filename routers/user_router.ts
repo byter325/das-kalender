@@ -47,7 +47,7 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
 
         if (value != undefined) {
             value.passwordHash = ""
-            const xmlDataStr = builder.build(value)
+            const xmlDataStr = builder.build({ user: value })
             response.status(200)
             response.send(xmlDataStr)
         } else return response.sendStatus(404)
