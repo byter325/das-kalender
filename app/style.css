@@ -874,6 +874,8 @@ table {
 #timelines,
 #login-and-registration,
 #admin-tools,
-#statusInfo {
+#statusInfo,
+#loginMessage,
+#loginRegistrationSpinner {
     display: none;
 }

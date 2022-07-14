@@ -43,14 +43,14 @@ function initTooltips() {
 function insertCourseEvents(course, start, end) {
     $.ajax({
         url: `/api/calendar/${course}?start=${start}&end=${end}&type=HTML`,
-        xhrFields: {withCredentials: true}
+        xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#eventGrid').after(data);
         adjustDays();
     });
     $.ajax({
         url: `/api/calendar/${course}?timeline=true&start=${start}&end=${end}&type=HTML`,
-        xhrFields: {withCredentials: true}
+        xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#timelines').replaceWith(data);
         $('#timelines').show();
@@ -60,7 +60,7 @@ function insertCourseEvents(course, start, end) {
 function insertUserEvents(uid, from, to) {
     $.ajax({
         url: `/api/calendar/${uid}?type=HTML&start=${from}&end=${to}`,
-        xhrFields: {withCredentials: true}
+        xhrFields: { withCredentials: true }
     }).done(function (data) {
         $('#eventGrid').after(data);
         adjustDays();
@@ -151,10 +151,19 @@ function getWeekRange(w, y) {
 }
 
 function checkTokenCredentials() {
-    console.log("Token is being checked.");
     const token = getCookie('AuthToken');
-    console.log(token);
-    if (token.length > 0) {
+    console.log('Found token:', token);
+    if (token && token.length > 0) {
+        $.get(`/api/users/${getCookie('UID')}`)
+            .done(function (data) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'application/xml');
+                console.log('Successful login', doc);
+            })
+            .fail(function () {
+                console.info('Login failed');
+                doLogout();
+            });
         $('#loggedin-bar').show();
         $('#kalender').show(500);
         $('#button-row').show();
@@ -219,9 +228,7 @@ $(() => {
     });
     $('#logout-button').click(doLogout);
     $('#switchDarkMode').change(function () {
-        setCookie('DarkMode', this.checked);
-        // TODO: entweder Cookie auf Server ändern oder Cookie weglassen und nur über JS steuern
-        // je nach API-Funktionalität
+        setCookie('DarkMode', this.checked, 0.5);
         handleDarkMode();
     });
 
@@ -367,6 +374,7 @@ async function submitLogin() {
 }
 
 function doLogin(uid, password) {
+    $('#loginRegistrationSpinner').show();
     $.post('/login', {
         loginMail: uid,
         loginPassword: password
@@ -379,21 +387,12 @@ function doLogin(uid, password) {
                 document.forms['loginForm'].reset();
                 document.forms['registrationForm'].reset();
             }, 1000);
-
-            $.ajax({
-                type: 'GET',
-                url: '/api/getActiveUser', // TODO: change, getActiveUser does not exist
-                xhrFields: {
-                    withCredentials: true
-                }
-            }).done(function (data) {
-                var domParser = new DOMParser();
-                window.activeUser = domParser.parseFromString(data, "text/xml");
-                $('#statusInfo').text("Hallo, " + $(window.activeUser).find("firstName").text()).show();
-            });
         })
         .fail(function () {
             $('#loginMessage').removeClass("alert-success").addClass("alert-danger").text("Login fehlgeschlagen!").show();
+        })
+        .always(function () {
+            $('#loginRegistrationSpinner').hide();
         });
 }
 
@@ -402,10 +401,12 @@ function doLogout() {
     $.ajax({
         url: `/api/token?token=${getCookie('AuthToken')}`,
         method: 'DELETE'
-    });
-    setCookie('AuthToken', '', 0);
-    setCookie('UID', '', 0);
-    checkTokenCredentials();
+    })
+        .always(function () {
+            setCookie('AuthToken', '', 0);
+            setCookie('UID', '', 0);
+            checkTokenCredentials();
+        });
 }
 
 async function submitRegistration() {
@@ -414,26 +415,19 @@ async function submitRegistration() {
     const password = registrationForm["registrationPassword"].value;
     const firstName = registrationForm["registrationFirstName"].value;
     const lastName = registrationForm["registrationLastName"].value;
-    $.ajax({
-        type: 'POST',
-        url: '/register',
-        xhrFields: {
-            withCredentials: true
-        },
-        data: {
-            registrationMail: email,
-            registrationFirstName: firstName,
-            registrationLastName: lastName,
-            registrationPassword: password,
-        },
-        statusCode: {
-            200: () => {
-                doLogin(email, password);
-                document.forms['loginForm'].reset();
-                document.forms['registrationForm'].reset();
-            }
-        }
-    });
+    $('#loginRegistrationSpinner').show();
+    $.post('/register', {
+        registrationMail: email,
+        registrationFirstName: firstName,
+        registrationLastName: lastName,
+        registrationPassword: password,
+    })
+        .done(function () {
+            doLogin(email, password);
+            document.forms['loginForm'].reset();
+            document.forms['registrationForm'].reset();
+        })
+        .fail(function () { $('#loginRegistrationSpinner').hide(); })
     document.forms["loginForm"].reset();
     registrationForm.reset();
 }
@@ -477,7 +471,7 @@ async function submitAdminManageGroups() {
     const uid = name;
     const url = adminManageGroupsForm["adminManageGroupsRaplaUrl"].value;
     console.log(name, url);
-    $.post('/api/groups', {uid, name, url})
+    $.post('/api/groups', { uid, name, url })
         .done(() => adminManageGroupsForm.reset())
         .always(openAdminManageGroups);
 }
@@ -522,9 +516,8 @@ async function openAdminManageUsers() {
                 $.ajax({
                     url: `/api/users/${uid}`,
                     method: 'PUT',
-                    data: {uid, firstName, lastName, mail, passwordHash, isAdministrator}
-                })
-                    .done(openAdminManageUsers);
+                    data: { uid, firstName, lastName, mail, passwordHash, isAdministrator }
+                }).done(openAdminManageUsers);
             });
         });
 }
