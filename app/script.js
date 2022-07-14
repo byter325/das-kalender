@@ -1,6 +1,6 @@
 "use strict";
 
-// https://www.w3schools.com/js/js_cookies.asp
+// inspired by https://www.w3schools.com/js/js_cookies.asp
 function getCookie(cname) {
     let name = cname + '=';
     let decodedCookie = decodeURIComponent(document.cookie);
@@ -21,7 +21,7 @@ function setCookie(cname, cvalue, exdays) {
     const d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
     let expires = 'expires=' + d.toUTCString();
-    document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
+    document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/;SameSite=Strict';
 }
 
 function getCurrentKw() {
@@ -165,10 +165,10 @@ function checkTokenCredentials() {
                     const mail = doc.getElementsByTagName('mail')[0].textContent;
                     const darkMode = doc.getElementsByTagName('darkMode')[0].textContent == 'true';
 
-                    if (firstName && lastName)
+                    if (firstName != undefined && lastName != undefined)
                         $('#profileUserName').text(`${firstName} ${lastName}`);
-                    if (darkMode)
-                        handleDarkMode(darkMode);
+                    if (darkMode != undefined)
+                        handleDarkMode(false, darkMode);
 
                     if (isAdmin) { $('#admin-tools').show(); }
                     else { $('#admin-tools').hide(); }
@@ -237,8 +237,7 @@ $(async () => {
     });
     $('#logout-button').click(doLogout);
     $('#switchDarkMode').change(function () {
-        setCookie('DarkMode', this.checked, 0.5);
-        handleDarkMode();
+        handleDarkMode(true, this.checked);
     });
 
     $('#userSettingsForm').submit(function () {
@@ -539,10 +538,21 @@ function setDarkMode(isDarkModeEnabled) {
     $('link[title="Dark mode"]').prop('disabled', !isDarkModeEnabled);
 }
 
-async function handleDarkMode(darkMode = undefined) {
+async function handleDarkMode(sendToServer = false, darkMode = undefined) {
     if (darkMode != undefined)
         setCookie('DarkMode', darkMode, '0.5');
     var darkMode = getCookie('DarkMode') === 'true';
     $('#switchDarkMode').prop('checked', darkMode);
     setDarkMode(darkMode);
+    if (sendToServer)
+        $.ajax({
+            url: `/api/users/${getCookie('UID')}`,
+            method: 'PUT',
+            data: {
+                user: {
+                    uid: getCookie('UID'),
+                    darkMode
+                }
+            }
+        });
 }
