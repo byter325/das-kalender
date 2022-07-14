@@ -110,14 +110,14 @@ export module Utils {
             [{}], false, false)
     }
 
-    export function getNextUID(): number {
+    export function getNextUID(): string {
         if (!idFetched) {
             currUID = getLastUID();
             idFetched = true;
         }
         currUID++;
         saveUID(currUID);
-        return currUID;
+        return "" + currUID;
     }
 
     function createDirectoryIfNotExists(path: string): void {
