@@ -1,8 +1,8 @@
 import * as express from 'express'
-import {Utils} from '../lib/utils';
-import {XMLManager} from '../lib/xml_manager';
-import {AuthManager} from "../lib/authManager";
-import {XMLBuilder} from "fast-xml-parser";
+import { Utils } from '../lib/utils';
+import { XMLManager } from '../lib/xml_manager';
+import { AuthManager } from "../lib/authManager";
+import { XMLBuilder } from "fast-xml-parser";
 
 const usersRouter = express.Router();
 
@@ -37,7 +37,16 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
             attributesGroupName: "token"
         })
         console.log(AuthManager.users)
-        const value = AuthManager.users.get(request.params.uid)
+        var value = AuthManager.users.get(request.params.uid)
+        if (value == undefined) {
+            const uidAsNumber: any = + request.params.uid
+            if (isNaN(uidAsNumber))
+                value = undefined
+            else
+                value = AuthManager.users.get(uidAsNumber)
+        }
+        console.log('VALUE IS', value, 'REQUEST PARAMS', request.params);
+
         if (value != undefined) {
             value.passwordHash = ""
             const xmlDataStr = builder.build(value)

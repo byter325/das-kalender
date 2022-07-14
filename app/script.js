@@ -150,33 +150,14 @@ function getWeekRange(w, y) {
     };
 }
 
-function checkTokenCredentials() {
+async function checkTokenCredentials() {
     const token = getCookie('AuthToken');
     console.log('Found token:', token);
     if (token && token.length > 0) {
-        $.get(`/api/users/${getCookie('UID')}`)
-            .done(function (data) {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data, 'application/xml');
-                console.log('Successful login', doc);
-            })
-            .fail(function () {
-                console.info('Login failed');
-                doLogout();
-            });
-        $('#loggedin-bar').show();
-        $('#kalender').show(500);
-        $('#button-row').show();
-        $('#timelines').show(500);
-        $('#login-and-registration').hide();
-        const ADMIN_DEBUG = true;
-        const isAdmin = true;
-        if (isAdmin) {
-            $('#admin-tools').show();
-        } else {
-            $('#admin-tools').hide();
-        }
-        return true;
+        console.log('TOKEN.LENGTH > 0');
+        isTokenValid()
+            .done(function () { console.log('CTC TRUE'); return true; })
+            .fail(function () { console.log('CTC FALSE'); return false; });
     } else {
         $('#loggedin-bar').hide();
         $('#kalender').hide();
@@ -186,6 +167,31 @@ function checkTokenCredentials() {
         $('#admin-tools').hide();
         return false;
     }
+}
+
+function isTokenValid() {
+    return $.get(`/api/users/${getCookie('UID')}`)
+        .done(function (data) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'application/xml');
+            console.log('Successful login', doc);
+            $('#loggedin-bar').show();
+            $('#kalender').show(500);
+            $('#button-row').show();
+            $('#timelines').show(500);
+            $('#login-and-registration').hide();
+            const ADMIN_DEBUG = true;
+            const isAdmin = true;
+            if (isAdmin) {
+                $('#admin-tools').show();
+            } else {
+                $('#admin-tools').hide();
+            }
+        })
+        .fail(function () {
+            console.info('Login failed');
+            doLogout();
+        });
 }
 
 $(() => {
