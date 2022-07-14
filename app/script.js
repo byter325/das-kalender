@@ -2,7 +2,7 @@
 
 // https://www.w3schools.com/js/js_cookies.asp
 function getCookie(cname) {
-    let name = cname + "=";
+    let name = cname + '=';
     let decodedCookie = decodeURIComponent(document.cookie);
     let ca = decodedCookie.split(';');
     for (let i = 0; i < ca.length; i++) {
@@ -14,14 +14,14 @@ function getCookie(cname) {
             return c.substring(name.length, c.length);
         }
     }
-    return "";
+    return '';
 }
 
 function setCookie(cname, cvalue, exdays) {
     const d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    let expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    let expires = 'expires=' + d.toUTCString();
+    document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
 }
 
 function getCurrentKw() {
@@ -75,36 +75,35 @@ function clearEvents() {
 function updateSite() {
     clearEvents();
     let weekRange = getWeekRange(window.calweek, window.calyear);
-    $('#calweek').text('KW ' + window.calweek + " (" + weekRange.startDay.toLocaleDateString() + " - " + weekRange.endDay.toLocaleDateString() + ")");
+    $('#calweek').text('KW ' + window.calweek + ' (' + weekRange.startDay.toLocaleDateString() + ' - ' + weekRange.endDay.toLocaleDateString() + ')');
     // TODO: use user's group
-    insertCourseEvents("TINF21B1", weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
-    insertUserEvents(getCookie("UID"), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
-    // insertUserEvents($(window.activeUser).find("uid").text(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    insertCourseEvents('TINF21B1', weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    insertUserEvents(getCookie('UID'), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
 }
 
 function adjustDays() {
-    var days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+    var days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     var dayCols = [2, 6, 10, 14, 18, 22, 26];
     days.forEach((day, dayindex) => {
         for (let i = 0; i < 44; i++) {
             var eventsAtRow = [];
             $('[data-day=' + day + ']').each((index, element) => {
-                var rowStart = Math.floor(((parseInt($(element).attr("data-starthour")) - 8) * 60 + parseInt($(element).attr("data-startminute"))) / 15);
-                var rowEnd = Math.floor(((parseInt($(element).attr("data-starthour")) - 8) * 60 + parseInt($(element).attr("data-startminute")) + parseInt($(element).attr("data-duration"))) / 15);
+                var rowStart = Math.floor(((parseInt($(element).attr('data-starthour')) - 8) * 60 + parseInt($(element).attr('data-startminute'))) / 15);
+                var rowEnd = Math.floor(((parseInt($(element).attr('data-starthour')) - 8) * 60 + parseInt($(element).attr('data-startminute')) + parseInt($(element).attr('data-duration'))) / 15);
                 if (rowStart <= i && rowEnd >= i) eventsAtRow.push(element);
             });
             if (eventsAtRow.length == 2) {
                 eventsAtRow.forEach((ki) => {
-                    $(ki).removeClass("ki-colspan-4");
-                    $(ki).addClass("ki-colspan-2");
+                    $(ki).removeClass('ki-colspan-4');
+                    $(ki).addClass('ki-colspan-2');
                 });
                 $(eventsAtRow[1]).removeClass('ki-day-' + day);
                 $(eventsAtRow[1]).addClass('ki-col-' + (dayCols[dayindex] + 2));
             }
             if (eventsAtRow.length == 3) {
                 eventsAtRow.forEach((ki) => {
-                    $(ki).removeClass("ki-colspan-4");
-                    $(ki).addClass("ki-colspan-1");
+                    $(ki).removeClass('ki-colspan-4');
+                    $(ki).addClass('ki-colspan-1');
                 });
                 $(eventsAtRow[1]).removeClass('ki-day-' + day);
                 $(eventsAtRow[1]).addClass('ki-col-' + (dayCols[dayindex] + 1));
@@ -113,8 +112,8 @@ function adjustDays() {
             }
             if (eventsAtRow.length >= 4) {
                 eventsAtRow.forEach((ki) => {
-                    $(ki).removeClass("ki-colspan-4");
-                    $(ki).addClass("ki-colspan-1");
+                    $(ki).removeClass('ki-colspan-4');
+                    $(ki).addClass('ki-colspan-1');
                 });
                 $(eventsAtRow[1]).removeClass('ki-day-' + day);
                 $(eventsAtRow[1]).addClass('ki-col-' + (dayCols[dayindex] + 1));
@@ -150,59 +149,63 @@ function getWeekRange(w, y) {
     };
 }
 
-async function checkTokenCredentials() {
-    const token = getCookie('AuthToken');
-    console.log('Found token:', token);
-    if (token && token.length > 0) {
-        console.log('TOKEN.LENGTH > 0');
-        isTokenValid()
-            .done(function () { console.log('CTC TRUE'); return true; })
-            .fail(function () { console.log('CTC FALSE'); return false; });
-    } else {
-        $('#loggedin-bar').hide();
-        $('#kalender').hide();
-        $('#button-row').hide();
-        $('#timelines').hide();
-        $('#login-and-registration').show(500);
-        $('#admin-tools').hide();
-        return false;
-    }
+function checkTokenCredentials() {
+    return new Promise(function (resolve) {
+        const token = getCookie('AuthToken');
+        if (token && token.length > 0) {
+            $.get(`/api/users/${getCookie('UID')}`)
+                .done(function (data) {
+                    console.log('Successful login', data);
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, 'application/xml');
+                    const isAdmin = doc.getElementsByTagName('isAdministrator')[0].textContent == 'true';
+                    const firstName = doc.getElementsByTagName('firstName')[0].textContent;
+                    const lastName = doc.getElementsByTagName('lastName')[0].textContent;
+                    const initials = doc.getElementsByTagName('initials')[0].textContent;
+                    const mail = doc.getElementsByTagName('mail')[0].textContent;
+                    const darkMode = doc.getElementsByTagName('darkMode')[0].textContent == 'true';
+
+                    if (firstName && lastName)
+                        $('#profileUserName').text(`${firstName} ${lastName}`);
+                    if (darkMode)
+                        handleDarkMode(darkMode);
+
+                    if (isAdmin) { $('#admin-tools').show(); }
+                    else { $('#admin-tools').hide(); }
+
+                    $('#loggedin-bar').show();
+                    $('#kalender').show(500);
+                    $('#button-row').show();
+                    $('#timelines').show(500);
+                    $('#login-and-registration').hide();
+                    resolve(true);
+                })
+                .fail(function () {
+                    console.info('Login failed');
+                    doLogout();
+                    resolve(false);
+                });
+        } else {
+            $('#loggedin-bar').hide();
+            $('#kalender').hide();
+            $('#button-row').hide();
+            $('#timelines').hide();
+            $('#login-and-registration').show(500);
+            $('#admin-tools').hide();
+            resolve(false);
+        }
+    });
 }
 
-function isTokenValid() {
-    return $.get(`/api/users/${getCookie('UID')}`)
-        .done(function (data) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data, 'application/xml');
-            console.log('Successful login', doc);
-            $('#loggedin-bar').show();
-            $('#kalender').show(500);
-            $('#button-row').show();
-            $('#timelines').show(500);
-            $('#login-and-registration').hide();
-            const ADMIN_DEBUG = true;
-            const isAdmin = true;
-            if (isAdmin) {
-                $('#admin-tools').show();
-            } else {
-                $('#admin-tools').hide();
-            }
-        })
-        .fail(function () {
-            console.info('Login failed');
-            doLogout();
-        });
-}
-
-$(() => {
-    if (!window.hasOwnProperty("calweek")) {
+$(async () => {
+    if (!window.hasOwnProperty('calweek')) {
         window.calweek = getCurrentKw();
     }
-    if (!window.hasOwnProperty("calyear")) {
+    if (!window.hasOwnProperty('calyear')) {
         window.calyear = new Date().getFullYear();
     }
 
-    if (checkTokenCredentials()) {
+    if (await checkTokenCredentials()) {
         updateSite();
     }
 
@@ -276,44 +279,44 @@ $(() => {
 
 /* UI events */
 function editEvent(buttonClicked) {
-    const eventId = buttonClicked.getAttribute("data-event-id"); // TODO: 'Anführungszeichen' oder "Anführungszeichen"
-    const eventOwnerId = buttonClicked.getAttribute("data-event-owner-id");
+    const eventId = buttonClicked.getAttribute('data-event-id');
+    const eventOwnerId = buttonClicked.getAttribute('data-event-owner-id');
     // TODO: get event information
-    const editEventForm = document.forms["editEventForm"];
-    editEventForm["editEventId"].value = eventId;
-    console.log(eventId, editEventForm["editEventId"].value);
-    editEventForm["editEventTitle"].value = "Ein zufälliger Titel";
-    editEventForm["editEventDescription"].value = "Lorem ipsum";
-    editEventForm["editEventCategory"].value = "Other";
-    editEventForm["editEventLocation"].value = "Mond 🌛";
-    editEventForm["editEventStart"].value = "2020-02-02T22:22";
-    editEventForm["editEventEnd"].value = "2022-02-22T20:20";
-    editEventForm["editEventOwnerId"].value = eventOwnerId;
+    const editEventForm = document.forms['editEventForm'];
+    editEventForm['editEventId'].value = eventId;
+    console.log(eventId, editEventForm['editEventId'].value);
+    editEventForm['editEventTitle'].value = 'Ein zufälliger Titel';
+    editEventForm['editEventDescription'].value = 'Lorem ipsum';
+    editEventForm['editEventCategory'].value = 'Other';
+    editEventForm['editEventLocation'].value = 'Mond 🌛';
+    editEventForm['editEventStart'].value = '2020-02-02T22:22';
+    editEventForm['editEventEnd'].value = '2022-02-22T20:20';
+    editEventForm['editEventOwnerId'].value = eventOwnerId;
 }
 
 function deleteEvent(buttonClicked) {
-    const eventId = buttonClicked.getAttribute("data-event-id");
+    const eventId = buttonClicked.getAttribute('data-event-id');
     // TODO: get event information
-    const deleteEventForm = document.forms["deleteEventForm"];
-    deleteEventForm["deleteEventId"].value = eventId;
-    deleteEventForm["deleteEventTitle"].value = "Etwas zum Löschen";
-    deleteEventForm["deleteEventDescription"].value = "Das ist definitiv löschbar";
-    deleteEventForm["deleteEventCategory"].value = "Lecture";
-    deleteEventForm["deleteEventLocation"].value = "An der DHBW";
-    deleteEventForm["deleteEventStart"].value = "1970-01-01T08:00";
-    deleteEventForm["deleteEventEnd"].value = "1970-01-01T09:30";
+    const deleteEventForm = document.forms['deleteEventForm'];
+    deleteEventForm['deleteEventId'].value = eventId;
+    deleteEventForm['deleteEventTitle'].value = 'Etwas zum Löschen';
+    deleteEventForm['deleteEventDescription'].value = 'Das ist definitiv löschbar';
+    deleteEventForm['deleteEventCategory'].value = 'Lecture';
+    deleteEventForm['deleteEventLocation'].value = 'An der DHBW';
+    deleteEventForm['deleteEventStart'].value = '1970-01-01T08:00';
+    deleteEventForm['deleteEventEnd'].value = '1970-01-01T09:30';
 }
 
 async function submitEditEvent() {
-    const editEventForm = document.forms["editEventForm"];
-    const eventId = editEventForm["editEventId"];
-    const ownerId = editEventForm["editEventOwnerId"];
-    const title = editEventForm["title"];
-    const description = editEventForm["description"];
-    const category = editEventForm["category"];
-    const location = editEventForm["location"];
-    const start = editEventForm["start"];
-    const end = editEventForm["end"];
+    const editEventForm = document.forms['editEventForm'];
+    const eventId = editEventForm['editEventId'];
+    const ownerId = editEventForm['editEventOwnerId'];
+    const title = editEventForm['title'];
+    const description = editEventForm['description'];
+    const category = editEventForm['category'];
+    const location = editEventForm['location'];
+    const start = editEventForm['start'];
+    const end = editEventForm['end'];
     $.ajax({
         type: 'PUT',
         url: '/api/calendar/' + ownerId + '?eventId=' + eventId,
@@ -332,8 +335,8 @@ async function submitEditEvent() {
 }
 
 async function submitDeleteEvent() {
-    const deleteEventForm = document.forms["deleteEventForm"];
-    const uid = deleteEventForm["deleteEventId"];
+    const deleteEventForm = document.forms['deleteEventForm'];
+    const uid = deleteEventForm['deleteEventId'];
     $.ajax({
         type: 'DELETE',
         url: '/api/calendar',
@@ -347,13 +350,13 @@ async function submitDeleteEvent() {
 }
 
 async function submitNewEvent() {
-    const newEventForm = document.forms["newEventForm"];
-    const title = newEventForm["newEventTitle"];
-    const description = newEventForm["newEventDescription"];
-    const category = newEventForm["newEventCategory"];
-    const location = newEventForm["newEventLocation"];
-    const start = newEventForm["newEventStart"];
-    const end = newEventForm["newEventEnd"];
+    const newEventForm = document.forms['newEventForm'];
+    const title = newEventForm['newEventTitle'];
+    const description = newEventForm['newEventDescription'];
+    const category = newEventForm['newEventCategory'];
+    const location = newEventForm['newEventLocation'];
+    const start = newEventForm['newEventStart'];
+    const end = newEventForm['newEventEnd'];
     $.ajax({
         type: 'POST',
         url: '/api/calendar',
@@ -373,9 +376,9 @@ async function submitNewEvent() {
 }
 
 async function submitLogin() {
-    const loginForm = document.forms["loginForm"];
-    const email = loginForm["loginMail"].value;
-    const password = loginForm["loginPassword"].value;
+    const loginForm = document.forms['loginForm'];
+    const email = loginForm['loginMail'].value;
+    const password = loginForm['loginPassword'].value;
     doLogin(email, password);
 }
 
@@ -386,7 +389,7 @@ function doLogin(uid, password) {
         loginPassword: password
     })
         .done(function () {
-            $('#loginMessage').removeClass("alert-danger").addClass("alert-success").text("Login erfolgreich!").show();
+            $('#loginMessage').removeClass('alert-danger').addClass('alert-success').text('Login erfolgreich!').show();
             setTimeout(() => {
                 checkTokenCredentials();
                 $('#loginMessage').hide();
@@ -395,7 +398,7 @@ function doLogin(uid, password) {
             }, 1000);
         })
         .fail(function () {
-            $('#loginMessage').removeClass("alert-success").addClass("alert-danger").text("Login fehlgeschlagen!").show();
+            $('#loginMessage').removeClass('alert-success').addClass('alert-danger').text('Login fehlgeschlagen!').show();
         })
         .always(function () {
             $('#loginRegistrationSpinner').hide();
@@ -403,7 +406,7 @@ function doLogin(uid, password) {
 }
 
 function doLogout() {
-    console.log("User logout");
+    console.log('User logout');
     $.ajax({
         url: `/api/token?token=${getCookie('AuthToken')}`,
         method: 'DELETE'
@@ -412,15 +415,16 @@ function doLogout() {
             setCookie('AuthToken', '', 0);
             setCookie('UID', '', 0);
             checkTokenCredentials();
+            $('#profileUserName').text('Profil');
         });
 }
 
 async function submitRegistration() {
-    const registrationForm = document.forms["registrationForm"];
-    const email = registrationForm["registrationMail"].value;
-    const password = registrationForm["registrationPassword"].value;
-    const firstName = registrationForm["registrationFirstName"].value;
-    const lastName = registrationForm["registrationLastName"].value;
+    const registrationForm = document.forms['registrationForm'];
+    const email = registrationForm['registrationMail'].value;
+    const password = registrationForm['registrationPassword'].value;
+    const firstName = registrationForm['registrationFirstName'].value;
+    const lastName = registrationForm['registrationLastName'].value;
     $('#loginRegistrationSpinner').show();
     $.post('/register', {
         registrationMail: email,
@@ -434,17 +438,17 @@ async function submitRegistration() {
             document.forms['registrationForm'].reset();
         })
         .fail(function () { $('#loginRegistrationSpinner').hide(); })
-    document.forms["loginForm"].reset();
+    document.forms['loginForm'].reset();
     registrationForm.reset();
 }
 
 async function submitUserSettingsChange() {
-    const userSettingsForm = document.forms["userSettingsForm"];
-    const email = userSettingsForm["userSettingsMail"].value;
-    const password = userSettingsForm["userSettingsPassword"].value;
-    const firstName = userSettingsForm["userSettingsFirstName"].value;
-    const lastName = userSettingsForm["userSettingsLastName"].value;
-    console.log("user settings changed to", email, password, firstName, lastName);
+    const userSettingsForm = document.forms['userSettingsForm'];
+    const email = userSettingsForm['userSettingsMail'].value;
+    const password = userSettingsForm['userSettingsPassword'].value;
+    const firstName = userSettingsForm['userSettingsFirstName'].value;
+    const lastName = userSettingsForm['userSettingsLastName'].value;
+    console.log('user settings changed to', email, password, firstName, lastName);
     // TODO: userSettings process
 }
 
@@ -472,10 +476,10 @@ async function openAdminManageGroups() {
 }
 
 async function submitAdminManageGroups() {
-    const adminManageGroupsForm = document.forms["adminManageGroupsForm"];
-    const name = adminManageGroupsForm["adminManageGroupsName"].value;
+    const adminManageGroupsForm = document.forms['adminManageGroupsForm'];
+    const name = adminManageGroupsForm['adminManageGroupsName'].value;
     const uid = name;
-    const url = adminManageGroupsForm["adminManageGroupsRaplaUrl"].value;
+    const url = adminManageGroupsForm['adminManageGroupsRaplaUrl'].value;
     console.log(name, url);
     $.post('/api/groups', { uid, name, url })
         .done(() => adminManageGroupsForm.reset())
@@ -497,7 +501,6 @@ async function openAdminManageUsers() {
                 const lastName = users[i].getElementsByTagName('lastName')[0].textContent;
                 const initials = users[i].getElementsByTagName('initials')[0].textContent;
                 const mail = users[i].getElementsByTagName('mail')[0].textContent;
-                const passwordHash = users[i].getElementsByTagName('passwordHash')[0].textContent;
                 const isAdministrator = users[i].getElementsByTagName('isAdministrator')[0].textContent;
                 // console.log(firstName, lastName, initials, mail, isAdministrator);
                 const tableRow = `<tr>
@@ -505,8 +508,7 @@ async function openAdminManageUsers() {
                     <td>${mail}</td>
                     <td>Gruppe TBD</td>
                     <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
-                    data-uid="${uid}" data-first-name="${firstName}" data-last-name="${lastName}" data-mail="${mail}"
-                    data-password-hash="${passwordHash}"\></td>
+                    data-uid="${uid}" data-first-name="${firstName}" data-last-name="${lastName}" data-mail="${mail}"\></td>
                     </tr>`;
                 tableContent += tableRow;
             }
@@ -537,8 +539,10 @@ function setDarkMode(isDarkModeEnabled) {
     $('link[title="Dark mode"]').prop('disabled', !isDarkModeEnabled);
 }
 
-async function handleDarkMode() {
-    var darkMode = getCookie("DarkMode") === "true";
-    $("#switchDarkMode").prop("checked", darkMode);
+async function handleDarkMode(darkMode = undefined) {
+    if (darkMode != undefined)
+        setCookie('DarkMode', darkMode, '0.5');
+    var darkMode = getCookie('DarkMode') === 'true';
+    $('#switchDarkMode').prop('checked', darkMode);
     setDarkMode(darkMode);
 }
