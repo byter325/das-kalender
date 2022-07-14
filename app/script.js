@@ -24,6 +24,14 @@ function setCookie(cname, cvalue, exdays) {
     document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/;SameSite=Strict';
 }
 
+function getUID() {
+    return getCookie('UID');
+}
+
+function getDarkMode() {
+    return getCookie('DarkMode');
+}
+
 function getCurrentKw() {
     var date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -78,7 +86,7 @@ function updateSite() {
     $('#calweek').text('KW ' + window.calweek + ' (' + weekRange.startDay.toLocaleDateString() + ' - ' + weekRange.endDay.toLocaleDateString() + ')');
     // TODO: use user's group
     insertCourseEvents('TINF21B1', weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
-    insertUserEvents(getCookie('UID'), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    insertUserEvents(getUID(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
 }
 
 function adjustDays() {
@@ -153,7 +161,7 @@ function checkTokenCredentials() {
     return new Promise(function (resolve) {
         const token = getCookie('AuthToken');
         if (token && token.length > 0) {
-            $.get(`/api/users/${getCookie('UID')}`)
+            $.get(`/api/users/${getUID()}`)
                 .done(function (data) {
                     console.log('Successful login', data);
                     const parser = new DOMParser();
@@ -237,7 +245,7 @@ $(async () => {
     });
     $('#logout-button').click(doLogout);
     $('#switchDarkMode').change(function () {
-        handleDarkMode(true, this.checked);
+        handleDarkMode(getUID() != '', this.checked);
     });
 
     $('#userSettingsForm').submit(function () {
@@ -447,8 +455,20 @@ async function submitUserSettingsChange() {
     const password = userSettingsForm['userSettingsPassword'].value;
     const firstName = userSettingsForm['userSettingsFirstName'].value;
     const lastName = userSettingsForm['userSettingsLastName'].value;
-    console.log('user settings changed to', email, password, firstName, lastName);
-    // TODO: userSettings process
+    $.ajax({
+        url: `/api/users/${getUID()}`,
+        method: 'PUT',
+        data: `<user>
+                <uid>${getUID()}</uid>
+                ${email ? `<email>${email}</email>` : ''}
+                ${password ? `<passwordHash>${password}</passwordHash>` : ''}
+                ${firstName ? `<firstName>${firstName}</firstName>` : ''}
+                ${lastName ? `<lastName>${lastName}</lastName>` : ''}
+            </user>`
+    })
+        .done(function () {
+            console.log('user settings changed to', email, password, firstName, lastName);
+        });
 }
 
 async function openAdminManageGroups() {
@@ -541,17 +561,17 @@ function setDarkMode(isDarkModeEnabled) {
 async function handleDarkMode(sendToServer = false, darkMode = undefined) {
     if (darkMode != undefined)
         setCookie('DarkMode', darkMode, '0.5');
-    var darkMode = getCookie('DarkMode') === 'true';
+    var darkMode = getDarkMode() === 'true';
     $('#switchDarkMode').prop('checked', darkMode);
     setDarkMode(darkMode);
     if (sendToServer)
         $.ajax({
-            url: `/api/users/${getCookie('UID')}`,
+            url: `/api/users/${getUID()}`,
             method: 'PUT',
             data: {
                 user: {
-                    uid: getCookie('UID'),
-                    darkMode
+                    uid: getUID(),
+                    darkmode: darkMode
                 }
             }
         });
