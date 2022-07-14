@@ -433,16 +433,16 @@ export module XMLManager {
 
     export function convertXMLResponseJSONToCorrectJSONForUser(xmlJSON: any) {
         let person = {
-            uid: xmlJSON.uid != undefined ? xmlJSON.uid[0] : undefined,
-            firstName: xmlJSON.firstname != undefined ? xmlJSON.firstname[0] : undefined,
-            lastName: xmlJSON.lastname != undefined ? xmlJSON.lastname[0] : undefined,
-            initials: xmlJSON.initials != undefined ? xmlJSON.initials[0] : undefined,
-            mail: xmlJSON.mail != undefined ? xmlJSON.mail[0] : undefined,
-            passwordHash: xmlJSON.passwordhash != undefined ? xmlJSON.passwordhash[0] : undefined,
+            uid: xmlJSON.uid != undefined ? xmlJSON.uid : undefined,
+            firstName: xmlJSON.firstname != undefined ? xmlJSON.firstname : undefined,
+            lastName: xmlJSON.lastname != undefined ? xmlJSON.lastname : undefined,
+            initials: xmlJSON.initials != undefined ? xmlJSON.initials : undefined,
+            mail: xmlJSON.mail != undefined ? xmlJSON.mail : undefined,
+            passwordHash: xmlJSON.passwordhash != undefined ? xmlJSON.passwordhash : undefined,
             group: xmlJSON.group != undefined ? [xmlJSON.group.length] : undefined,
             editableGroup: xmlJSON.editablegroup != undefined ? [xmlJSON.editablegroup.length] : undefined,
-            darkMode: xmlJSON.darkmode != undefined ? xmlJSON.darkmode[0] : undefined,
-            isAdministrator: xmlJSON.isadministrator != undefined ? xmlJSON.isadministrator[0] : undefined
+            darkMode: xmlJSON.darkmode != undefined ? xmlJSON.darkmode : undefined,
+            isAdministrator: xmlJSON.isadministrator != undefined ? xmlJSON.isadministrator : undefined
         }
         if (person.group != undefined) {
             for (let index = 0; index < xmlJSON.group.length; index++) {
