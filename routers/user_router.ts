@@ -36,7 +36,6 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
             ignoreAttributes: false,
             attributesGroupName: "token"
         })
-        console.log(AuthManager.users)
         var value = AuthManager.users.get(request.params.uid)
         if (value == undefined) {
             const uidAsNumber: any = + request.params.uid
@@ -45,7 +44,6 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
             else
                 value = AuthManager.users.get(uidAsNumber)
         }
-        console.log('VALUE IS', value, 'REQUEST PARAMS', request.params);
 
         if (value != undefined) {
             value.passwordHash = ""
