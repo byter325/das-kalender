@@ -56,6 +56,13 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
 
 usersRouter.put("/:uid", (request: express.Request, response: express.Response) => {
     let originalUser = AuthManager.users.get(request.params.uid)
+    if (originalUser == undefined) {
+        const uidAsNumber: any = + request.params.uid
+        if (isNaN(uidAsNumber))
+            originalUser = undefined
+        else
+            originalUser = AuthManager.users.get(uidAsNumber)
+    }
     if (originalUser != undefined) {
         if (request.user.isAdministrator) {
             return response.sendStatus(XMLManager.updateUserAsAdmin(request.params.uid, request.body))
