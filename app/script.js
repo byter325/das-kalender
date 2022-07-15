@@ -98,7 +98,7 @@ function adjustDays() {
             var eventsAtRow = [];
             $('[data-day=' + day + ']').each((index, element) => {
                 var rowStart = Math.floor(((parseInt($(element).attr('data-starthour')) - 8) * 60 + parseInt($(element).attr('data-startminute'))) / 15);
-                var rowEnd = Math.floor(((parseInt($(element).attr('data-starthour')) - 8) * 60 + parseInt($(element).attr('data-startminute')) + parseInt($(element).attr('data-duration'))) / 15);
+                var rowEnd = Math.floor(((parseInt($(element).attr('data-starthour')) - 8) * 60 + parseInt($(element).attr('data-startminute')) + parseInt($(element).attr('data-duration'))) / 15) - 1;
                 if (rowStart <= i && rowEnd >= i) eventsAtRow.push(element);
             });
             if (eventsAtRow.length == 2) {
@@ -530,7 +530,8 @@ async function openAdminManageUsers() {
                     url: `/api/users/${uid}`,
                     method: 'PUT',
                     data: { uid, firstName, lastName, mail, passwordHash, isAdministrator }
-                }).done(openAdminManageUsers);
+                })
+                    .done(openAdminManageUsers);
             });
         });
 }
