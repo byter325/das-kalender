@@ -41,13 +41,6 @@ function getCurrentKw() {
         - 3 + (week1.getDay() + 6) % 7) / 7);
 }
 
-function initTooltips() {
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    });
-};
-
 function insertCourseEvents(course, start, end) {
     $.ajax({
         url: `/api/calendar/${course}?start=${start}&end=${end}&type=HTML`,
@@ -87,7 +80,6 @@ function updateSite() {
     // TODO: use user's group
     insertCourseEvents('TINF21B1', weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
     insertUserEvents(getUID(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
-    initTooltips();
 }
 
 function adjustDays() {
@@ -212,8 +204,6 @@ $(async () => {
     }
 
     checkTokenCredentials();
-
-    initTooltips();
     handleDarkMode();
 
     $('#thisweek').click(() => {
