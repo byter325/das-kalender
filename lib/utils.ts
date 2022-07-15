@@ -3,6 +3,7 @@ import {User} from "./classes/user";
 import {CalendarEvent} from "./classes/userEvent";
 import fs from 'fs';
 import path from "path";
+import { exit } from "process";
 
 export module Utils {
     export const BODY_PARTIALLY_CORRECT = 0;
@@ -118,6 +119,32 @@ export module Utils {
         currUID++;
         saveUID(currUID);
         return "" + currUID;
+    }
+
+    /**
+     * Waits for a file to be created
+     * @param filename The name of the file to be checked
+     */
+     export async function waitForFile(filename:string) {
+        let exists = false;
+        let i: number = 0;
+        while(!exists){
+            try {
+                i++;
+                if (i > 200){
+                    console.log("x1b[31m\x1b[0m", "Huston we have a problem...");
+                    process.exit(-1);
+                }
+                exists = fs.existsSync(filename);
+                
+                // wait 100ms
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+            } catch (error) {
+                // console.log(error);
+            }
+        }
+            
     }
 
     function createDirectoryIfNotExists(path: string): void {

@@ -1,5 +1,5 @@
 import * as path from "path";
-import fs, { writeFileSync } from "fs"
+import fs, { readFileSync, writeFileSync } from "fs"
 import { User } from "./classes/user"
 import { CalendarEvent } from "./classes/userEvent"
 import { Utils } from "./utils"
@@ -9,9 +9,9 @@ import { Handlers } from "./handlers";
 export module XMLManager {
 
     // TODO: Change folder structure to /events/
-    const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
+    export const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
     const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
-    const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
+    export const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
     const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups/`
     const PATH_TOKEN_FILE: string = `${PATH_DATA_DIR}/AuthTokens.xml`
 
@@ -177,15 +177,18 @@ export module XMLManager {
             const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml"
 
+            console.log("URL: " + url);
+            
             if (!allowOverride && fs.existsSync(groupsPath))
-                return false;
+            return false;
             else
-                writeFileSync(groupsPath, xmlDataStr, { flag: "w+" })
-
+            writeFileSync(groupsPath, xmlDataStr, { flag: "w+" })
+            
             if (!allowOverride && fs.existsSync(eventsPath))
-                return false;
-            else
-                writeFileSync(eventsPath, "<events></events>", { flag: "w+" })
+            return false;
+            else{
+                Handlers.updateGroup(uid);
+            }
 
             return true
 
@@ -194,6 +197,7 @@ export module XMLManager {
             return false
         }
     }
+    
 
     /**
      * Adds an event to a user's or a group's events
