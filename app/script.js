@@ -354,27 +354,21 @@ async function submitDeleteEvent() {
 
 async function submitNewEvent() {
     const newEventForm = document.forms['newEventForm'];
-    const title = newEventForm['newEventTitle'];
-    const description = newEventForm['newEventDescription'];
-    const category = newEventForm['newEventCategory'];
-    const location = newEventForm['newEventLocation'];
-    const start = newEventForm['newEventStart'];
-    const end = newEventForm['newEventEnd'];
-    $.ajax({
-        type: 'POST',
-        url: '/api/calendar',
-        xhrFields: {
-            withCredentials: true
-        },
-        data: {
-            uid: 'no',
-            title,
-            description,
-            category,
-            start,
-            end,
-            location
-        }
+    const title = newEventForm['newEventTitle'].value;
+    const description = newEventForm['newEventDescription'].value;
+    const category = newEventForm['newEventCategory'].value;
+    const location = newEventForm['newEventLocation'].value;
+    const start = newEventForm['newEventStart'].value;
+    const end = newEventForm['newEventEnd'].value;
+    // $.post(`/api/calendar/${getUID()}`, `<Event><uid>placeholder</uid><title>${title}</title><description>${description}</description><category>${category}</category><start>${start}</start><end>${end}</end><location>${location}</location></Event>`);
+    $.post(`/api/calendar/${getUID()}`, {
+        uid: 'placeholder',
+        title,
+        description,
+        category,
+        location,
+        start,
+        end
     });
 }
 
