@@ -58,7 +58,7 @@ const server: Server = https.createServer(options, app).listen(port, () => {
 
 app.use(RateLimit({
     windowMs: 1000, // 1 second
-    max: 10 // limit each IP to 10 requests per second
+    max: 15 // limit each IP to 10 requests per second
 }));
 app.use(cookieParser())
 app.use(bodyParser.urlencoded())
