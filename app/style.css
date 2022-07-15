@@ -60,20 +60,6 @@ table {
     font-size: 9pt;
 }
 
-/* .kalenderitem:hover {
-    background-color: var(--kalenderitem-hover-bg);
-}
-
-.kalenderitem-vorlesung {
-    --kalenderitem-bg: #cfe2ff;
-    --kalenderitem-hover-bg: #bfd1ec;
-}
-
-.kalenderitem-klausur {
-    --kalenderitem-bg: #f8d7da;
-    --kalenderitem-hover-bg: #e5c7ca
-} */
-
 #timelines {
     display: none;
 }
