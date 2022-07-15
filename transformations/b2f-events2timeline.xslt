@@ -70,6 +70,15 @@
 			<xsl:variable name="startMinute" select="number(format-dateTime(start,'[m]'))" />
 			<xsl:variable name="startHour" select="number(format-dateTime(start,'[H]'))" />
 			<li class="timeline-item mb-4 mt-3">
+				<xsl:attribute name="title">
+					<xsl:value-of select="category" />
+					<xsl:text disable-output-escaping="yes">&#13;</xsl:text>
+					<xsl:value-of select="description" />
+					<xsl:if test="presenters/presenter">
+						<xsl:text disable-output-escaping="yes">&#13;</xsl:text>
+						<xsl:value-of select="concat(presenters/presenter/lastName,' (',presenters/presenter/mail,')')" />
+					</xsl:if>
+				</xsl:attribute>
 				<span class="timeline-icon">
 					<i class="bi bi-book"></i>
 				</span>
@@ -83,23 +92,16 @@
 					-
 					<xsl:value-of select="format-dateTime(end,'[H]:[m]')" />
 					<span class="ms-2">
-						(
-						<xsl:value-of select="$duration" />
-						min
-						)
+						<xsl:value-of select="concat('(',$duration,' min)')" />
 					</span>
 				</p>
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="{location}">
-					<i class="bi bi-geo-alt-fill me-1"></i>
-					<xsl:value-of select="location" />
-				</span>
+				<i class="bi bi-geo-alt-fill me-1"></i>
+				<xsl:value-of select="location" />
 				<br />
 
 				<xsl:if test="presenters/presenter">
-					<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="{presenters/presenter/lastName}">
-						<i class=" bi bi-person-square me-1" />
-						<xsl:value-of select="presenters/presenter/lastName" />
-					</span>
+					<i class=" bi bi-person-square me-1" />
+					<xsl:value-of select="presenters/presenter/lastName" />
 				</xsl:if>
 			</li>
 		</xsl:if>
