@@ -75,18 +75,19 @@ function insertUserEvents(uid, from, to) {
     });
 }
 
-function clearEvents() {
-    $('.kalenderitem').remove();
-    $('#timelines').html("");
+function clearEvents(kalender, timeline) {
+    if (kalender) { $('.kalenderitem').remove(); }
+    if (timeline) { $('#timelines').html(''); }
 }
 
 function updateSite() {
-    clearEvents();
+    clearEvents(true, true);
     let weekRange = getWeekRange(window.calweek, window.calyear);
     $('#calweek').text('KW ' + window.calweek + ' (' + weekRange.startDay.toLocaleDateString() + ' - ' + weekRange.endDay.toLocaleDateString() + ')');
     // TODO: use user's group
     insertCourseEvents('TINF21B1', weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
     insertUserEvents(getUID(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    initTooltips();
 }
 
 function adjustDays() {
@@ -158,51 +159,48 @@ function getWeekRange(w, y) {
 }
 
 function checkTokenCredentials() {
-    return new Promise(function (resolve) {
-        const token = getCookie('AuthToken');
-        if (token && token.length > 0) {
-            $.get(`/api/users/${getUID()}`)
-                .done(function (data) {
-                    console.log('Successful login', data);
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(data, 'application/xml');
-                    const isAdmin = doc.getElementsByTagName('isAdministrator')[0].textContent == 'true';
-                    const firstName = doc.getElementsByTagName('firstName')[0].textContent;
-                    const lastName = doc.getElementsByTagName('lastName')[0].textContent;
-                    const initials = doc.getElementsByTagName('initials')[0].textContent;
-                    const mail = doc.getElementsByTagName('mail')[0].textContent;
-                    const darkMode = doc.getElementsByTagName('darkMode')[0].textContent == 'true';
+    const token = getCookie('AuthToken');
+    if (token && token.length > 0) {
+        $.get(`/api/users/${getUID()}`)
+            .done(function (data) {
+                console.log('Successful login', data);
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'application/xml');
+                const isAdmin = doc.getElementsByTagName('isAdministrator')[0].textContent == 'true';
+                const firstName = doc.getElementsByTagName('firstName')[0].textContent;
+                const lastName = doc.getElementsByTagName('lastName')[0].textContent;
+                const initials = doc.getElementsByTagName('initials')[0].textContent;
+                const mail = doc.getElementsByTagName('mail')[0].textContent;
+                const darkMode = doc.getElementsByTagName('darkMode')[0].textContent == 'true';
 
-                    if (firstName != undefined && lastName != undefined)
-                        $('#profileUserName').text(`${firstName} ${lastName}`);
-                    if (darkMode != undefined)
-                        handleDarkMode(false, darkMode);
+                if (firstName != undefined && lastName != undefined)
+                    $('#profileUserName').text(`${firstName} ${lastName}`);
+                if (darkMode != undefined)
+                    handleDarkMode(false, darkMode);
 
-                    if (isAdmin) { $('#admin-tools').show(); }
-                    else { $('#admin-tools').hide(); }
+                if (isAdmin) { $('#admin-tools').show(); }
+                else { $('#admin-tools').hide(); }
 
-                    $('#loggedin-bar').show();
-                    $('#kalender').show(500);
-                    $('#button-row').show();
-                    $('#timelines').show(500);
-                    $('#login-and-registration').hide();
-                    resolve(true);
-                })
-                .fail(function () {
-                    console.info('Login failed');
-                    doLogout();
-                    resolve(false);
-                });
-        } else {
-            $('#loggedin-bar').hide();
-            $('#kalender').hide();
-            $('#button-row').hide();
-            $('#timelines').hide();
-            $('#login-and-registration').show(500);
-            $('#admin-tools').hide();
-            resolve(false);
-        }
-    });
+                $('#loggedin-bar').show();
+                $('#kalender').show(500);
+                $('#button-row').show();
+                $('#timelines').show(500);
+                $('#login-and-registration').hide();
+
+                updateSite();
+            })
+            .fail(function () {
+                console.info('Login failed');
+                doLogout();
+            });
+    } else {
+        $('#loggedin-bar').hide();
+        $('#kalender').hide();
+        $('#button-row').hide();
+        $('#timelines').hide();
+        $('#login-and-registration').show(500);
+        $('#admin-tools').hide();
+    }
 }
 
 $(async () => {
@@ -213,9 +211,7 @@ $(async () => {
         window.calyear = new Date().getFullYear();
     }
 
-    if (await checkTokenCredentials()) {
-        updateSite();
-    }
+    checkTokenCredentials();
 
     initTooltips();
     handleDarkMode();
@@ -455,20 +451,16 @@ async function submitUserSettingsChange() {
     const password = userSettingsForm['userSettingsPassword'].value;
     const firstName = userSettingsForm['userSettingsFirstName'].value;
     const lastName = userSettingsForm['userSettingsLastName'].value;
+    const user = {};
+    if (email) user.email = email;
+    if (password) user.passwordHash = password;
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
     $.ajax({
         url: `/api/users/${getUID()}`,
         method: 'PUT',
-        data: `<user>
-                <uid>${getUID()}</uid>
-                ${email ? `<email>${email}</email>` : ''}
-                ${password ? `<passwordHash>${password}</passwordHash>` : ''}
-                ${firstName ? `<firstName>${firstName}</firstName>` : ''}
-                ${lastName ? `<lastName>${lastName}</lastName>` : ''}
-            </user>`
-    })
-        .done(function () {
-            console.log('user settings changed to', email, password, firstName, lastName);
-        });
+        data: { user }
+    });
 }
 
 async function openAdminManageGroups() {
