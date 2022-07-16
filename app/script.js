@@ -486,22 +486,21 @@ async function submitUserSettingsChange() {
     const firstName = userSettingsForm['userSettingsFirstName'].value;
     const lastName = userSettingsForm['userSettingsLastName'].value;
 
-    const user = {};
-    user.uid = getUID()
-    if (mail !== '') user.mail = mail;
-    if (password !== '') user.passwordhash = password;
-    if (firstName !== '') user.firstname = firstName;
-    if (lastName !== '') user.lastname = lastName;
-
+    var user = `<uid>${getUID()}</uid>`;
+    if (mail !== '') user += `<mail>${mail}</mail>`;
+    if (password !== '') user += `<passwordHash>${password}</passwordHash>`;
+    if (firstName !== '') user += `<firstName>${firstName}</firstName>`;
+    if (lastName !== '') user += `<lastName>${lastName}</lastName>`;
     $.ajax({
         url: `/api/users/${getUID()}`,
         method: 'PUT',
-        data: { user }
+        contentType: 'application/xml',
+        data: `<User>${user}</User>`
     })
         .done(function () {
             userSettingsForm.reset();
             checkTokenCredentials();
-        });
+        }); // TODO: data in XML
 }
 
 async function genApiToken() {
@@ -587,7 +586,7 @@ async function openAdminManageUsers() {
                     <td>Anzeigen: ${groups.length ? groups.map(group => group.name).join(', ') : '-'}<br>
                         Bearbeiten: ${editableGroups.length ? editableGroups.map(group => group.name).join(', ') : '-'}</td>
                     <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
-                    data-uid="${uid}" data-first-name="${firstName}" data-last-name="${lastName}" data-mail="${mail}"\></td>
+                    data-uid="${uid}" \></td>
                     </tr>`;
                 tableContent += tableRow;
             }
@@ -595,17 +594,14 @@ async function openAdminManageUsers() {
 
             $('.checkbox-admin').change(function () {
                 const uid = this.getAttribute('data-uid');
-                const firstName = this.getAttribute('data-first-name');
-                const lastName = this.getAttribute('data-last-name');
-                const mail = this.getAttribute('data-mail');
-                const passwordHash = this.getAttribute('data-password-hash');
                 const isAdministrator = this.checked ? 'true' : 'false';
                 $.ajax({
                     url: `/api/users/${uid}`,
                     method: 'PUT',
-                    data: { user: { uid, isAdministrator } }
+                    contentType: 'application/xml',
+                    data: `<User><uid>${uid}</uid><isAdministrator>${isAdministrator}</isAdministrator></User>`
                 })
-                    .done(openAdminManageUsers);
+                    .always(openAdminManageUsers);
             });
         });
 }
@@ -629,11 +625,7 @@ async function handleDarkMode(sendToServer = false, darkMode = undefined) {
         $.ajax({
             url: `/api/users/${getUID()}`,
             method: 'PUT',
-            data: {
-                user: {
-                    uid: getUID(),
-                    darkmode: darkMode
-                }
-            }
+            contentType: 'application/xml',
+            data: `<User><uid>${getUID()}</uid><darkmode>${darkMode}</darkmode></User>`
         });
 }
