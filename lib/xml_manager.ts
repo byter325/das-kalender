@@ -9,6 +9,7 @@ import { Handlers } from "./handlers";
 export module XMLManager {
 
     // TODO: Change folder structure to /events/
+    import GenerateHash = Utils.GenerateHash;
     const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
     const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
     const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
@@ -45,7 +46,7 @@ export module XMLManager {
             const person = parser.parse(data)["person"]
             console.log("parsed person: " + person)
             return new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
-                person.group, person.editableGroup, person.darkMode, person.isAdministrator)
+                person.group, person.editableGroup, person.darkMode, person.isAdministrator, Utils.GenerateHash(uid) + ".xml")
         } catch (e) {
             console.log(e);
             return null
@@ -135,8 +136,10 @@ export module XMLManager {
 
             console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml")
 
-            const usersPath = PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml"
-            const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(user.uid) + ".xml"
+            // const usersPath = PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml"
+            // const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(user.uid) + ".xml"
+            const usersPath = PATH_DATA_USERS + user.fileName
+            const eventsPath = PATH_DATA_EVENTS + user.fileName
 
             if (!allowOverride && fs.existsSync(usersPath))
                 return false;
@@ -490,7 +493,7 @@ export module XMLManager {
                     let data = fs.readFileSync(PATH_DATA_USERS + element, "utf-8");
                     const person = parser.parse(data)["person"]
                     result.push(new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
-                        person.group, person.editableGroup, person.darkMode, person.isAdministrator))
+                        person.group, person.editableGroup, person.darkMode, person.isAdministrator, element.substring(0, element.length - 4)))
                 }
             }
         } catch (error) {
@@ -539,8 +542,10 @@ export module XMLManager {
         if (json.initials != undefined) user.initials = json.initials
         if (json.mail != undefined) user.mail = json.mail
         if (json.darkMode != undefined) user.darkMode = json.darkMode
-        if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
+        if (json.passwordHash != undefined) user.passwordHash = GenerateHash(json.passwordHash)
 
+        console.log(json)
+        console.log(user)
         if (insertUser(user, true, false)) return 204
         return 400
     }
@@ -558,9 +563,11 @@ export module XMLManager {
         if (json.darkMode != undefined) user.darkMode = json.darkMode
         if (json.group != undefined) user.group = json.group
         if (json.editableGroup != undefined) user.editableGroup = json.editableGroup
-        if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
+        if (json.passwordHash != undefined) user.passwordHash =  GenerateHash(json.passwordHash)
         if (json.isAdministrator != undefined) user.isAdministrator = json.isAdministrator
 
+        console.log(json)
+        console.log(user)
         if (insertUser(user, true, false)) return 204
         return 400
     }

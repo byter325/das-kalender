@@ -22,7 +22,7 @@ export module AuthManager {
         })
         if (users.size == 0) {
             let uid = "" + getNextUID()
-            let user = new User(uid, "Administrator", "User", "AB", "test@test.example", GenerateHash("changeMe"), [], [], false, true)
+            let user = new User(uid, "Administrator", "User", "AB", "test@test.example", GenerateHash("changeMe"), [], [], false, true, GenerateHash(uid) + ".xml")
             users.set(uid, user)
             insertUser(user, false, true)
             console.log("No users available. Created admin user with eMail: 'test@test.example' and password: 'changeMe'")
@@ -91,7 +91,8 @@ export module AuthManager {
      * @param lastName  The last name of the user.
      */
     export function register(mail: string, password: string, firstName: string, lastName: string) {
-        let user = new User("" + getNextUID(), firstName, lastName, firstName.substring(0, 1), mail, Utils.GenerateHash(password), [], [], false, false)
+        let uid = "" + getNextUID()
+        let user = new User(uid, firstName, lastName, firstName.substring(0, 1), mail, Utils.GenerateHash(password), [], [], false, false, GenerateHash(uid) + ".xml")
         users.set(user.uid, user)
         XMLManager.insertUser(user, false, true)
         return user

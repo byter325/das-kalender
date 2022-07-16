@@ -102,12 +102,12 @@ export module Utils {
 
     export function convertFullPostBodyToUser(body: any): User {
         return new User(body.uid, body.firstName, body.lastName, body.initials, body.mail, body.passwordHash, body.group,
-            body.editableGroup, body.darkMode, body.isAdministrator)
+            body.editableGroup, body.darkMode, body.isAdministrator, GenerateHash(body.uid) + ".xml")
     }
 
     export function convertPartialPostBodyToUser(body: any): User {
         return new User(body.uid, body.firstName, body.lastName, body.firstName[0] + body.lastName[0], body.mail, body.passwordHash, [{}],
-            [{}], false, false)
+            [{}], false, false, GenerateHash(body.uid) + ".xml")
     }
 
     export function getNextUID(): string {
