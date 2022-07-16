@@ -40,7 +40,6 @@
 			</xsl:call-template>
 		</article>
 	</xsl:template>
-
 	<xsl:template name="printweekday">
 		<xsl:param name="weekdayE" />
 		<xsl:param name="weekdayD" />
@@ -61,7 +60,6 @@
 		</div>
 		<hr />
 	</xsl:template>
-
 	<xsl:template match="event">
 		<xsl:param name="weekday" />
 		<xsl:variable name="startDay" select="format-dateTime(start,'[Fn]')" />
@@ -85,12 +83,18 @@
 				<h6 class="fw-bold d-inline">
 					<xsl:value-of select="title" />
 				</h6>
+				<xsl:if test="(category != 'Lehrveranstaltung') and (category != 'Prüfung')">
+					<div class="btn-group float-end">
+						<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal" data-bs-target="#editEvent" onclick="editEvent('{uid}')">
+							<i class="bi bi-pencil-fill"></i>
+						</button>
+						<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal" data-bs-target="#deleteEvent" onclick="deleteEvent('{uid}')">
+							<i class="bi bi-trash-fill"></i>
+						</button>
+					</div>
+				</xsl:if>
 				<p class="text-muted mb-1 fw-bold">
-					<xsl:value-of select="format-dateTime(start,'[D].[M].[Y]')" />
-					,
-					<xsl:value-of select="format-dateTime(start,'[H]:[m]')" />
-					-
-					<xsl:value-of select="format-dateTime(end,'[H]:[m]')" />
+					<xsl:value-of select="concat(format-dateTime(start,'[D].[M].[Y], [H]:[m]'),' - ', format-dateTime(end,'[H]:[m]'))" />
 					<span class="ms-2">
 						<xsl:value-of select="concat('(',$duration,' min)')" />
 					</span>
@@ -98,7 +102,6 @@
 				<i class="bi bi-geo-alt-fill me-1"></i>
 				<xsl:value-of select="location" />
 				<br />
-
 				<xsl:if test="presenters/presenter">
 					<i class=" bi bi-person-square me-1" />
 					<xsl:value-of select="presenters/presenter/lastName" />
