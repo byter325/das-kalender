@@ -10,6 +10,7 @@ export module AuthManager {
     import insertUser = XMLManager.insertUser;
     import VerifyHash = Utils.VerifyHash;
     import GenerateHash = Utils.GenerateHash;
+    import insertGroup = XMLManager.insertGroup;
     export let authTokens: Map<string, Token> = new Map<string, Token>()
     export let users: Map<string, User> = new Map<string, User>()
 
@@ -22,8 +23,9 @@ export module AuthManager {
         })
         if (users.size == 0) {
             let uid = "" + getNextUID()
-            let user = new User(uid, "Administrator", "User", "AB", "test@test.example", GenerateHash("changeMe"), [], [], false, true, GenerateHash(uid) + ".xml")
+            let user = new User(uid, "Administrator", "User", "AB", "test@test.example", GenerateHash("changeMe"), [], [{uid: "Testgruppe", name: "Testgruppe", url:""}], false, true, GenerateHash(uid) + ".xml")
             users.set(uid, user)
+            insertGroup("Testgruppe", "Testgruppe", "", true)
             insertUser(user, false, true)
             console.log("No users available. Created admin user with eMail: 'test@test.example' and password: 'changeMe'")
         }

@@ -493,7 +493,7 @@ export module XMLManager {
                     let data = fs.readFileSync(PATH_DATA_USERS + element, "utf-8");
                     const person = parser.parse(data)["person"]
                     result.push(new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
-                        person.group, person.editableGroup, person.darkMode, person.isAdministrator, element.substring(0, element.length - 4)))
+                        person.group, person.editableGroup, person.darkMode, person.isAdministrator, element))
                 }
             }
         } catch (error) {
@@ -544,8 +544,6 @@ export module XMLManager {
         if (json.darkMode != undefined) user.darkMode = json.darkMode
         if (json.passwordHash != undefined) user.passwordHash = GenerateHash(json.passwordHash)
 
-        console.log(json)
-        console.log(user)
         if (insertUser(user, true, false)) return 204
         return 400
     }
@@ -566,8 +564,6 @@ export module XMLManager {
         if (json.passwordHash != undefined) user.passwordHash =  GenerateHash(json.passwordHash)
         if (json.isAdministrator != undefined) user.isAdministrator = json.isAdministrator
 
-        console.log(json)
-        console.log(user)
         if (insertUser(user, true, false)) return 204
         return 400
     }

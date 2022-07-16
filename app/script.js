@@ -445,14 +445,15 @@ async function submitUserSettingsChange() {
     const password = userSettingsForm['userSettingsPassword'].value;
     const firstName = userSettingsForm['userSettingsFirstName'].value;
     const lastName = userSettingsForm['userSettingsLastName'].value;
+
     const user = {};
     user.uid = getUID()
     if (mail !== '') user.mail = mail;
     if (password !== '') user.passwordhash = password;
     if (firstName !== '') user.firstname = firstName;
     if (lastName !== '') user.lastname = lastName;
-
     console.log(user);
+
     $.ajax({
         url: `/api/users/${getUID()}`,
         method: 'PUT',
