@@ -431,15 +431,19 @@ async function submitRegistration() {
 
 async function submitUserSettingsChange() {
     const userSettingsForm = document.forms['userSettingsForm'];
-    const email = userSettingsForm['userSettingsMail'].value;
+    const mail = userSettingsForm['userSettingsMail'].value;
     const password = userSettingsForm['userSettingsPassword'].value;
     const firstName = userSettingsForm['userSettingsFirstName'].value;
     const lastName = userSettingsForm['userSettingsLastName'].value;
+
     const user = {};
-    if (email) user.email = email;
-    if (password) user.passwordHash = password;
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
+    user.uid = getUID()
+    if (mail !== '') user.mail = mail;
+    if (password !== '') user.passwordhash = password;
+    if (firstName !== '') user.firstname = firstName;
+    if (lastName !== '') user.lastname = lastName;
+    console.log(user);
+
     $.ajax({
         url: `/api/users/${getUID()}`,
         method: 'PUT',

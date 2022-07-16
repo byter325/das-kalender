@@ -1,14 +1,16 @@
 import * as path from "path";
-import fs, { writeFileSync } from "fs"
-import { User } from "./classes/user"
-import { CalendarEvent } from "./classes/userEvent"
-import { Utils } from "./utils"
-import { XMLBuilder, XMLParser } from 'fast-xml-parser'
-import { Handlers } from "./handlers";
+import fs, {writeFileSync} from "fs"
+import {User} from "./classes/user"
+import {CalendarEvent} from "./classes/userEvent"
+import {Utils} from "./utils"
+import {XMLBuilder, XMLParser} from 'fast-xml-parser'
+import {Handlers} from "./handlers";
+import {AuthManager} from "./authManager";
 
 export module XMLManager {
 
     // TODO: Change folder structure to /events/
+    import GenerateHash = Utils.GenerateHash;
     const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
     const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
     const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
@@ -22,16 +24,6 @@ export module XMLManager {
      * @param {string} uid unique user id
      * @return {string} Returns an XML string of a user
      */
-    export function getUser(uid: string): string | null {
-        try {
-            const path = PATH_DATA_USERS + Utils.GenerateHash(uid) + ".xml";
-            return fs.readFileSync(path, "utf-8")
-        } catch (e) {
-            console.log(e);
-            return null
-        }
-    }
-
     export function getUserByUid(uid: string): User | null {
         try {
             const parser = new XMLParser({
@@ -45,7 +37,7 @@ export module XMLManager {
             const person = parser.parse(data)["person"]
             console.log("parsed person: " + person)
             return new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
-                person.group, person.editableGroup, person.darkMode, person.isAdministrator)
+                person.group, person.editableGroup, person.darkMode, person.isAdministrator, Utils.GenerateHash(uid) + ".xml")
         } catch (e) {
             console.log(e);
             return null
@@ -87,7 +79,7 @@ export module XMLManager {
                 return undefined
             } else {
                 let filteredEvents = events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)
-                let firstElementAsXML = builder.build({ event: filteredEvents[0] })
+                let firstElementAsXML = builder.build({event: filteredEvents[0]})
                 console.log("MULTIPLE EVENTS: " + filteredEvents + firstElementAsXML);
 
                 return firstElementAsXML
@@ -135,19 +127,21 @@ export module XMLManager {
 
             console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml")
 
-            const usersPath = PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml"
-            const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(user.uid) + ".xml"
+            // const usersPath = PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml"
+            // const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(user.uid) + ".xml"
+            const usersPath = PATH_DATA_USERS + user.fileName
+            const eventsPath = PATH_DATA_EVENTS + user.fileName
 
             if (!allowOverride && fs.existsSync(usersPath))
                 return false;
             else
-                writeFileSync(usersPath, xmlDataStr, { flag: "w+" })
+                writeFileSync(usersPath, xmlDataStr, {flag: "w+"})
 
             if (!allowOverride && fs.existsSync(eventsPath))
                 return false;
             else {
                 if (createOrOverrideEvents)
-                    writeFileSync(eventsPath, "<events></events>", { flag: "w+" })
+                    writeFileSync(eventsPath, "<events></events>", {flag: "w+"})
             }
 
             return true
@@ -171,7 +165,7 @@ export module XMLManager {
     export function insertGroup(uid: string, name: string, url: string, allowOverride: boolean): boolean {
         try {
             const builder = new XMLBuilder({})
-            let xmlDataStr: string = builder.build({ group: { uid: uid, name: name, url: url } });
+            let xmlDataStr: string = builder.build({group: {uid: uid, name: name, url: url}});
             createFoldersIfNotExist()
 
             const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
@@ -180,12 +174,12 @@ export module XMLManager {
             if (!allowOverride && fs.existsSync(groupsPath))
                 return false;
             else
-                writeFileSync(groupsPath, xmlDataStr, { flag: "w+" })
+                writeFileSync(groupsPath, xmlDataStr, {flag: "w+"})
 
             if (!allowOverride && fs.existsSync(eventsPath))
                 return false;
             else
-                writeFileSync(eventsPath, "<events></events>", { flag: "w+" })
+                writeFileSync(eventsPath, "<events></events>", {flag: "w+"})
 
             return true
 
@@ -214,12 +208,12 @@ export module XMLManager {
             console.log(events);
 
             events.event.push(event)
-            events = { events: events }
+            events = {events: events}
 
             var xmlDataStr: string = builder.build(events)
             console.log(xmlDataStr);
 
-            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, { flag: "w+" })
+            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e);
@@ -236,7 +230,7 @@ export module XMLManager {
      */
     export function getAllEvents(uid: string): string {
         try {
-            return fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", { encoding: "utf-8" })
+            return fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", {encoding: "utf-8"})
         } catch (error) {
             console.log(error);
             return "<events></events>"
@@ -258,7 +252,7 @@ export module XMLManager {
         //fetch
         let boundaryStartDate = new Date(startdate);
         let boundaryEndDate = new Date(enddate);
-        const builder = new XMLBuilder({ attributesGroupName: "event" })
+        const builder = new XMLBuilder({attributesGroupName: "event"})
 
         let events = getAllEventsJSON(uid);
         if (events == "") {
@@ -271,7 +265,7 @@ export module XMLManager {
                     return event
 
             });
-            let x = { event: filteredEvents };
+            let x = {event: filteredEvents};
             let xmlEvents = "<events>";
             xmlEvents += builder.build(x) + "</events>"
 
@@ -309,10 +303,10 @@ export module XMLManager {
 
             },
         })
-        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", { encoding: "utf-8" })
+        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", {encoding: "utf-8"})
         var events = parser.parse(data)["events"]
         if (events == undefined || events == "")
-            events = { event: [] }
+            events = {event: []}
         return events
     }
 
@@ -364,7 +358,7 @@ export module XMLManager {
             let events: any[] = getAllEventsJSON(uid)['event'];
             let filteredEvents: any[] = events.filter(event => event.uid != eventUid);
 
-            let data = { events: { event: filteredEvents } };
+            let data = {events: {event: filteredEvents}};
 
             const builder = new XMLBuilder({
                 ignoreAttributes: false,
@@ -373,7 +367,7 @@ export module XMLManager {
             let xmlDataStr = builder.build(data);
             console.log(xmlDataStr);
 
-            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, { flag: "w+" })
+            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, {flag: "w+"})
             return true
         } catch (e) {
             console.log(e)
@@ -490,7 +484,7 @@ export module XMLManager {
                     let data = fs.readFileSync(PATH_DATA_USERS + element, "utf-8");
                     const person = parser.parse(data)["person"]
                     result.push(new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
-                        person.group, person.editableGroup, person.darkMode, person.isAdministrator))
+                        person.group, person.editableGroup, person.darkMode, person.isAdministrator, element))
                 }
             }
         } catch (error) {
@@ -508,22 +502,47 @@ export module XMLManager {
             friendlyArray.push(user)
         });
         console.log(friendlyArray);
-        let xmlString: string = builder.build({ user: friendlyArray })
+        let xmlString: string = builder.build({user: friendlyArray})
         return "<users>" + xmlString + "</users>"
     }
 
     export function getTokens() {
         const parser = new XMLParser()
         try {
-            const data = fs.readFileSync(PATH_TOKEN_FILE, { encoding: "utf-8" })
+            const data = fs.readFileSync(PATH_TOKEN_FILE, {encoding: "utf-8"})
             return parser.parse(data)["Tokens"]["Token"]
         } catch {
             return []
         }
     }
 
-    export function saveTokens(xmlString: string) {
-        writeFileSync(PATH_TOKEN_FILE, xmlString, { flag: "w+", encoding: "utf-8" })
+    export function saveTokens() {
+        try {
+            var tokens: {Token: {tokenString: string; uid: string; unlimited: boolean; validUntil: string;}[]} = {Token: []}
+            const builder = new XMLBuilder({
+                ignoreAttributes: false,
+                attributesGroupName: "Token"
+            })
+
+            AuthManager.authTokens.forEach((value, key) => {
+                tokens.Token.push({
+                        tokenString: key,
+                        uid: value.uid,
+                        unlimited: value.unlimited,
+                        validUntil: value.validUntil
+                })
+            })
+            let result = {Tokens: tokens}
+            // let xmlDataStr: string = '<Tokens>' + builder.build(tokens) + '</Tokens>'
+            let xmlDataStr: string = builder.build(result)
+            console.log(xmlDataStr);
+
+            fs.writeFileSync(PATH_TOKEN_FILE, xmlDataStr, {flag: "w+", encoding: "utf-8"})
+            return true
+        } catch (e) {
+            console.log(e);
+            return false
+        }
     }
 
     export function updateUser(uid: string, requestBody: any): number {
@@ -539,7 +558,7 @@ export module XMLManager {
         if (json.initials != undefined) user.initials = json.initials
         if (json.mail != undefined) user.mail = json.mail
         if (json.darkMode != undefined) user.darkMode = json.darkMode
-        if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
+        if (json.passwordHash != undefined) user.passwordHash = GenerateHash(json.passwordHash)
 
         if (insertUser(user, true, false)) return 204
         return 400
@@ -558,7 +577,7 @@ export module XMLManager {
         if (json.darkMode != undefined) user.darkMode = json.darkMode
         if (json.group != undefined) user.group = json.group
         if (json.editableGroup != undefined) user.editableGroup = json.editableGroup
-        if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
+        if (json.passwordHash != undefined) user.passwordHash = GenerateHash(json.passwordHash)
         if (json.isAdministrator != undefined) user.isAdministrator = json.isAdministrator
 
         if (insertUser(user, true, false)) return 204

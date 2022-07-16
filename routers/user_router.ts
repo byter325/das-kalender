@@ -47,6 +47,7 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
 
         if (value != undefined) {
             value.passwordHash = ""
+            value.fileName = ""
             const xmlDataStr = builder.build({ user: value })
             response.status(200)
             response.send(xmlDataStr)
