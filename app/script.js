@@ -182,7 +182,7 @@ function checkTokenCredentials() {
                     const name = editableGroup.getElementsByTagName('name')[0].textContent;
                     window.editableGroups.push({ uid, name });
                     window.groups.push({ uid, name });
-                    $('#newEventOwner').append(`<option value="${uid}" class="newEventOwnerOptionGroup">${name} (Gruppe)</option>`)
+                    $('#newEventOwner').append(`<option value="${uid}" class="newEventOwnerOptionGroup">${name} (Gruppe)</option>`);
                 }
 
                 if (firstName != undefined && lastName != undefined)
@@ -561,17 +561,31 @@ async function openAdminManageUsers() {
             const users = doc.getElementsByTagName('user');
             var tableContent = '';
             for (let i = 0; i < users.length; i++) {
-                const uid = users[i].getElementsByTagName('uid')[0].textContent;
-                const firstName = users[i].getElementsByTagName('firstName')[0].textContent;
-                const lastName = users[i].getElementsByTagName('lastName')[0].textContent;
-                const initials = users[i].getElementsByTagName('initials')[0].textContent;
-                const mail = users[i].getElementsByTagName('mail')[0].textContent;
-                const isAdministrator = users[i].getElementsByTagName('isAdministrator')[0].textContent;
-                // console.log(firstName, lastName, initials, mail, isAdministrator);
+                const user = users[i];
+                const uid = user.getElementsByTagName('uid')[0].textContent;
+                const firstName = user.getElementsByTagName('firstName')[0].textContent;
+                const lastName = user.getElementsByTagName('lastName')[0].textContent;
+                const initials = user.getElementsByTagName('initials')[0].textContent;
+                const mail = user.getElementsByTagName('mail')[0].textContent;
+                const isAdministrator = user.getElementsByTagName('isAdministrator')[0].textContent;
+                const groups = [];
+                const editableGroups = [];
+                for (const group of user.getElementsByTagName('group')) {
+                    const uid = group.getElementsByTagName('uid')[0].textContent;
+                    const name = group.getElementsByTagName('name')[0].textContent;
+                    groups.push({ uid, name });
+                }
+                $('.newEventOwnerOptionGroup').remove();
+                for (const editableGroup of user.getElementsByTagName('editableGroup')) {
+                    const uid = editableGroup.getElementsByTagName('uid')[0].textContent;
+                    const name = editableGroup.getElementsByTagName('name')[0].textContent;
+                    editableGroups.push({ uid, name });
+                }
                 const tableRow = `<tr>
                     <td>${lastName}, ${firstName} (${initials})</td>
                     <td>${mail}</td>
-                    <td>Gruppe TBD</td>
+                    <td>Anzeigen: ${groups.length ? groups.map(group => group.name).join(', ') : '-'}<br>
+                        Bearbeiten: ${editableGroups.length ? editableGroups.map(group => group.name).join(', ') : '-'}</td>
                     <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
                     data-uid="${uid}" data-first-name="${firstName}" data-last-name="${lastName}" data-mail="${mail}"\></td>
                     </tr>`;
@@ -589,7 +603,7 @@ async function openAdminManageUsers() {
                 $.ajax({
                     url: `/api/users/${uid}`,
                     method: 'PUT',
-                    data: { uid, firstName, lastName, mail, passwordHash, isAdministrator }
+                    data: { user: { uid, isAdministrator } }
                 })
                     .done(openAdminManageUsers);
             });
