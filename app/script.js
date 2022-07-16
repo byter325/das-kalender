@@ -168,6 +168,7 @@ function checkTokenCredentials() {
                 const darkMode = doc.getElementsByTagName('darkMode')[0].textContent == 'true';
                 const groups = doc.getElementsByTagName('group');
                 const editableGroups = doc.getElementsByTagName('editableGroup');
+                window.user = { firstName, lastName, mail, initials };
                 window.groups = [];
                 window.editableGroups = [];
                 for (const group of groups) {
@@ -175,11 +176,13 @@ function checkTokenCredentials() {
                     const name = group.getElementsByTagName('name')[0].textContent;
                     window.groups.push({ uid, name });
                 }
+                $('.newEventOwnerOptionGroup').remove();
                 for (const editableGroup of editableGroups) {
                     const uid = editableGroup.getElementsByTagName('uid')[0].textContent;
                     const name = editableGroup.getElementsByTagName('name')[0].textContent;
                     window.editableGroups.push({ uid, name });
                     window.groups.push({ uid, name });
+                    $('#newEventOwner').append(`<option value="${uid}" class="newEventOwnerOptionGroup">${name} (Gruppe)</option>`)
                 }
 
                 if (firstName != undefined && lastName != undefined)
@@ -263,7 +266,6 @@ $(async () => {
         submitRegistration();
         return false;
     });
-    $('#buttonNewEvent').click(open)
     $('#newEventForm').submit(function () {
         submitNewEvent();
         return false;
@@ -369,15 +371,44 @@ async function submitNewEvent() {
     const location = newEventForm['newEventLocation'].value;
     const start = newEventForm['newEventStart'].value;
     const end = newEventForm['newEventEnd'].value;
+    const presenterFirstName = newEventForm['newEventPresenterFirstName'].value;
+    const presenterLastName = newEventForm['newEventPresenterLastName'].value;
+    var presenterInitials = newEventForm['newEventPresenterInitials'].value;
+    if (!presenterInitials.length && presenterFirstName.length && presenterLastName.length) {
+        presenterInitials = `${presenterFirstName[0]}. ${presenterLastName[0]}.`;
+    }
+    const presenterMail = newEventForm['newEventPresenterMail'].value;
+    const owner = newEventForm['newEventOwner'].value;
+    const ownerUid = owner.length == 0 ? getUID() : owner;
 
-    $.post(`/api/calendar/${getUID()}`, {
-        uid: 'placeholder',
-        title,
-        description,
-        category,
-        location,
-        start,
-        end
+
+
+    $.ajax({
+        url: `/api/calendar/${ownerUid}`,
+        method: 'POST',
+        contentType: 'application/xml',
+        data: `<Event>
+            <uid>${Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(+ new Date() + Math.random())))).map(b => b.toString(16).padStart(2, '0')).join('')}</uid>
+            <title>${title}</title>
+            <description>${description}</description>
+            <presenter>
+                <firstName>${presenterFirstName}</firstName>
+                <lastName>${presenterLastName}</lastName>
+                <mail>${presenterMail}</mail>
+                <initials>${presenterInitials}</initials>
+            </presenter>
+            <modifiedBy>
+                <firstName>${window.user.firstName}</firstName>
+                <lastName>${window.user.lastName}</lastName>
+                <mail>${window.user.mail}</mail>
+                <initials>${window.user.initials}</initials>
+            </modifiedBy>
+            <modified>${(new Date()).toISOString()}</modified>
+            <category>${category}</category>
+            <location>${location}</location>
+            <start>${start}</start>
+            <end>${end}</end>
+        </Event>`
     });
 }
 
