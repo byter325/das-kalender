@@ -58,6 +58,7 @@ table {
     border: 1px solid var(--bs-body-color);
     background-color: var(--bs-body-bg);
     font-size: 9pt;
+    overflow: hidden;
 }
 
 #timelines {
