@@ -586,8 +586,8 @@ async function openAdminManageUsers() {
                         var groupsSelectedOptions = '<option selected="selected">Zu Ansehen-Gruppe hinzufügen...</option>';
                         var editableGroupsSelectedOptions = '<option selected="selected">Zu Bearbeiten-Gruppe hinzufügen...</option>';
                         for (const group of allGroups) {
-                            groupsSelectedOptions += `<option value="${group.uid}" ${groups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
-                            editableGroupsSelectedOptions += `<option value="${group.uid}" ${editableGroups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
+                            groupsSelectedOptions += `<option value="${group.uid}">${group.name}</option>`;
+                            editableGroupsSelectedOptions += `<option value="${group.uid}"}>${group.name}</option>`;
                         }
                         const tableRow = `<tr>
                             <td>${lastName}, ${firstName} (${initials})</td>
@@ -597,8 +597,9 @@ async function openAdminManageUsers() {
                             <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
                             data-uid="${uid}" \></td>
                             <td>
-                                <select class="form-select adminSelectGroup" aria-label="Default select example" data-user="${uid}">${groupsSelectedOptions}</select>
-                                <select class="form-select adminSelectEditableGroup" aria-label="Default select example" data-user="${uid}">${editableGroupsSelectedOptions}</select>
+                                <select class="form-select form-select-sm adminSelectGroup mb-1" aria-label="Default select example" data-user="${uid}">${groupsSelectedOptions}</select>
+                                <select class="form-select form-select-sm adminSelectEditableGroup mb-1" aria-label="Default select example" data-user="${uid}">${editableGroupsSelectedOptions}</select>
+                                <button type="button" class="btn btn-danger adminDeleteUserButton" title="Löschen" data-user="${uid}" data-username="${firstName} ${lastName}"><i class="bi bi-x"></i></button>
                             </td>
                             </tr>`;
                         $('#adminManageUsersTableBody').append(tableRow);
@@ -623,6 +624,17 @@ async function openAdminManageUsers() {
                                 }
                                 console.log(doc);
                             });
+                    });
+                    $('.adminDeleteUserButton').click(function () {
+                        const uid = this.getAttribute('data-user');
+                        const username = this.getAttribute('data-username');
+                        if (confirm(`Sie sind dabei, ${username} zu löschen.`)) {
+                            $.ajax({
+                                url: `/api/users/${uid}`,
+                                method: 'DELETE'
+                            })
+                                .done(openAdminManageUsers);
+                        }
                     });
 
                     $('.checkbox-admin').change(function () {
