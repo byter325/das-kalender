@@ -4,7 +4,6 @@ import usersRouter from "./routers/user_router"
 import groupsRouter from "./routers/group_router"
 import calendarRouter from "./routers/calendar_router"
 import tokenRouter from "./routers/token_router"
-import { Server } from 'http'
 import { Handlers } from './lib/handlers'
 import * as cron from "node-cron"
 import * as https from "https"
@@ -42,7 +41,7 @@ const options = {
     cert: cert
 };
 
-const server: Server = https.createServer(options, app).listen(port, () => {
+https.createServer(options, app).listen(port, () => {
     Handlers.updateRaplaEvents("freudenmann", "TINF21B1")
     AuthManager.loadUsers()
     AuthManager.loadTokens()
@@ -58,7 +57,7 @@ const server: Server = https.createServer(options, app).listen(port, () => {
 
 app.use(RateLimit({
     windowMs: 1000, // 1 second
-    max: 15 // limit each IP to 10 requests per second
+    max: 15 // limit each IP to 15 requests per second
 }));
 app.use(cookieParser())
 app.use(bodyParser.urlencoded())
