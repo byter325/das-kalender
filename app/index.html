@@ -226,7 +226,7 @@
 			</button>
 			-->
 			<button type="button" class="btn btn-success me-1 mb-1" data-bs-toggle="modal" data-bs-target="#newEvent"
-				onclick="newEvent()">
+				id="buttonNewEvent">
 				<i class="bi bi-plus-circle me-1"></i>
 				Neuer Termin
 			</button>
@@ -664,10 +664,14 @@
 								<input type="text" class="form-control" id="userSettingsLastName">
 							</div>
 						</div>
+						<button type="button" class="btn btn-primary mt-4 mb-1" id="buttonGenApiToken">API-Token
+							generieren</button>
+						<br>
+						&rightarrow; benutzbar für <a href="/docs" target="_blank">API-Dokumentation</a>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-						<button type="submit" class="btn btn-primary">Ändern</button>
+						<button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Ändern</button>
 					</div>
 				</form>
 			</div>

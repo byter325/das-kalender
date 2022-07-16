@@ -1,6 +1,6 @@
 import * as express from 'express'
-import {AuthManager} from "../lib/authManager";
-import {Utils} from "../lib/utils";
+import { AuthManager } from "../lib/authManager";
+import { Utils } from "../lib/utils";
 
 const tokenRouter = express.Router();
 

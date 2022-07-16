@@ -78,7 +78,9 @@ function updateSite() {
     let weekRange = getWeekRange(window.calweek, window.calyear);
     $('#calweek').text('KW ' + window.calweek + ' (' + weekRange.startDay.toLocaleDateString() + ' - ' + weekRange.endDay.toLocaleDateString() + ')');
     // TODO: use user's group
-    insertCourseEvents('TINF21B1', weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    for (const group of window.groups) {
+        insertCourseEvents(group.uid, weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    }
     insertUserEvents(getUID(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
 }
 
@@ -164,6 +166,21 @@ function checkTokenCredentials() {
                 const initials = doc.getElementsByTagName('initials')[0].textContent;
                 const mail = doc.getElementsByTagName('mail')[0].textContent;
                 const darkMode = doc.getElementsByTagName('darkMode')[0].textContent == 'true';
+                const groups = doc.getElementsByTagName('group');
+                const editableGroups = doc.getElementsByTagName('editableGroup');
+                window.groups = [];
+                window.editableGroups = [];
+                for (const group of groups) {
+                    const uid = group.getElementsByTagName('uid')[0].textContent;
+                    const name = group.getElementsByTagName('name')[0].textContent;
+                    window.groups.push({ uid, name });
+                }
+                for (const editableGroup of editableGroups) {
+                    const uid = editableGroup.getElementsByTagName('uid')[0].textContent;
+                    const name = editableGroup.getElementsByTagName('name')[0].textContent;
+                    window.editableGroups.push({ uid, name });
+                    window.groups.push({ uid, name });
+                }
 
                 if (firstName != undefined && lastName != undefined)
                     $('#profileUserName').text(`${firstName} ${lastName}`);
@@ -246,6 +263,7 @@ $(async () => {
         submitRegistration();
         return false;
     });
+    $('#buttonNewEvent').click(open)
     $('#newEventForm').submit(function () {
         submitNewEvent();
         return false;
@@ -268,6 +286,7 @@ $(async () => {
         submitAdminManageUsers();
         return false;
     });
+    $('#buttonGenApiToken').click(genApiToken);
 });
 
 /* UI events */
@@ -350,7 +369,7 @@ async function submitNewEvent() {
     const location = newEventForm['newEventLocation'].value;
     const start = newEventForm['newEventStart'].value;
     const end = newEventForm['newEventEnd'].value;
-    // $.post(`/api/calendar/${getUID()}`, `<Event><uid>placeholder</uid><title>${title}</title><description>${description}</description><category>${category}</category><start>${start}</start><end>${end}</end><location>${location}</location></Event>`);
+
     $.post(`/api/calendar/${getUID()}`, {
         uid: 'placeholder',
         title,
@@ -442,13 +461,29 @@ async function submitUserSettingsChange() {
     if (password !== '') user.passwordhash = password;
     if (firstName !== '') user.firstname = firstName;
     if (lastName !== '') user.lastname = lastName;
-    console.log(user);
 
     $.ajax({
         url: `/api/users/${getUID()}`,
         method: 'PUT',
         data: { user }
-    });
+    })
+        .done(function () {
+            userSettingsForm.reset();
+            checkTokenCredentials();
+        });
+}
+
+async function genApiToken() {
+    $.ajax({
+        url: '/api/token',
+        method: 'POST',
+        contentType: 'application/xml',
+        data: `<Token><uid>${getUID()}</uid><unlimited>true</unlimited><validUntil>2022-07-16T15:12:31.960Z</validUntil></Token>`
+    })
+        .done(function (data) {
+            console.info('API Token:', data);
+            alert(`WARNUNG: Dieser API-Token ist nur einmal gültig.\n\nToken:\n${data}`);
+        });
 }
 
 async function openAdminManageGroups() {
