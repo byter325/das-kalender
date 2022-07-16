@@ -249,35 +249,6 @@
 		<article id="timelines"></article>
 	</main>
 
-
-	<!-- Modal: selectGroup TODO: delete or implement
-	<div class="modal fade" id="selectGroupModal" tabindex="-1" aria-labelledby="selectGroupModalLabel"
-		aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="selectGroupModalLabel">Vorlesungen filtern</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
-				</div>
-				<div class="modal-body">
-					<ul class="list-group">
-						<li class="list-group-item">
-							<input class="form-check-input me-1" type="checkbox" checked="checked" aria-label="" />
-							TINF21B1 INF
-						</li>
-						<li class="list-group-item">
-							<input class="form-check-input me-1" type="checkbox" checked="checked" aria-label="" />
-							TINF21B1 MI
-						</li>
-					</ul>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Bestätigen</button>
-				</div>
-			</div>
-		</div>
-	</div> -->
-
 	<!-- Modal: newEvent -->
 	<div class="modal fade" id="newEvent" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
@@ -586,7 +557,6 @@
 								<label for="adminManageGroupsName" class="form-label">Name</label>
 								<input type="text" class="form-control" id="adminManageGroupsName"
 									required="required" />
-								<!-- TODO: HTML-Tags korrekt schließen -->
 							</div>
 							<div class="mb-2">
 								<label for="adminManageGroupsRaplaUrl" class="form-label">Rapla-URL (optional)</label>
@@ -596,6 +566,39 @@
 						<button type="submit" class="btn btn-success mb-4">Gruppe hinzufügen</button>
 						<h6>Liste bisheriger Gruppen:</h6>
 						<ul id="adminManageGroupsGroupsList" class="list-group list-group-flush"></ul>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal: adminSelectGroups -->
+	<div class="modal fade" id="adminSelectGroups" tabindex="-1" aria-labelledby="adminSelectGroupsLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form id="adminSelectGroupsForm">
+					<div class="modal-header">
+						<h5 class="modal-title" id="adminSelectGroupsLabel">Gruppen von
+							<span id="adminSelectGroupsName"></span> auswählen
+						</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+					</div>
+					<div class="modal-body">
+						<label class="form-label" for="adminSelectGroupsSelect">Nur anzeigen:</label>
+						<select class="form-select" id="adminSelectGroupsSelect" multiple="multiple"
+							aria-label="Gruppen für diesen Benutzer auswählen">
+						</select>
+						<label class="form-label" for="adminSelectGroupsSelect">Anzeigen und bearbeiten:</label>
+						<select class="form-select" id="adminSelectEditableGroupsSelect" multiple="multiple"
+							aria-label="Bearbeitbare Gruppen für diesen Benutzer auswählen">
+						</select>
+					</div>
+					<div class="modal-footer">
+						<button type="button" id="adminSelectGroupsCancelButton" class="btn btn-secondary"
+							data-bs-dismiss="modal">Abbrechen</button>
+						<button type="submit" id="adminSelectGroupsSubmitButton" class="btn btn-primary"
+							data-bs-dismiss="modal">Ändern</button>
 					</div>
 				</form>
 			</div>

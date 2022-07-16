@@ -157,7 +157,6 @@ function checkTokenCredentials() {
     if (token && token.length > 0) {
         $.get(`/api/users/${getUID()}`)
             .done(function (data) {
-                console.log('Successful login', data);
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(data, 'application/xml');
                 const isAdmin = doc.getElementsByTagName('isAdministrator')[0].textContent == 'true';
@@ -279,15 +278,12 @@ $(async () => {
         return false;
     });
     $('#adminManageGroupsButton').click(openAdminManageGroups);
+    $('#adminSelectGroupsSubmitButton').click(submitAdminSelectGroups);
     $('#adminManageGroupsForm').submit(function () {
         submitAdminManageGroups();
         return false;
     });
     $('#adminManageUsersButton').click(openAdminManageUsers);
-    $('#adminManageUsersForm').submit(function () {
-        submitAdminManageUsers();
-        return false;
-    });
     $('#buttonGenApiToken').click(genApiToken);
 });
 
@@ -500,7 +496,7 @@ async function submitUserSettingsChange() {
         .done(function () {
             userSettingsForm.reset();
             checkTokenCredentials();
-        }); // TODO: data in XML
+        });
 }
 
 async function genApiToken() {
@@ -555,8 +551,6 @@ async function openAdminManageUsers() {
         .done(function (data) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(data, 'application/xml');
-            console.log(data);
-            console.log(doc);
             const users = doc.getElementsByTagName('user');
             var tableContent = '';
             for (let i = 0; i < users.length; i++) {
@@ -587,6 +581,8 @@ async function openAdminManageUsers() {
                         Bearbeiten: ${editableGroups.length ? editableGroups.map(group => group.name).join(', ') : '-'}</td>
                     <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
                     data-uid="${uid}" \></td>
+                    <td><button type="button" class="btn btn-sm btn-primary adminSelectGroupsButton" data-bs-dismiss="modal" data-bs-toggle="modal"
+					data-bs-target="#adminSelectGroups" onclick="openAdminSelectGroups("${uid}", "${firstName}", "${lastName}")"><i class="bi bi-people-fill"></i> Gruppen auswählen</button></td>
                     </tr>`;
                 tableContent += tableRow;
             }
@@ -606,8 +602,49 @@ async function openAdminManageUsers() {
         });
 }
 
-async function submitAdminManageUsers() {
-    // TODO
+function openAdminSelectGroups(uid, firstName, lastName) {
+    $('#adminSelectGroupsName').text(firstName + ' ' + lastName);
+    $('#adminSelectGroupsSelect').html('');
+    const groups = new Set();
+    const editableGroups = [];
+    $.get(`/api/users/${uid}`)
+        .done(function (data) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data);
+            for (const group in doc.getElementsByTagName('group')) {
+                const uid = group.getElementsByTagName('uid')[0];
+                groups.add(uid);
+            }
+            for (const editableGroup in doc.getElementsByTagName('editable')) {
+                const uid = editableGroup.getElementsByTagName('uid')[0];
+                editableGroups.add(uid);
+            }
+        });
+    $.get('/api/groups')
+        .done(function (data) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data);
+            for (const group in doc.getElementsByTagName('group')) {
+                const name = group.getElementsByTagName('name')[0];
+                const uid = group.getElementsByTagName('uid')[0];
+                const url = group.getElementsByTagName('url')[0];
+                $('#adminSelectGroupsSelect').append(`<option value="${uid}" ${groups.has(uid) ? 'selected="selected"' : ''}>${name}</option>`);
+                $('#adminSelectEditableGroupsSelect').append(`<option value="${uid}" ${editableGroups.has(uid) ? 'selected="selected"' : ''}>${name}</option>`);
+            }
+        });
+    $.get(`/api/users/${window.adminSelectGroupsSelectedUserUID}`)
+        .done(function (data) {
+            console.log('GROUPS', data);
+        });
+}
+
+function submitAdminSelectGroups() {
+    $.ajax({
+        url: `/api/users/${window.adminSelectGroupsSelectedUserUID}`,
+        method: `PUT`,
+        contentType: 'application/xml',
+        data: `<User><uid>${uid}</uid><groups></groups><editableGroups></editableGroups></User>`
+    });
 }
 
 function setDarkMode(isDarkModeEnabled) {
