@@ -1,6 +1,6 @@
 import * as crypto from "crypto-js";
-import {User} from "./classes/user";
-import {CalendarEvent} from "./classes/userEvent";
+import { User } from "./classes/user";
+import { CalendarEvent } from "./classes/userEvent";
 import fs from 'fs';
 import path from "path";
 import { exit } from "process";
@@ -24,7 +24,7 @@ export module Utils {
     }
 
     export function isBodyForGroupCorrect(body: any): boolean {
-        return body.name != undefined && body.uid != undefined && body.url != undefined;
+        return body.name != undefined && body.url != undefined;
     }
 
     /**
@@ -52,21 +52,18 @@ export module Utils {
                 && body.end != undefined
                 && body.location != undefined
                 && body.modified != undefined
-                && body.modifiedBy != undefined) return BODY_FULLY_CORRECT
+                && body.modifiedby != undefined) return BODY_FULLY_CORRECT
         }
         return BODY_INCORRECT
     }
 
     export function convertFullPostBodyToEvent(body: any): CalendarEvent {
-        let o = new CalendarEvent(body.uid, body.title, body.description, body.presenter, body.category, body.start, body.end,
+        return new CalendarEvent(getNextUID(), body.title, body.description, body.presenter, body.category, body.start, body.end,
             body.location, body.modified, body.modifiedBy)
-        console.log(o);
-
-        return o
     }
 
     export function convertPartialPostBodyToEvent(body: any): CalendarEvent {
-        return new CalendarEvent(body.uid, body.title, "No description", {}, "No category", body.start, body.end,
+        return new CalendarEvent(getNextUID(), body.title, "No description", {}, "No category", body.start, body.end,
             "No location", new Date().toISOString(), {})
     }
 
@@ -102,13 +99,15 @@ export module Utils {
     }
 
     export function convertFullPostBodyToUser(body: any): User {
-        return new User(body.uid, body.firstName, body.lastName, body.initials, body.mail, body.passwordHash, body.group,
-            body.editableGroup, body.darkMode, body.isAdministrator)
+        let uid = getNextUID()
+        return new User(uid, body.firstName, body.lastName, body.initials, body.mail, body.passwordHash, body.group,
+            body.editableGroup, body.darkMode, body.isAdministrator, GenerateHash(uid) + ".xml")
     }
 
     export function convertPartialPostBodyToUser(body: any): User {
-        return new User(body.uid, body.firstName, body.lastName, body.firstName[0] + body.lastName[0], body.mail, body.passwordHash, [{}],
-            [{}], false, false)
+        let uid = getNextUID()
+        return new User(uid, body.firstName, body.lastName, body.firstName[0] + body.lastName[0], body.mail, body.passwordHash, body.group,
+            body.editableGroup, body.darkMode, body.isAdministrator, GenerateHash(uid) + ".xml")
     }
 
     export function getNextUID(): string {
@@ -156,7 +155,7 @@ export module Utils {
     function saveUID(uid: number) {
         createDirectoryIfNotExists(idDataPath);
 
-        let data = {"uid": uid, "last_time": new Date().toISOString()};
+        let data = { "uid": uid, "last_time": new Date().toISOString() };
         fs.writeFileSync(idDataFile, JSON.stringify(data));
     }
 

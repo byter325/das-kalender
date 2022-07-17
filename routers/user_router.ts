@@ -31,6 +31,7 @@ usersRouter.get("/", (request: express.Request, response: express.Response) => {
 });
 
 usersRouter.get('/:uid', (request: express.Request, response: express.Response) => {
+    AuthManager.loadUsers();
     if (request.user.uid == request.params.uid || request.user.isAdministrator) {
         const builder = new XMLBuilder({
             ignoreAttributes: false,
@@ -47,6 +48,7 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
 
         if (value != undefined) {
             value.passwordHash = ""
+            value.fileName = ""
             const xmlDataStr = builder.build({ user: value })
             response.status(200)
             response.send(xmlDataStr)
@@ -71,6 +73,14 @@ usersRouter.put("/:uid", (request: express.Request, response: express.Response) 
         return response.sendStatus(401)
     }
     return response.sendStatus(404)
+})
+
+usersRouter.delete('/:uid/groups', (request: express.Request, response) => {
+    let type:string | undefined = request.query.type?.toString();
+
+    if(type == undefined) return 400;
+
+    return response.sendStatus(XMLManager.unassignAllGroupsFromUser(request.params.uid, type))
 })
 
 usersRouter.delete("/:uid", (request: express.Request, response) => {

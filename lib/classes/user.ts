@@ -9,6 +9,7 @@ export class User {
     public editableGroup: any[]
     public darkMode: boolean
     public isAdministrator: boolean
+    public fileName: string
 
     constructor(
         uid: string,
@@ -20,7 +21,8 @@ export class User {
         group: any[],
         editableGroup: any[],
         darkMode: boolean,
-        isAdministrator: boolean
+        isAdministrator: boolean,
+        fileName: string
     ) {
         this.uid = uid
         this.firstName = firstName
@@ -32,6 +34,7 @@ export class User {
         this.editableGroup = editableGroup
         this.darkMode = darkMode
         this.isAdministrator = isAdministrator
+        this.fileName = fileName
     }
 
 }

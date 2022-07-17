@@ -10,6 +10,7 @@ export module AuthManager {
     import insertUser = XMLManager.insertUser;
     import VerifyHash = Utils.VerifyHash;
     import GenerateHash = Utils.GenerateHash;
+    import insertGroup = XMLManager.insertGroup;
     export let authTokens: Map<string, Token> = new Map<string, Token>()
     export let users: Map<string, User> = new Map<string, User>()
 
@@ -22,8 +23,9 @@ export module AuthManager {
         })
         if (users.size == 0) {
             let uid = "" + getNextUID()
-            let user = new User(uid, "Administrator", "User", "AB", "test@test.example", GenerateHash("changeMe"), [], [], false, true)
+            let user = new User(uid, "Administrator", "User", "AB", "test@test.example", GenerateHash("changeMe"), [], [{uid: "Testgruppe", name: "Testgruppe"}], false, true, GenerateHash(uid) + ".xml")
             users.set(uid, user)
+            insertGroup("Testgruppe", "", true)
             insertUser(user, false, true)
             console.log("No users available. Created admin user with eMail: 'test@test.example' and password: 'changeMe'")
         }
@@ -35,6 +37,7 @@ export module AuthManager {
     export function loadTokens() {
         const rawTokens = XMLManager.getTokens()
         if (rawTokens == undefined) return
+        console.log(rawTokens)
 
         //iterate over all elements of the array and add them as Token to the map
         for (var i = 0; i < rawTokens.length; i++) {
@@ -45,25 +48,6 @@ export module AuthManager {
             } else console.log("Token " + rawTokens[i].tokenString + " is expired and will be deleted")
         }
         console.log("Loaded " + authTokens.size + " tokens")
-    }
-
-    /**
-     * @description Saves all valid authTokens to the XML file.
-     */
-    export function saveTokens() {
-        var xmlTokens = "<Tokens>"
-        authTokens.forEach((value, key) => {
-            if (isTokenValid(key, false)) {
-                xmlTokens += "<Token>"
-                xmlTokens += "<tokenString>" + key + "</tokenString>"
-                xmlTokens += "<uid>" + value.uid + "</uid>"
-                xmlTokens += "<unlimited>" + value.unlimited + "</unlimited>"
-                xmlTokens += "<validUntil>" + value.validUntil + "</validUntil>"
-                xmlTokens += "</Token>"
-            }
-        })
-        xmlTokens += "</Tokens>"
-        XMLManager.saveTokens(xmlTokens)
     }
 
     /**
@@ -91,7 +75,8 @@ export module AuthManager {
      * @param lastName  The last name of the user.
      */
     export function register(mail: string, password: string, firstName: string, lastName: string) {
-        let user = new User("" + getNextUID(), firstName, lastName, firstName.substring(0, 1), mail, Utils.GenerateHash(password), [], [], false, false)
+        let uid = "" + getNextUID()
+        let user = new User(uid, firstName, lastName, firstName.substring(0, 1), mail, Utils.GenerateHash(password), [], [], false, false, GenerateHash(uid) + ".xml")
         users.set(user.uid, user)
         XMLManager.insertUser(user, false, true)
         return user
@@ -111,7 +96,7 @@ export module AuthManager {
                 return user.isAdministrator || !requiresAdmin
             } else {
                 authTokens.delete(Utils.GenerateHash(token))
-                saveTokens()
+                XMLManager.saveTokens()
                 return false
             }
         } else {
@@ -160,7 +145,7 @@ export module AuthManager {
     export function createToken(uid: string, unlimited: boolean, validUntil: string): string {
         let token = Utils.GenerateHash(uid + new Date() + randomUUID())
         authTokens.set(Utils.GenerateHash(token), new Token(uid, unlimited, validUntil))
-        saveTokens()
+        XMLManager.saveTokens()
         console.log("Created new token " + new Token(uid, unlimited, validUntil) + " for user " + uid)
         return token
     }
@@ -179,7 +164,7 @@ export module AuthManager {
      */
     export function deleteToken(token: string) {
         authTokens.delete(Utils.GenerateHash(token))
-        saveTokens()
+        XMLManager.saveTokens()
         console.log("Deleted token " + token)
     }
 
@@ -193,7 +178,7 @@ export module AuthManager {
                 authTokens.delete(key)
             }
         })
-        saveTokens()
+        XMLManager.saveTokens()
         console.log("Deleted all tokens of user " + uid)
     }
 }

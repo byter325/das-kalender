@@ -11,10 +11,12 @@ groupsRouter.post("/", (request: express.Request, response) => {
     const requestType = request.headers['content-type']
     if (requestType == "application/xml" || requestType == "text/html") {
         body = XMLManager.convertXMLResponseJSONToCorrectJSONForGroup(body.group)
+        console.log(body);
     }
 
-    if (Utils.isBodyForGroupCorrect(request.body)) {
-        let b: boolean = XMLManager.insertGroup(body.uid, body.name, body.url, false)
+    if (Utils.isBodyForGroupCorrect(body)) {
+        let b: boolean = XMLManager.insertGroup(body.name, body.url, false)
+        console.log("SUCCESS?" + b);
         if (b) return response.sendStatus(201)
     }
     return response.sendStatus(400)
@@ -50,8 +52,9 @@ groupsRouter.put("/:uid", (request: express.Request, response: express.Response)
     }
 
     if (Utils.isBodyForGroupCorrect(body)) {
-        if (body.uid != request.params.uid) return response.sendStatus(400)
-        let b: boolean = XMLManager.insertGroup(body.uid, body.name, body.url, true)
+        let b: boolean = XMLManager.insertGroup(body.name, body.url, true)
+        console.log("SUCCESS?" + b);
+        
         if (b) return response.sendStatus(204)
     }
     return response.sendStatus(400)
