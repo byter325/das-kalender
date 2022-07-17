@@ -346,6 +346,7 @@
 				<form id="editEventForm">
 					<input type="hidden" id="editEventId" />
 					<input type="hidden" id="editEventOwnerId" />
+					<input type="hidden" id="editEventOwner" />
 					<div class="modal-header">
 						<h5 class="modal-title" id="editEventModalLabel">Termin bearbeiten</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -390,14 +391,6 @@
 								<input type="datetime-local" class="form-control" id="editEventEnd"
 									required="required" />
 							</div>
-						</div>
-						<div class="mb-2">
-							<label class="form-label" for="editEventOwner">
-								<i class="bi bi-person"></i> Besitzer/Gruppe</label>
-							<select class="form-select" aria-label="Besitzer/Gruppe" id="editEventOwner"
-								disabled="disabled">
-								<option value="" selected="selected">Ich</option>
-							</select>
 						</div>
 						<hr>
 						<h6>Präsentator:</h6>
@@ -444,6 +437,7 @@
 				<form id="deleteEventForm">
 					<input type="hidden" id="deleteEventId" />
 					<input type="hidden" id="deleteEventOwnerId" />
+					<input type="hidden" id="editEventOwner" />
 					<div class="modal-header">
 						<h5 class="modal-title" id="deleteEventModalLabel">Termin löschen</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -492,14 +486,6 @@
 								<input type="datetime-local" class="form-control" id="deleteEventEnd"
 									disabled="disabled" />
 							</div>
-						</div>
-						<div class="mb-2">
-							<label class="form-label" for="deleteEventOwner">
-								<i class="bi bi-person"></i> Besitzer/Gruppe</label>
-							<select class="form-select" aria-label="Besitzer/Gruppe" id="deleteEventOwner"
-								disabled="disabled">
-								<option value="" selected="selected">Ich</option>
-							</select>
 						</div>
 						<hr>
 						<h6>Präsentator:</h6>

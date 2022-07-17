@@ -49,8 +49,8 @@ class API {
             <modified>${(new Date()).toISOString()}</modified>
             <category>${category}</category>
             <location>${location}</location>
-            <start>${(new Date(start)).toISOString()}</start>
-            <end>${(new Date(end)).toISOString()}</end>
+            <start>${(new Date((new Date(start)).getTime() - (new Date()).getTimezoneOffset() * 60000)).toISOString()}</start>
+            <end>${(new Date((new Date(end)).getTime() - (new Date()).getTimezoneOffset() * 60000)).toISOString()}</end>
         </Event>`
         })
             .done(function () {
