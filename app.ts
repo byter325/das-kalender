@@ -42,7 +42,6 @@ const options = {
 };
 
 https.createServer(options, app).listen(port, () => {
-    Handlers.updateRaplaEvents("freudenmann", "TINF21B1")
     AuthManager.loadUsers()
     AuthManager.loadTokens()
     Handlers.updateAllGroups();
