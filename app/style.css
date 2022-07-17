@@ -60,10 +60,6 @@ table {
     overflow: hidden;
 }
 
-#timelines {
-    display: none;
-}
-
 .ki-heading {
     grid-row-start: 1;
 }
