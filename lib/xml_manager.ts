@@ -102,10 +102,9 @@ export module XMLManager {
      */
     export function insertUser(user: User, allowOverride: boolean, createOrOverrideEvents: boolean): boolean {
         try {
-            let uid = Utils.getNextUID()
             let json = {
                 person: {
-                    uid: uid,
+                    uid: user.uid,
                     firstName: user.firstName,
                     lastName: user.lastName,
                     initials: user.initials,
@@ -119,14 +118,13 @@ export module XMLManager {
             };
 
             const builder = new XMLBuilder({
-                ignoreAttributes: false,
-                attributesGroupName: "group"
+                ignoreAttributes: false
             })
 
             let xmlDataStr: string = builder.build(json);
             createFoldersIfNotExist();
 
-            console.log("Writing user '" + uid + "' to " + PATH_DATA_USERS + user.fileName)
+            console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + user.fileName)
 
             // const usersPath = PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml"
             // const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(user.uid) + ".xml"
