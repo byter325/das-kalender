@@ -583,22 +583,26 @@ async function openAdminManageUsers() {
                             const uid = editableGroup.getElementsByTagName('uid')[0].textContent;
                             editableGroups.add(uid);
                         }
-                        var groupsSelectedOptions = '<option selected="selected">Zu Ansehen-Gruppe hinzufügen...</option>';
-                        var editableGroupsSelectedOptions = '<option selected="selected">Zu Bearbeiten-Gruppe hinzufügen...</option>';
+                        var groupsSelectedOptions = '';
+                        var editableGroupsSelectedOptions = '';
                         for (const group of allGroups) {
-                            groupsSelectedOptions += `<option value="${group.uid}">${group.name}</option>`;
-                            editableGroupsSelectedOptions += `<option value="${group.uid}"}>${group.name}</option>`;
+                            groupsSelectedOptions += `<option value="${group.uid}" ${groups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
+                            editableGroupsSelectedOptions += `<option value="${group.uid}" ${editableGroups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
                         }
                         const tableRow = `<tr>
                             <td>${lastName}, ${firstName} (${initials})</td>
                             <td>${mail}</td>
-                            <td>Anzeigen: ${groups.length ? groups.map(group => group.name).join(', ') : '-'}<br>
-                                Bearbeiten: ${editableGroups.length ? editableGroups.map(group => group.name).join(', ') : '-'}</td>
+                            <td>
+                            <a class="link" data-bs-toggle="collapse" href="#adminGroupSelects${uid}" role="button" aria-expanded="false" aria-controls="adminGroupSelects${uid}">Gruppen verwalten</a>
+                            <div class="collapse pt-2" id="adminGroupSelects${uid}">
+                                <label>Gruppen zum Anzeigen</label>
+                                <select class="form-select form-select-sm adminSelectGroup mb-1" multiple="multiple" data-user="${uid}">${groupsSelectedOptions}</select>
+                                <label>Gruppen zum Bearbeiten</label>
+                                <select class="form-select form-select-sm adminSelectEditableGroup mb-1" multiple="multiple" data-user="${uid}">${editableGroupsSelectedOptions}</select>
+                            </div>
                             <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
                             data-uid="${uid}" \></td>
                             <td>
-                                <select class="form-select form-select-sm adminSelectGroup mb-1" aria-label="Default select example" data-user="${uid}">${groupsSelectedOptions}</select>
-                                <select class="form-select form-select-sm adminSelectEditableGroup mb-1" aria-label="Default select example" data-user="${uid}">${editableGroupsSelectedOptions}</select>
                                 <button type="button" class="btn btn-danger adminDeleteUserButton" title="Löschen" data-user="${uid}" data-username="${firstName} ${lastName}"><i class="bi bi-x"></i></button>
                             </td>
                             </tr>`;
@@ -606,23 +610,32 @@ async function openAdminManageUsers() {
                     }
                     $('.adminSelectGroup').change(function () {
                         const uid = this.getAttribute('data-user');
-                        const groupUid = this.value;
-                        const selectedGroup = allGroups.filter(group => group.uid == groupUid)[0];
-                        $.get(`/api/users/${uid}`)
-                            .done(function (data) {
-                                const doc = parseXML(data);
-                                var userAlreadyInGroup = false;
-                                for (const group of doc.getElementsByTagName('group')) {
-                                    if (group.getElementsByTagName('uid')[0] == groupUid) {
-                                        userAlreadyInGroup = true;
-                                        break;
-                                    }
-                                }
-                                var updatedUserData = data;
-                                if (!userAlreadyInGroup) {
-                                    doc.getElementsByTagName('user')[0].appendChild(`<group><uid>${groupUid}</uid><name>${selectedGroup.name}</name><url>${selectedGroup.url}</url></group>`);
-                                }
-                                console.log(doc);
+                        const groupUIDs = $(this).val();
+                        const selectedGroups = allGroups.filter(group => groupUIDs.includes(group.uid));
+                        const selectedGroupsXml = selectedGroups.map(group => `<group><uid>${group.uid}</uid><name>${group.name}</name><url>${group.url}</url></group>`).join('');
+                        $.ajax({
+                            url: `/api/users/${uid}`,
+                            method: 'PUT',
+                            contentType: 'application/xml',
+                            data: `<User><uid>${uid}</uid>${selectedGroupsXml}</User>`
+                        })
+                            .fail(function () {
+                                alert('Die Gruppen konnten nicht geändert werden.');
+                            });
+                    });
+                    $('.adminSelectEditableGroup').change(function () {
+                        const uid = this.getAttribute('data-user');
+                        const groupUIDs = $(this).val();
+                        const selectedGroups = allGroups.filter(group => groupUIDs.includes(group.uid));
+                        const selectedGroupsXml = selectedGroups.map(group => `<editableGroup><uid>${group.uid}</uid><name>${group.name}</name><url>${group.url}</url></editableGroup>`).join('');
+                        $.ajax({
+                            url: `/api/users/${uid}`,
+                            method: 'PUT',
+                            contentType: 'application/xml',
+                            data: `<User><uid>${uid}</uid>${selectedGroupsXml}</User>`
+                        })
+                            .fail(function () {
+                                alert('Die Gruppen konnten nicht geändert werden.');
                             });
                     });
                     $('.adminDeleteUserButton').click(function () {
