@@ -167,22 +167,23 @@ export module XMLManager {
      */
     export function insertGroup(name: string, url: string, allowOverride: boolean): boolean {
         try {
+
             const builder = new XMLBuilder({})
             let uid: string = Utils.getNextUID()
-            let xmlDataStr: string = builder.build({ group: { uid: uid, name: name, url: url } });
+            let xmlDataStr: string = builder.build({ group: { uid: uid, name: name, url: url.replace('&#38;', '&') } });
             createFoldersIfNotExist()
 
             const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml"
             xmlDataStr = '<?xml-model href="../../camed/DTD_Exports/raw_group.dtd" type="application/xml-dtd"?>' + xmlDataStr
             if (!allowOverride && fs.existsSync(groupsPath))
-            return false;
+                return false;
             else
-            writeFileSync(groupsPath, xmlDataStr, { flag: "w+" })
-            
+                writeFileSync(groupsPath, xmlDataStr, { flag: "w+" })
+
             if (!allowOverride && fs.existsSync(eventsPath))
-            return false;
-            else{
+                return false;
+            else {
                 Handlers.updateGroup(uid);
             }
 
@@ -193,7 +194,7 @@ export module XMLManager {
             return false
         }
     }
-    
+
 
     /**
      * Adds an event to a user's or a group's events
@@ -262,11 +263,11 @@ export module XMLManager {
         const builder = new XMLBuilder({})
 
         let user: User | null = getUserByUid(uid)
-        if(user == null) return "";
+        if (user == null) return "";
 
-        let events = getAllEventsJSON(uid);       
+        let events = getAllEventsJSON(uid);
 
-        if(user.group != undefined){
+        if (user.group != undefined) {
 
             let userGroups = []
             if (!Array.isArray(user.group)) {
@@ -359,7 +360,7 @@ export module XMLManager {
         })
         let hash = Utils.GenerateHash("" + uid)
         console.log("uid: " + uid + " hash: " + hash);
-        
+
         var data = fs.readFileSync(PATH_DATA_EVENTS + hash + ".xml", { encoding: "utf-8" })
         var events = parser.parse(data)["events"]
         if (events == undefined || events == "")
