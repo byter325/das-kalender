@@ -32,7 +32,7 @@ export module XMLManager {
             })
             const path = PATH_DATA_USERS + Utils.GenerateHash(uid) + ".xml"
             console.log("Reading file of user " + uid + " from " + path)
-            if (!fs.existsSync(path)) throw new Error("File for user '" + uid + "' does not exist")
+            if (!fs.existsSync(path)) return null
             const data = fs.readFileSync(path, "utf-8")
             const person = parser.parse(data)["person"]
             console.log("parsed person: " + person)
@@ -162,10 +162,11 @@ export module XMLManager {
      * @param {boolean} allowOverride Set to true to allow overriding existing groups
      * @return {boolean} Returns if the operation was successful or not
      */
-    export function insertGroup(uid: string, name: string, url: string, allowOverride: boolean): boolean {
+    export function insertGroup(name: string, url: string, allowOverride: boolean): boolean {
         try {
             const builder = new XMLBuilder({})
-            let xmlDataStr: string = builder.build({ group: { uid: uid, name: name, url: url } });
+            let uid:string = Utils.getNextUID()
+            let xmlDataStr: string = builder.build({group: {uid:uid, name: name, url: url}});
             createFoldersIfNotExist()
 
             const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
@@ -426,6 +427,8 @@ export module XMLManager {
     }
 
     export function convertXMLResponseJSONToCorrectJSONForUser(xmlJSON: any) {
+        console.log(xmlJSON);
+        
         let person = {
             uid: xmlJSON.uid != undefined ? xmlJSON.uid[0] : undefined,
             firstName: xmlJSON.firstname != undefined ? xmlJSON.firstname[0] : undefined,
@@ -464,7 +467,6 @@ export module XMLManager {
 
     export function convertXMLResponseJSONToCorrectJSONForGroup(xmlJSON: any) {
         return {
-            uid: xmlJSON.uid[0],
             name: xmlJSON.name[0],
             url: xmlJSON.url[0],
         }
@@ -582,6 +584,20 @@ export module XMLManager {
 
         if (insertUser(user, true, false)) return 204
         return 400
+    }
+
+    export function unassignAllGroupsFromUser(uid:string, type:string):number{
+        let user: User | null = getUserByUid(uid)
+        
+        if(user == null) return 404;
+
+        if(type == "group"){
+            user.group = []            
+            return insertUser(user, true, false) == true ? 200 : 500
+        } else if (type == "editableGroup"){
+            user.editableGroup = []
+            return insertUser(user, true, false) == true ? 200 : 500
+        } else return 400;
     }
 
     function createFoldersIfNotExist() {

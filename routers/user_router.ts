@@ -75,6 +75,14 @@ usersRouter.put("/:uid", (request: express.Request, response: express.Response) 
     return response.sendStatus(404)
 })
 
+usersRouter.delete('/:uid/groups', (request: express.Request, response) => {
+    let type:string | undefined = request.query.type?.toString();
+
+    if(type == undefined) return 400;
+
+    return response.sendStatus(XMLManager.unassignAllGroupsFromUser(request.params.uid, type))
+})
+
 usersRouter.delete("/:uid", (request: express.Request, response) => {
     if (request.user.uid == request.params.uid || request.user.isAdministrator) {
         let deleted: boolean = XMLManager.deleteUser(request.params.uid)
