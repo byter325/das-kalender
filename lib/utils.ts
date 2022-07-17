@@ -23,7 +23,7 @@ export module Utils {
     }
 
     export function isBodyForGroupCorrect(body: any): boolean {
-        return body.name != undefined && body.uid != undefined && body.url != undefined;
+        return body.name != undefined && body.url != undefined;
     }
 
     /**
