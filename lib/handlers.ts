@@ -5,7 +5,9 @@ import * as fs from "fs";
 import {Utils} from "./utils";
 import * as https from "https";
 import e from "express";
+import * as fsPromises from "fs/promises";
 import { XMLManager } from "./xml_manager";
+import { nodeModuleNameResolver } from "typescript";
 
 export module Handlers {
     const SaxonJs = require("saxon-js");
@@ -106,23 +108,31 @@ export module Handlers {
      * @param {string} lecturer
      * @param {string} course
      */
-    export function updateRaplaEvents(lecturer: string, course: string) {
+    export async function updateRaplaEvents(lecturer: string, course: string) {
         console.log(`Fetching events from Rapla for ${lecturer}/${course}`);
         const outfile: string = `${dataDir}/${course}.xml`;
         const outkalfile: string = `${dataDir}/${course}-kalender.xml`;
         const icsUrl: string = raplaUrl.replace('@@page@@', 'ical').replace('@@lecturer@@', lecturer).replace('@@course@@', course);        
-        fs.opendir(`${dataDir}`, (err: NodeJS.ErrnoException | null, dir: fs.Dir) => {
-            if (err) {
-                // dir.close();
-                fs.mkdir(`${dataDir}`, (err: NodeJS.ErrnoException | null) => {
-                    if (err) {
-                        throw err;
-                    }
-                });
-            } else {
-                dir.close();
-            }
-        });
+        
+        try {
+            await fsPromises.access(dataDir, fs.constants.R_OK | fs.constants.W_OK);
+        }
+        catch(err) {
+            console.log("x1b[31m\x1b[0m", "Can't access directory: " + dataDir);
+            return;
+        }
+        // fs.opendir(`${dataDir}`, (err: NodeJS.ErrnoException | null, dir: fs.Dir) => {
+        //     if (err) {
+        //         // dir.close();
+        //         fs.mkdir(`${dataDir}`, (err: NodeJS.ErrnoException | null) => {
+        //             if (err) {
+        //                 throw err;
+        //             }
+        //         });
+        //     } else {
+        //         dir.close();
+        //     }
+        // });
 
         /**
          * download ics
