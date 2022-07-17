@@ -351,6 +351,11 @@
 				<form id="editEventForm">
 					<input type="hidden" id="editEventId" />
 					<input type="hidden" id="editEventOwnerId" />
+					<input type="hidden" id="deleteEventModified" />
+					<input type="hidden" id="deleteEventModifiedByFirstName" />
+					<input type="hidden" id="deleteEventModifiedByLastName" />
+					<input type="hidden" id="deleteEventModifiedByMail" />
+					<input type="hidden" id="deleteEventModifiedByInitials" />
 					<div class="modal-header">
 						<h5 class="modal-title" id="editEventModalLabel">Termin bearbeiten</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -447,6 +452,12 @@
 			<div class="modal-content">
 				<form id="deleteEventForm">
 					<input type="hidden" id="deleteEventId" />
+					<input type="hidden" id="deleteEventOwnerId" />
+					<input type="hidden" id="deleteEventModified" />
+					<input type="hidden" id="deleteEventModifiedByFirstName" />
+					<input type="hidden" id="deleteEventModifiedByLastName" />
+					<input type="hidden" id="deleteEventModifiedByMail" />
+					<input type="hidden" id="deleteEventModifiedByInitials" />
 					<div class="modal-header">
 						<h5 class="modal-title" id="deleteEventModalLabel">Termin löschen</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -497,9 +508,10 @@
 							</div>
 						</div>
 						<div class="mb-2">
-							<label class="form-label" for="newEventOwner">
+							<label class="form-label" for="deleteEventOwner">
 								<i class="bi bi-person"></i> Besitzer/Gruppe</label>
-							<select class="form-select" aria-label="Besitzer/Gruppe" id="newEventOwner">
+							<select class="form-select" aria-label="Besitzer/Gruppe" id="deleteEventOwner"
+								disabled="disabled">
 								<option value="" selected="selected">Ich</option>
 							</select>
 						</div>
@@ -507,28 +519,30 @@
 						<h6>Präsentator:</h6>
 						<div class="row row-cols-sm-2">
 							<div class="mb-2">
-								<label for="newEventPresenterFirstName" class="form-label">
+								<label for="deleteEventPresenterFirstName" class="form-label">
 									<i class="bi bi-person me-1"></i> Vorname</label>
-								<input type="text" class="form-control" id="newEventPresenterFirstName"
-									required="required" />
+								<input type="text" class="form-control" id="deleteEventPresenterFirstName"
+									required="required" disabled="disabled" />
 							</div>
 							<div class="mb-2">
-								<label for="newEventPresenterLastName" class="form-label">
+								<label for="deleteEventPresenterLastName" class="form-label">
 									<i class="bi bi-person me-1"></i> Nachname</label>
-								<input type="text" class="form-control" id="newEventPresenterLastName"
-									required="required" />
+								<input type="text" class="form-control" id="deleteEventPresenterLastName"
+									required="required" disabled="disabled" />
 							</div>
 						</div>
 						<div class="row row-cols-sm-2">
 							<div class="mb-2">
-								<label class="form-label" for="newEventPresenterInitials">
+								<label class="form-label" for="deleteEventPresenterInitials">
 									<i class="bi bi-person"></i> Initialien (optional)</label>
-								<input type="text" class="form-control" id="newEventPresenterInitials" />
+								<input type="text" class="form-control" id="deleteEventPresenterInitials"
+									disabled="disabled" />
 							</div>
 							<div class="mb-2">
-								<label class="form-label" for="newEventPresenterMail">
+								<label class="form-label" for="deleteEventPresenterMail">
 									<i class="bi bi-envelope"></i> E-Mail (optional)</label>
-								<input type="email" class="form-control" id="newEventPresenterMail" />
+								<input type="email" class="form-control" id="deleteEventPresenterMail"
+									disabled="disabled" />
 							</div>
 						</div>
 					</div>
