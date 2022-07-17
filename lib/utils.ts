@@ -117,7 +117,7 @@ export module Utils {
         }
         currUID++;
         saveUID(currUID);
-        return "" + currUID;
+        return "U" + currUID;
     }
 
     /**
