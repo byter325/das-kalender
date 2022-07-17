@@ -14,3 +14,4 @@
         <!ELEMENT location (#PCDATA)>
         <!ELEMENT modified (#PCDATA)>
         <!ELEMENT modifiedBy (firstName, lastName, initials, mail)>
+        <!ELEMENT ownerID (#PCDATA)>

@@ -57,14 +57,14 @@ export module Utils {
         return BODY_INCORRECT
     }
 
-    export function convertFullPostBodyToEvent(body: any): CalendarEvent {
+    export function convertFullPostBodyToEvent(body: any, ownerID:string): CalendarEvent {
         return new CalendarEvent(getNextUID(), body.title, body.description, body.presenter, body.category, body.start, body.end,
-            body.location, body.modified, body.modifiedBy)
+            body.location, body.modified, body.modifiedBy, ownerID)
     }
 
-    export function convertPartialPostBodyToEvent(body: any): CalendarEvent {
+    export function convertPartialPostBodyToEvent(body: any, ownerID:string): CalendarEvent {
         return new CalendarEvent(getNextUID(), body.title, "No description", {}, "No category", body.start, body.end,
-            "No location", new Date().toISOString(), {})
+            "No location", new Date().toISOString(), {}, ownerID)
     }
 
     /**

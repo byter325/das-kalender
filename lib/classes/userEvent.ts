@@ -9,9 +9,10 @@ export class CalendarEvent {
     public location: string
     public modified: string
     public modifiedBy: object
+    public ownerID:string
 
     constructor(uid: string, title: string, description: string, presenter: object, category: string,
-                start: string, end: string, location: string, modified: string, modifiedBy: object) {
+                start: string, end: string, location: string, modified: string, modifiedBy: object, ownerID:string) {
         this.uid = uid
         this.title = title
         this.description = description
@@ -22,5 +23,6 @@ export class CalendarEvent {
         this.location = location
         this.modified = modified
         this.modifiedBy = modifiedBy
+        this.ownerID = ownerID
     }
 }
