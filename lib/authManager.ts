@@ -37,7 +37,6 @@ export module AuthManager {
     export function loadTokens() {
         const rawTokens = XMLManager.getTokens()
         if (rawTokens == undefined) return
-        console.log(rawTokens)
 
         //iterate over all elements of the array and add them as Token to the map
         for (var i = 0; i < rawTokens.length; i++) {
