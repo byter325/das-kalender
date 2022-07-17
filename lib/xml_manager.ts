@@ -257,9 +257,56 @@ export module XMLManager {
         //fetch
         let boundaryStartDate = new Date(startdate);
         let boundaryEndDate = new Date(enddate);
-        const builder = new XMLBuilder({ attributesGroupName: "event" })
+        const builder = new XMLBuilder({})
 
-        let events = getAllEventsJSON(uid);
+        let user: User | null = getUserByUid(uid)
+        if(user == null) return "";
+
+        let events = getAllEventsJSON(uid);       
+
+        if(user.group != undefined){
+
+            let userGroups = []
+            if (!Array.isArray(user.group)) {
+                userGroups.push(user.group)
+            } else {
+                userGroups = user.group
+            }
+
+            for (let index = 0; index < userGroups.length; index++) {
+                const element = userGroups[index];
+                try {
+                    let groupEvents = getAllEventsJSON(element.uid)
+
+                    events['event'] = events['event'].concat(groupEvents.event)
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
+
+        if (user.editableGroup != undefined) {
+
+            let userGroups = []
+            if (!Array.isArray(user.editableGroup)) {
+                userGroups.push(user.editableGroup)
+            } else {
+                userGroups = user.editableGroup
+            }
+
+            for (let index = 0; index < userGroups.length; index++) {
+                const element = userGroups[index];
+                try {
+                    let groupEvents = getAllEventsJSON(element.uid)
+
+                    events['event'] = events['event'].concat(groupEvents.event)
+                } catch (error) {
+                    console.log(error);
+
+                }
+            }
+        }
+
         if (events == "") {
             return null
         } else if (Array.isArray(events['event'])) {
@@ -308,7 +355,10 @@ export module XMLManager {
 
             },
         })
-        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", { encoding: "utf-8" })
+        let hash = Utils.GenerateHash("" + uid)
+        console.log("uid: " + uid + " hash: " + hash);
+        
+        var data = fs.readFileSync(PATH_DATA_EVENTS + hash + ".xml", { encoding: "utf-8" })
         var events = parser.parse(data)["events"]
         if (events == undefined || events == "")
             events = { event: [] }
