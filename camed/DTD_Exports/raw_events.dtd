@@ -6,8 +6,8 @@
         <!ELEMENT presenter (firstName, lastName, initials, mail)>
             <!ELEMENT firstName (#PCDATA)>
             <!ELEMENT lastName (#PCDATA)>
-            <!ELEMENT initials (#PCDATA)>
             <!ELEMENT mail (#PCDATA)>
+            <!ELEMENT initials (#PCDATA)>
         <!ELEMENT category (#PCDATA)>
         <!ELEMENT start (#PCDATA)>
         <!ELEMENT end (#PCDATA)>
