@@ -25,7 +25,7 @@ export module AuthManager {
             let uid = "" + getNextUID()
             let user = new User(uid, "Administrator", "User", "AB", "test@test.example", GenerateHash("changeMe"), [], [{uid: "Testgruppe", name: "Testgruppe"}], false, true, GenerateHash(uid) + ".xml")
             users.set(uid, user)
-            insertGroup("Testgruppe", "Testgruppe", "", true)
+            insertGroup("Testgruppe", "", true)
             insertUser(user, false, true)
             console.log("No users available. Created admin user with eMail: 'test@test.example' and password: 'changeMe'")
         }
