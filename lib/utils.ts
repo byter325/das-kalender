@@ -57,15 +57,12 @@ export module Utils {
     }
 
     export function convertFullPostBodyToEvent(body: any): CalendarEvent {
-        let o = new CalendarEvent(body.uid, body.title, body.description, body.presenter, body.category, body.start, body.end,
+        return new CalendarEvent(getNextUID(), body.title, body.description, body.presenter, body.category, body.start, body.end,
             body.location, body.modified, body.modifiedBy)
-        console.log(o);
-
-        return o
     }
 
     export function convertPartialPostBodyToEvent(body: any): CalendarEvent {
-        return new CalendarEvent(body.uid, body.title, "No description", {}, "No category", body.start, body.end,
+        return new CalendarEvent(getNextUID(), body.title, "No description", {}, "No category", body.start, body.end,
             "No location", new Date().toISOString(), {})
     }
 
@@ -101,13 +98,15 @@ export module Utils {
     }
 
     export function convertFullPostBodyToUser(body: any): User {
-        return new User(body.uid, body.firstName, body.lastName, body.initials, body.mail, body.passwordHash, body.group,
-            body.editableGroup, body.darkMode, body.isAdministrator, GenerateHash(body.uid) + ".xml")
+        let uid = getNextUID()
+        return new User(uid, body.firstName, body.lastName, body.initials, body.mail, body.passwordHash, body.group,
+            body.editableGroup, body.darkMode, body.isAdministrator, GenerateHash(uid) + ".xml")
     }
 
     export function convertPartialPostBodyToUser(body: any): User {
-        return new User(body.uid, body.firstName, body.lastName, body.firstName[0] + body.lastName[0], body.mail, body.passwordHash, [{}],
-            [{}], false, false, GenerateHash(body.uid) + ".xml")
+        let uid = getNextUID()
+        return new User(uid, body.firstName, body.lastName, body.firstName[0] + body.lastName[0], body.mail, body.passwordHash, body.group,
+            body.editableGroup, body.darkMode, body.isAdministrator, GenerateHash(uid) + ".xml")
     }
 
     export function getNextUID(): string {
