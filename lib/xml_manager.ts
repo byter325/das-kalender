@@ -73,14 +73,16 @@ export module XMLManager {
         try {
             const parser = new XMLParser()
             const builder = new XMLBuilder({})
-            let data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenerateHash(uid) + ".xml");
+            let data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenerateHash(uid) + ".xml")
             let events = parser.parse(data)["events"]
             if (events['event'] == "") {
                 return undefined
+            } else if (typeof events['event'] == 'object') {
+                return builder.build({ event: events['event'] })
             } else {
                 let filteredEvents = events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)
                 let firstElementAsXML = builder.build({ event: filteredEvents[0] })
-                console.log("MULTIPLE EVENTS: " + filteredEvents + firstElementAsXML);
+                console.log("MULTIPLE EVENTS: " + filteredEvents + firstElementAsXML)
 
                 return firstElementAsXML
             }
@@ -166,8 +168,8 @@ export module XMLManager {
     export function insertGroup(name: string, url: string, allowOverride: boolean): boolean {
         try {
             const builder = new XMLBuilder({})
-            let uid:string = Utils.getNextUID()
-            let xmlDataStr: string = builder.build({group: {uid:uid, name: name, url: url}});
+            let uid: string = Utils.getNextUID()
+            let xmlDataStr: string = builder.build({ group: { uid: uid, name: name, url: url } });
             createFoldersIfNotExist()
 
             const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
@@ -215,7 +217,7 @@ export module XMLManager {
             events = { events: events }
 
             var xmlDataStr: string = builder.build(events)
-            
+
             xmlDataStr = '<?xml-model href="../../camed/DTD_Exports/raw_events.dtd" type="application/xml-dtd"?>' + xmlDataStr
 
             writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, { flag: "w+" })
@@ -432,7 +434,7 @@ export module XMLManager {
 
     export function convertXMLResponseJSONToCorrectJSONForUser(xmlJSON: any) {
         console.log(xmlJSON);
-        
+
         let person = {
             uid: xmlJSON.uid != undefined ? xmlJSON.uid[0] : undefined,
             firstName: xmlJSON.firstname != undefined ? xmlJSON.firstname[0] : undefined,
@@ -590,15 +592,15 @@ export module XMLManager {
         return 400
     }
 
-    export function unassignAllGroupsFromUser(uid:string, type:string):number{
+    export function unassignAllGroupsFromUser(uid: string, type: string): number {
         let user: User | null = getUserByUid(uid)
-        
-        if(user == null) return 404;
 
-        if(type == "group"){
-            user.group = []            
+        if (user == null) return 404;
+
+        if (type == "group") {
+            user.group = []
             return insertUser(user, true, false) == true ? 200 : 500
-        } else if (type == "editableGroup"){
+        } else if (type == "editableGroup") {
             user.editableGroup = []
             return insertUser(user, true, false) == true ? 200 : 500
         } else return 400;
