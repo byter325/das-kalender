@@ -25,7 +25,6 @@ tbody tr th {
 
 td {
     word-break: break-word;
-    /* TODO: word-break or table-responsive */
 }
 
 table {

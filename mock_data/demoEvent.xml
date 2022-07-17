@@ -16,7 +16,7 @@
         <start>2022-05-16T09:00:00</start>
         <end>2022-05-30T10:30:00</end>
         <location>A268 Hörsaal</location>
-        <modified>2001-05-30T09:00:00</modified> <!-- Gilt nur für alle Vorlesungen -> sinnvoll? -->
+        <modified>2001-05-30T09:00:00</modified>
         <modifiedBy>
             <firstName>Test</firstName>
             <lastName>Ersteller</lastName>
@@ -249,7 +249,9 @@
             <initials>SM</initials>
             <mail>MS@test.example</mail>
         </presenter>
-        <category><Post-exam></Post-exam></category>
+        <category>
+            <Post-exam></Post-exam>
+        </category>
         <participant>
             <uid>12345</uid>
             <name>TINF21B1</name>
@@ -274,7 +276,9 @@
             <initials>MP</initials>
             <mail>MP@test.example</mail>
         </presenter>
-        <category><Post-exam></Post-exam></category>
+        <category>
+            <Post-exam></Post-exam>
+        </category>
         <participant>
             <uid>12345MI</uid>
             <name>TINF21B1 (MI)</name>
@@ -299,7 +303,9 @@
             <initials>GL</initials>
             <mail>GL@test.example</mail>
         </presenter>
-        <category><Post-exam></Post-exam></category>
+        <category>
+            <Post-exam></Post-exam>
+        </category>
         <participant>
             <uid>12345</uid>
             <name>TINF21B1</name>
@@ -324,7 +330,9 @@
             <initials>MP</initials>
             <mail>MP@test.example</mail>
         </presenter>
-        <category><Post-exam></Post-exam></category>
+        <category>
+            <Post-exam></Post-exam>
+        </category>
         <participant>
             <uid>12345MI</uid>
             <name>TINF21B1 (MI)</name>
@@ -349,7 +357,9 @@
             <initials>BR</initials>
             <mail>GL@test.example</mail>
         </presenter>
-        <category><Post-exam></Post-exam></category>
+        <category>
+            <Post-exam></Post-exam>
+        </category>
         <participant>
             <uid>12345</uid>
             <name>Technik/Informatik/TINF21B1</name>
