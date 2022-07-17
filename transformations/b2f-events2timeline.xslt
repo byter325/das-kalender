@@ -86,9 +86,19 @@
 				<xsl:if test="(category != 'Lehrveranstaltung') and (category != 'Prüfung')">
 					<div class="btn-group float-end">
 						<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal" data-bs-target="#editEvent" onclick="editEvent(this)" data-event-id="{uid}">
+							<xsl:if test="ownerID">
+								<xsl:attribute name="data-event-ownerID">
+									<xsl:value-of select="ownerID" />
+								</xsl:attribute>
+							</xsl:if>
 							<i class="bi bi-pencil-fill"></i>
 						</button>
 						<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal" data-bs-target="#deleteEvent" onclick="deleteEvent(this)" data-event-id="{uid}">
+							<xsl:if test="ownerID">
+								<xsl:attribute name="data-event-ownerID">
+									<xsl:value-of select="ownerID" />
+								</xsl:attribute>
+							</xsl:if>
 							<i class="bi bi-trash-fill"></i>
 						</button>
 					</div>
