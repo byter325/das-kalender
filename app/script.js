@@ -155,6 +155,10 @@ function parseXML(text) {
     return (new DOMParser()).parseFromString(text, 'application/xml');
 }
 
+function encodeText(text) {
+    return text.replace(/[\u00A0-\u9999<>\&]/g, i => '&#' + i.charCodeAt(0) + ';');
+}
+
 function checkTokenCredentials() {
     const token = getCookie('AuthToken');
     if (token && token.length > 0) {
@@ -538,7 +542,7 @@ async function submitAdminManageGroups() {
     const adminManageGroupsForm = document.forms['adminManageGroupsForm'];
     const name = adminManageGroupsForm['adminManageGroupsName'].value;
     const uid = name;
-    const url = adminManageGroupsForm['adminManageGroupsRaplaUrl'].value;
+    const url = encodeText(adminManageGroupsForm['adminManageGroupsRaplaUrl'].value);
     console.log(name, url);
     $.post('/api/groups', { uid, name, url })
         .done(() => adminManageGroupsForm.reset())
@@ -611,31 +615,55 @@ async function openAdminManageUsers() {
                         const uid = this.getAttribute('data-user');
                         const groupUIDs = $(this).val();
                         const selectedGroups = allGroups.filter(group => groupUIDs.includes(group.uid));
-                        const selectedGroupsXml = selectedGroups.map(group => `<group><uid>${group.uid}</uid><name>${group.name}</name><url>${group.url}</url></group>`).join('');
-                        $.ajax({
-                            url: `/api/users/${uid}`,
-                            method: 'PUT',
-                            contentType: 'application/xml',
-                            data: `<User><uid>${uid}</uid>${selectedGroupsXml}</User>`
-                        })
-                            .fail(function () {
-                                alert('Die Gruppen konnten nicht geändert werden.');
-                            });
+                        if (selectedGroups.length == 0) {
+                            $.ajax({
+                                url: `/api/users/${uid}/groups?type=group`,
+                                method: 'DELETE',
+                            })
+                                .fail(function () {
+                                    alert('Die Gruppen konnten nicht geändert werden.');
+                                    openAdminManageUsers();
+                                });
+                        } else {
+                            const selectedGroupsXml = selectedGroups.map(group => `<group><uid>${group.uid}</uid><name>${group.name}</name><url>${encodeText(group.url)}</url></group>`).join('');
+                            $.ajax({
+                                url: `/api/users/${uid}`,
+                                method: 'PUT',
+                                contentType: 'application/xml',
+                                data: `<User><uid>${uid}</uid>${selectedGroupsXml}</User>`
+                            })
+                                .fail(function () {
+                                    alert('Die Gruppen konnten nicht geändert werden.');
+                                    openAdminManageUsers();
+                                });
+                        }
                     });
                     $('.adminSelectEditableGroup').change(function () {
                         const uid = this.getAttribute('data-user');
                         const groupUIDs = $(this).val();
                         const selectedGroups = allGroups.filter(group => groupUIDs.includes(group.uid));
-                        const selectedGroupsXml = selectedGroups.map(group => `<editableGroup><uid>${group.uid}</uid><name>${group.name}</name><url>${group.url}</url></editableGroup>`).join('');
-                        $.ajax({
-                            url: `/api/users/${uid}`,
-                            method: 'PUT',
-                            contentType: 'application/xml',
-                            data: `<User><uid>${uid}</uid>${selectedGroupsXml}</User>`
-                        })
-                            .fail(function () {
-                                alert('Die Gruppen konnten nicht geändert werden.');
-                            });
+                        if (selectedGroups.length == 0) {
+                            $.ajax({
+                                url: `/api/users/${uid}/groups?type=editableGroup`,
+                                method: 'DELETE',
+                            })
+                                .fail(function () {
+                                    alert('Die Gruppen konnten nicht geändert werden.');
+                                    openAdminManageUsers();
+                                });
+                        } else {
+                            const selectedGroupsXml = selectedGroups.map(group => `<editableGroup><uid>${group.uid}</uid><name>${group.name}</name><url>${encodeText(group.url)}</url></editableGroup>`).join('');
+                            $.ajax({
+                                url: `/api/users/${uid}`,
+                                method: 'PUT',
+                                contentType: 'application/xml',
+                                data: `<User><uid>${uid}</uid>${selectedGroupsXml}</User>`
+                            })
+                                .fail(function () {
+                                    alert('Die Gruppen konnten nicht geändert werden.');
+                                    openAdminManageUsers();
+                                });
+                        }
                     });
                     $('.adminDeleteUserButton').click(function () {
                         const uid = this.getAttribute('data-user');
