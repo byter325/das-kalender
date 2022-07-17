@@ -68,16 +68,12 @@ export module Handlers {
         const url = /<url>([A-z0-9\:\/\.\-\?\=\&\;]+)<\/url>/.exec(XMLManager.getGroup(uid))?.at(1);
         const urlRe = /([https:\/\/]*rapla\.dhbw-karlsruhe\.de\/rapla\?page=[A-z]+&user=[A-z]+&file=[A-z0-9]+)/;
         if(url != null){
-            console.log("URL: " + url);
-            console.log("URL Test: " + urlRe.test(url));
-            const lecturer = /user=([A-z]+)/.exec(url);
+            const lecturer = /user=([A-z]+)/.exec(url); 
             const course = /file=([A-z0-9]+)/.exec(url);
-            console.log("Lecturer: " + lecturer?.[1]);
-            console.log("Course: " + course?.[1]);
             if(lecturer != null && lecturer.length > 1 && course != null && course.length > 1){
                 Handlers.updateRaplaEvents(lecturer[1], course[1]);
                 let dataFilePath = path.join(XMLManager.PATH_DATA_DIR, course[1] + ".xml");
-                console.log("Writing to " + dataFilePath);
+                console.log("Writing to " + eventsPath);
                 Utils.waitForFile(dataFilePath).then(() => {
                     fs.writeFileSync(eventsPath, fs.readFileSync(dataFilePath, {flag: "r"}), { flag: "w+" } );
                     console.log("Writing to " + eventsPath + " sucessfully");
