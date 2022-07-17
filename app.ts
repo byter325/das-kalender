@@ -147,6 +147,6 @@ app.post("/register", (req: express.Request, res: express.Response) => {
 const swaggerDocument = YAML.load('./openapi.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
-cron.schedule("0 */15 * * * *", () => {
-    Handlers.updateRaplaEvents("freudenmann", "TINF21B1")
+cron.schedule("0 */1 * * * *", () => {
+    Handlers.updateAllGroups();
 })
