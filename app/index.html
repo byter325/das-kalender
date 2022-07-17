@@ -396,6 +396,41 @@
 									required="required" />
 							</div>
 						</div>
+						<div class="mb-2">
+							<label class="form-label" for="editEventOwner">
+								<i class="bi bi-person"></i> Besitzer/Gruppe</label>
+							<select class="form-select" aria-label="Besitzer/Gruppe" id="editEventOwner">
+								<option value="" selected="selected">Ich</option>
+							</select>
+						</div>
+						<hr>
+						<h6>Präsentator:</h6>
+						<div class="row row-cols-sm-2">
+							<div class="mb-2">
+								<label for="editEventPresenterFirstName" class="form-label">
+									<i class="bi bi-person me-1"></i> Vorname</label>
+								<input type="text" class="form-control" id="editEventPresenterFirstName"
+									required="required" />
+							</div>
+							<div class="mb-2">
+								<label for="editEventPresenterLastName" class="form-label">
+									<i class="bi bi-person me-1"></i> Nachname</label>
+								<input type="text" class="form-control" id="editEventPresenterLastName"
+									required="required" />
+							</div>
+						</div>
+						<div class="row row-cols-sm-2">
+							<div class="mb-2">
+								<label class="form-label" for="editEventPresenterInitials">
+									<i class="bi bi-person"></i> Initialien (optional)</label>
+								<input type="text" class="form-control" id="editEventPresenterInitials" />
+							</div>
+							<div class="mb-2">
+								<label class="form-label" for="editEventPresenterMail">
+									<i class="bi bi-envelope"></i> E-Mail (optional)</label>
+								<input type="email" class="form-control" id="editEventPresenterMail" />
+							</div>
+						</div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
@@ -459,6 +494,41 @@
 									<i class="bi bi-clock me-1"></i> Ende</label>
 								<input type="datetime-local" class="form-control" id="deleteEventEnd"
 									disabled="disabled" />
+							</div>
+						</div>
+						<div class="mb-2">
+							<label class="form-label" for="newEventOwner">
+								<i class="bi bi-person"></i> Besitzer/Gruppe</label>
+							<select class="form-select" aria-label="Besitzer/Gruppe" id="newEventOwner">
+								<option value="" selected="selected">Ich</option>
+							</select>
+						</div>
+						<hr>
+						<h6>Präsentator:</h6>
+						<div class="row row-cols-sm-2">
+							<div class="mb-2">
+								<label for="newEventPresenterFirstName" class="form-label">
+									<i class="bi bi-person me-1"></i> Vorname</label>
+								<input type="text" class="form-control" id="newEventPresenterFirstName"
+									required="required" />
+							</div>
+							<div class="mb-2">
+								<label for="newEventPresenterLastName" class="form-label">
+									<i class="bi bi-person me-1"></i> Nachname</label>
+								<input type="text" class="form-control" id="newEventPresenterLastName"
+									required="required" />
+							</div>
+						</div>
+						<div class="row row-cols-sm-2">
+							<div class="mb-2">
+								<label class="form-label" for="newEventPresenterInitials">
+									<i class="bi bi-person"></i> Initialien (optional)</label>
+								<input type="text" class="form-control" id="newEventPresenterInitials" />
+							</div>
+							<div class="mb-2">
+								<label class="form-label" for="newEventPresenterMail">
+									<i class="bi bi-envelope"></i> E-Mail (optional)</label>
+								<input type="email" class="form-control" id="newEventPresenterMail" />
 							</div>
 						</div>
 					</div>
