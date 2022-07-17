@@ -8,7 +8,7 @@ const calendarRouter = express.Router();
 calendarRouter.post('/:uid', (request: express.Request, response) => {
     if (!(
         request.user.uid == request.params.uid ||
-        request.user.editableGroup.uid == request.params.uid ||
+        //request.user.editableGroup.uid == request.params.uid ||
         request.user.isAdministrator)) return response.sendStatus(401)
 
     let body = request.body
