@@ -45,6 +45,7 @@ https.createServer(options, app).listen(port, () => {
     Handlers.updateRaplaEvents("freudenmann", "TINF21B1")
     AuthManager.loadUsers()
     AuthManager.loadTokens()
+    Handlers.updateAllGroups();
 
     console.log()
     console.log("\x1b[1m\x1b[5m\x1b[33m%s\x1b[0m\x1b[1m", '--------------------------------------------------------------------------------')
