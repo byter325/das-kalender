@@ -66,7 +66,7 @@ export module Handlers {
         console.log("Updating group " + uid);
         const eventsPath = path.join(XMLManager.PATH_DATA_EVENTS, Utils.GenerateHash(uid) + ".xml");
         const url = /<url>([A-z0-9\:\/\.\-\?\=\&\;]+)<\/url>/.exec(XMLManager.getGroup(uid))?.at(1);
-        const urlRe = /(https:\/\/rapla\.dhbw-karlsruhe\.de\/rapla\?page=[A-z]+&user=[A-z]+&file=[A-z0-9]+)/;
+        const urlRe = /((https:\/\/)*rapla\.dhbw-karlsruhe\.de\/rapla\?page=[A-z]+&user=[A-z]+&file=[A-z0-9]+)/;
         if(url != null){
             console.log("URL: " + url);
             console.log("URL Test: " + urlRe.test(url));
