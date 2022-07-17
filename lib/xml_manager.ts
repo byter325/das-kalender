@@ -132,6 +132,8 @@ export module XMLManager {
             const usersPath = PATH_DATA_USERS + user.fileName
             const eventsPath = PATH_DATA_EVENTS + user.fileName
 
+            xmlDataStr = '<?xml-model href="../../camed/DTD_Exports/raw_person.dtd" type="application/xml-dtd"?>' + xmlDataStr
+
             if (!allowOverride && fs.existsSync(usersPath))
                 return false;
             else
@@ -171,6 +173,8 @@ export module XMLManager {
 
             const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml"
+
+            xmlDataStr = '<?xml-model href="../../camed/DTD_Exports/raw_group.dtd" type="application/xml-dtd"?>' + xmlDataStr
 
             if (!allowOverride && fs.existsSync(groupsPath))
                 return false;
@@ -212,7 +216,8 @@ export module XMLManager {
             events = { events: events }
 
             var xmlDataStr: string = builder.build(events)
-            console.log(xmlDataStr);
+            
+            xmlDataStr = '<?xml-model href="../../camed/DTD_Exports/raw_events.dtd" type="application/xml-dtd"?>' + xmlDataStr
 
             writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, { flag: "w+" })
             return true
