@@ -84,7 +84,8 @@ class API {
         return $.ajax({
             url: `/api/users/${userId}/groups?type=${type}`,
             method: 'DELETE',
-        });
+        })
+            .done(checkTokenCredentials);
     }
 
     static putUser({ userId, userDoc }) {
@@ -94,13 +95,14 @@ class API {
             contentType: 'application/xml',
             data: userDoc
         })
+            .done(checkTokenCredentials);
     }
 
     static deleteUser({ userId }) {
         return $.ajax({
             url: `/api/users/${userId}`,
             method: 'DELETE'
-        })
+        });
     }
 
     static postLogin({ loginMail, loginPassword }) {
@@ -159,19 +161,17 @@ class FormParser {
         const presenterFirstName = eventForm[`${prefixTagName}PresenterFirstName`].value;
         const presenterLastName = eventForm[`${prefixTagName}PresenterLastName`].value;
         const presenterMail = eventForm[`${prefixTagName}PresenterMail`].value;
+        var eventId = undefined;
+        if (eventForm[`${prefixTagName}Id`])
+            eventId = eventForm[`${prefixTagName}Id`].value;
         var presenterInitials = eventForm[`${prefixTagName}PresenterInitials`].value;
-        // const modified = eventForm[`${prefixTagName}Modified`].value;
-        // const modifiedByFirstName = eventForm[`${prefixTagName}ModifiedFirstName`].value;
-        // const modifiedByLastName = eventForm[`${prefixTagName}ModifiedLastName`].value;
-        // const modifiedByInitials = eventForm[`${prefixTagName}ModifiedInitials`].value;
-        // const modifiedByMail = eventForm[`${prefixTagName}ModifiedMail`].value;
         if (!presenterInitials.length && presenterFirstName.length && presenterLastName.length) {
             presenterInitials = `${presenterFirstName[0]}${presenterLastName[0]}`;
         }
         const owner = eventForm[`${prefixTagName}Owner`].value;
         const ownerId = owner.length == 0 ? getUserId() : owner;
 
-        return { ownerId, title, description, presenterFirstName, presenterLastName, presenterInitials, presenterMail, modified, modifiedByFirstName, modifiedByLastName, modifiedByInitials, modifiedByMail, category, location, start, end };
+        return { eventId, ownerId, title, description, presenterFirstName, presenterLastName, presenterInitials, presenterMail, category, location, start, end };
     }
 }
 
@@ -446,7 +446,7 @@ $(async () => {
 });
 
 async function insertEventDataIntoForm(ownerId, eventId, eventForm, prefixTagName) {
-    API.getEvent({ ownerId: 1, eventId }) // TODO: hard code 1 to ownerId
+    API.getEvent({ ownerId, eventId })
         .done(function (data) {
             const doc = parseXML(data);
             console.log('event information', data);
@@ -461,11 +461,6 @@ async function insertEventDataIntoForm(ownerId, eventId, eventForm, prefixTagNam
             const start = (new Date(doc.getElementsByTagName('start')[0].textContent));
             const end = (new Date(doc.getElementsByTagName('end')[0].textContent));
             const location = doc.getElementsByTagName('location')[0].textContent;
-            const modified = (new Date(doc.getElementsByTagName('modified')[0].textContent));
-            const modifiedByFirstName = doc.getElementsByTagName('modifiedBy')[0].getElementsByTagName('firstName')[0].textContent;
-            const modifiedByLastName = doc.getElementsByTagName('modifiedBy')[0].getElementsByTagName('lastName')[0].textContent;
-            const modifiedByMail = doc.getElementsByTagName('modifiedBy')[0].getElementsByTagName('mail')[0].textContent;
-            const modifiedByInitials = doc.getElementsByTagName('modifiedBy')[0].getElementsByTagName('initials')[0].textContent;
             eventForm[`${prefixTagName}Id`].value = eventId;
             eventForm[`${prefixTagName}Title`].value = title;
             eventForm[`${prefixTagName}Description`].value = description;
@@ -477,26 +472,14 @@ async function insertEventDataIntoForm(ownerId, eventId, eventForm, prefixTagNam
             eventForm[`${prefixTagName}Start`].value = dateToHTMLInputValue(start);
             eventForm[`${prefixTagName}End`].value = dateToHTMLInputValue(end);
             eventForm[`${prefixTagName}Location`].value = location;
-            eventForm[`${prefixTagName}Modified`].value = dateToHTMLInputValue(modified);
-            eventForm[`${prefixTagName}ModifiedByFirstName`].value = modifiedByFirstName;
-            eventForm[`${prefixTagName}ModifiedByLastName`].value = modifiedByLastName;
-            eventForm[`${prefixTagName}ModifiedByMail`].value = modifiedByMail;
-            eventForm[`${prefixTagName}ModifiedByInitials`].value = modifiedByInitials;
         });
 }
 
 function editEvent(buttonClicked) {
     const eventId = buttonClicked.getAttribute('data-event-id');
-    const eventOwnerId = buttonClicked.getAttribute('data-event-owner-id');
+    const eventOwnerId = buttonClicked.getAttribute('data-event-ownerid');
     const editEventForm = document.forms['editEventForm'];
     insertEventDataIntoForm(eventOwnerId, eventId, editEventForm, 'editEvent');
-}
-
-function deleteEvent(buttonClicked) {
-    const eventId = buttonClicked.getAttribute('data-event-id');
-    const eventOwnerId = buttonClicked.getAttribute('data-event-owner-id');
-    const deleteEventForm = document.forms['deleteEventForm'];
-    insertEventDataIntoForm(eventOwnerId, eventId, deleteEventForm, 'deleteEvent');
 }
 
 async function submitEditEvent() {
@@ -515,15 +498,32 @@ async function submitEditEvent() {
         });
 }
 
+function deleteEvent(buttonClicked) {
+    const eventId = buttonClicked.getAttribute('data-event-id');
+    const eventOwnerId = buttonClicked.getAttribute('data-event-ownerid');
+    const deleteEventForm = document.forms['deleteEventForm'];
+    insertEventDataIntoForm(eventOwnerId, eventId, deleteEventForm, 'deleteEvent');
+}
+
 async function submitDeleteEvent() {
     const deleteEventForm = document.forms['deleteEventForm'];
     const event = FormParser.fromEventForm(deleteEventForm, 'deleteEvent');
-    //API.deleteEvent(event, event.);
+    API.deleteEvent({ eventId: event.eventId, ownerId: event.ownerId })
+        .done(function () {
+            updateSite();
+        });
 }
 
 async function submitNewEvent() {
     const newEventForm = document.forms['newEventForm'];
-    API.postEvent(FormParser.fromEventForm(newEventForm, 'newEvent'));
+    API.postEvent(FormParser.fromEventForm(newEventForm, 'newEvent'))
+        .done(function () {
+            newEventForm.reset();
+            alert('Termin wurde hinzugefügt');
+        })
+        .fail(function () {
+            alert('Termin konnte nicht gelöscht werden');
+        });
 }
 
 async function submitLogin() {

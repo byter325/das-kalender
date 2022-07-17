@@ -222,19 +222,12 @@
 		</article>
 
 		<article id="button-row" class="mb-3">
-			<!-- TODO: entfernen, wenn es nicht funktioniert
-			<button type="button" class="btn btn-primary me-1 mb-1" data-bs-toggle="modal"
-				data-bs-target="#selectGroupModal">
-				<i class="bi bi-funnel-fill me-1"></i>
-				Gruppen auswählen
-			</button>
-			-->
 			<button type="button" class="btn btn-success me-1 mb-1" data-bs-toggle="modal" data-bs-target="#newEvent"
 				id="buttonNewEvent">
 				<i class="bi bi-plus-circle me-1"></i>
 				Neuer Termin
 			</button>
-			<div id="admin-tools">
+			<div id="admin-tools btn-group">
 				<button type="button" class="btn btn-dark me-1 mb-1" data-bs-toggle="modal"
 					data-bs-target="#adminManageUsers" id="adminManageUsersButton">
 					<i class="bi bi-wrench"></i>
@@ -253,7 +246,7 @@
 
 	<!-- Modal: newEvent -->
 	<div class="modal fade" id="newEvent" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<form id="newEventForm">
 					<div class="modal-header">
@@ -353,11 +346,6 @@
 				<form id="editEventForm">
 					<input type="hidden" id="editEventId" />
 					<input type="hidden" id="editEventOwnerId" />
-					<input type="hidden" id="deleteEventModified" />
-					<input type="hidden" id="deleteEventModifiedByFirstName" />
-					<input type="hidden" id="deleteEventModifiedByLastName" />
-					<input type="hidden" id="deleteEventModifiedByMail" />
-					<input type="hidden" id="deleteEventModifiedByInitials" />
 					<div class="modal-header">
 						<h5 class="modal-title" id="editEventModalLabel">Termin bearbeiten</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -455,11 +443,6 @@
 				<form id="deleteEventForm">
 					<input type="hidden" id="deleteEventId" />
 					<input type="hidden" id="deleteEventOwnerId" />
-					<input type="hidden" id="deleteEventModified" />
-					<input type="hidden" id="deleteEventModifiedByFirstName" />
-					<input type="hidden" id="deleteEventModifiedByLastName" />
-					<input type="hidden" id="deleteEventModifiedByMail" />
-					<input type="hidden" id="deleteEventModifiedByInitials" />
 					<div class="modal-header">
 						<h5 class="modal-title" id="deleteEventModalLabel">Termin löschen</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -550,7 +533,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-						<button type="submit" class="btn btn-danger">Termin löschen</button>
+						<button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Termin löschen</button>
 					</div>
 				</form>
 			</div>
@@ -638,16 +621,13 @@
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
 					</div>
 					<div class="modal-body">
-						<div class="row row-cols-sm-2">
-							<div class="mb-2">
-								<label for="adminManageGroupsName" class="form-label">Name</label>
-								<input type="text" class="form-control" id="adminManageGroupsName"
-									required="required" />
-							</div>
-							<div class="mb-2">
-								<label for="adminManageGroupsRaplaUrl" class="form-label">Rapla-URL (optional)</label>
-								<input type="url" class="form-control" id="adminManageGroupsRaplaUrl" />
-							</div>
+						<div class="mb-2">
+							<label for="adminManageGroupsName" class="form-label">Name</label>
+							<input type="text" class="form-control" id="adminManageGroupsName" required="required" />
+						</div>
+						<div class="mb-2">
+							<label for="adminManageGroupsRaplaUrl" class="form-label">Rapla-URL (optional)</label>
+							<input type="url" class="form-control" id="adminManageGroupsRaplaUrl" />
 						</div>
 						<button type="submit" class="btn btn-success mb-4">Gruppe hinzufügen</button>
 						<h6>Liste bisheriger Gruppen:</h6>
