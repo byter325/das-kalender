@@ -11,7 +11,7 @@ export module XMLManager {
 
     // TODO: Change folder structure to /events/
     import GenerateHash = Utils.GenerateHash;
-    const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
+    export const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
     const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
     export const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
     const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups/`

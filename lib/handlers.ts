@@ -74,7 +74,7 @@ export module Handlers {
             const course = /file=([A-z0-9]+)/.exec(url);
             if(lecturer != null && lecturer.length > 1 && course != null && course.length > 1){
                 Handlers.updateRaplaEvents(lecturer[1], course[1]);
-                let dataFilePath = path.join(XMLManager.PATH_DATA_DIR, course[1] + ".xml");
+                let dataFilePath = path.join(XMLManager.PATH_DATA_DIR, course[1] + "-Kalender.xml");
                 console.log("Writing to " + eventsPath);
                 Utils.waitForFile(dataFilePath).then(() => {
                     fs.writeFileSync(eventsPath, fs.readFileSync(dataFilePath, {flag: "r"}), { flag: "w+" } );
