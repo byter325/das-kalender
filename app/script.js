@@ -779,7 +779,7 @@ async function handleDarkMode(sendToServer = false, darkMode = undefined) {
     var darkMode = getDarkMode() === 'true';
     $('#switchDarkMode').prop('checked', darkMode);
     setDarkMode(darkMode);
-    $('#styleLightMode').html(`.kalenderitem { background-color: ${darkMode ? 'rgb(0, 25, 0)' : 'rgb(228, 234, 255)'}; }`);
+    $('#chagingStyle').html(`.kalenderitem { background-color: ${darkMode ? 'rgb(0, 25, 0)' : 'rgb(228, 234, 255)'}; }`);
     if (sendToServer) {
         API.putUser({ userId: getUserId(), userDoc: `<User><uid>${getUserId()}</uid><darkmode>${darkMode}</darkmode></User>` });
     }
