@@ -446,7 +446,7 @@ $(async () => {
 });
 
 async function insertEventDataIntoForm(ownerId, eventId, eventForm, prefixTagName) {
-    API.getEvent({ ownerId: 1, eventId })
+    API.getEvent({ ownerId: 1, eventId }) // TODO: hard code 1 to ownerId
         .done(function (data) {
             const doc = parseXML(data);
             console.log('event information', data);
@@ -779,6 +779,7 @@ async function handleDarkMode(sendToServer = false, darkMode = undefined) {
     var darkMode = getDarkMode() === 'true';
     $('#switchDarkMode').prop('checked', darkMode);
     setDarkMode(darkMode);
+    $('#styleLightMode').html(`.kalenderitem { background-color: ${darkMode ? 'rgb(0, 25, 0)' : 'rgb(228, 234, 255)'}; }`);
     if (sendToServer) {
         API.putUser({ userId: getUserId(), userDoc: `<User><uid>${getUserId()}</uid><darkmode>${darkMode}</darkmode></User>` });
     }
