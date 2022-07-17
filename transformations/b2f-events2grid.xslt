@@ -6,7 +6,6 @@
 			<xsl:sort select="start" order="ascending" />
 		</xsl:apply-templates>
 	</xsl:template>
-
 	<xsl:template match="event">
 		<xsl:variable name="duration" select="(xs:dayTimeDuration(xs:dateTime(end)-xs:dateTime(start)) div xs:dayTimeDuration('PT1S')) div 60" />
 		<xsl:variable name="startMinute" select="number(format-dateTime(start,'[m]'))" />
@@ -22,7 +21,9 @@
 					<xsl:value-of select="concat(presenters/presenter/lastName,' (',presenters/presenter/mail,')')" />
 				</xsl:if>
 			</xsl:attribute>
-			<xsl:value-of select="title" />
+			<span class="eventHeading">
+				<xsl:value-of select="title" />
+			</span>
 			<br />
 			<i class="bi bi-clock-fill me-1" />
 			<xsl:value-of select="format-dateTime(start,'[D].[M].[Y]')" />
