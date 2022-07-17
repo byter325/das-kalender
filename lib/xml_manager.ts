@@ -77,7 +77,7 @@ export module XMLManager {
             let events = parser.parse(data)["events"]
             if (events['event'] == "") {
                 return undefined
-            } else if (typeof events['event'] == 'object') {
+            } else if (!Array.isArray(events['event'])) {
                 return builder.build({ event: events['event'] })
             } else {
                 let filteredEvents = events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)
