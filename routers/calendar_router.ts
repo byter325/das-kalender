@@ -1,6 +1,6 @@
 import * as express from 'express'
-import {Utils} from '../lib/utils';
-import {XMLManager} from '../lib/xml_manager';
+import { Utils } from '../lib/utils';
+import { XMLManager } from '../lib/xml_manager';
 
 
 const calendarRouter = express.Router();
@@ -17,7 +17,7 @@ calendarRouter.post('/:uid', (request: express.Request, response) => {
         body = XMLManager.convertXMLResponseJSONToCorrectJSONForEvent(body.event)
     }
 
-    if (Utils.isBodyForEventCorrect(request.body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
+    if (Utils.isBodyForEventCorrect(request.body.event, false) >= Utils.BODY_PARTIALLY_CORRECT) {
         let b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body))
         if (b) return response.sendStatus(201)
     }

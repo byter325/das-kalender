@@ -1,6 +1,6 @@
 import * as crypto from "crypto-js";
-import {User} from "./classes/user";
-import {CalendarEvent} from "./classes/userEvent";
+import { User } from "./classes/user";
+import { CalendarEvent } from "./classes/userEvent";
 import fs from 'fs';
 import path from "path";
 
@@ -51,7 +51,7 @@ export module Utils {
                 && body.end != undefined
                 && body.location != undefined
                 && body.modified != undefined
-                && body.modifiedBy != undefined) return BODY_FULLY_CORRECT
+                && body.modifiedby != undefined) return BODY_FULLY_CORRECT
         }
         return BODY_INCORRECT
     }
@@ -129,7 +129,7 @@ export module Utils {
     function saveUID(uid: number) {
         createDirectoryIfNotExists(idDataPath);
 
-        let data = {"uid": uid, "last_time": new Date().toISOString()};
+        let data = { "uid": uid, "last_time": new Date().toISOString() };
         fs.writeFileSync(idDataFile, JSON.stringify(data));
     }
 
