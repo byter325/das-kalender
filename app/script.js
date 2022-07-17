@@ -449,8 +449,6 @@ async function insertEventDataIntoForm(ownerId, eventId, eventForm, prefixTagNam
     API.getEvent({ ownerId, eventId })
         .done(function (data) {
             const doc = parseXML(data);
-            console.log('event information', data);
-            const eventId = doc.getElementsByTagName('uid')[0].textContent;
             const title = doc.getElementsByTagName('title')[0].textContent;
             const description = doc.getElementsByTagName('description')[0].textContent;
             const presenterFirstName = doc.getElementsByTagName('presenter')[0].getElementsByTagName('firstName')[0].textContent;
@@ -486,9 +484,12 @@ async function submitEditEvent() {
     const editEventForm = document.forms['editEventForm'];
     const event = FormParser.fromEventForm(editEventForm, 'editEvent');
 
-    API.deleteEvent(event.ownerId, event.eventId)
+    API.deleteEvent({ ownerId: event.ownerId, eventId: event.eventId })
         .then(function () {
             API.postEvent(event)
+                .done(function () {
+                    editEventForm.reset();
+                })
                 .fail(function () {
                     alert('Termin konnte nicht geändert werden.');
                 });
@@ -554,7 +555,6 @@ function doLogin(loginMail, loginPassword) {
 }
 
 function doLogout() {
-    console.log('User logout');
     API.deleteToken(getCookie('AuthToken'))
         .always(function () {
             setCookie('AuthToken', '', 0);
@@ -641,7 +641,6 @@ async function submitAdminManageGroups() {
     const name = adminManageGroupsForm['adminManageGroupsName'].value;
     const uid = name;
     const url = htmlEncode(adminManageGroupsForm['adminManageGroupsRaplaUrl'].value);
-    console.log(name, url);
     API.postGroups({ uid, name, url })
         .done(() => adminManageGroupsForm.reset())
         .always(openAdminManageGroups);
