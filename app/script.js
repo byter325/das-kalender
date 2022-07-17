@@ -77,8 +77,9 @@ function updateSite() {
     clearEvents(true, true);
     let weekRange = getWeekRange(window.calweek, window.calyear);
     $('#calweek').text('KW ' + window.calweek + ' (' + weekRange.startDay.toLocaleDateString() + ' - ' + weekRange.endDay.toLocaleDateString() + ')');
-    // TODO: use user's group
-    insertCourseEvents('TINF21B1', weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    for (const group of window.groups) {
+        insertCourseEvents(group.uid, weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
+    }
     insertUserEvents(getUID(), weekRange.startDay.toISOString(), weekRange.endDay.toISOString());
 }
 
@@ -150,20 +151,40 @@ function getWeekRange(w, y) {
     };
 }
 
+function parseXML(text) {
+    return (new DOMParser()).parseFromString(text, 'application/xml');
+}
+
 function checkTokenCredentials() {
     const token = getCookie('AuthToken');
     if (token && token.length > 0) {
         $.get(`/api/users/${getUID()}`)
             .done(function (data) {
-                console.log('Successful login', data);
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data, 'application/xml');
+                const doc = parseXML(data);
                 const isAdmin = doc.getElementsByTagName('isAdministrator')[0].textContent == 'true';
                 const firstName = doc.getElementsByTagName('firstName')[0].textContent;
                 const lastName = doc.getElementsByTagName('lastName')[0].textContent;
                 const initials = doc.getElementsByTagName('initials')[0].textContent;
                 const mail = doc.getElementsByTagName('mail')[0].textContent;
                 const darkMode = doc.getElementsByTagName('darkMode')[0].textContent == 'true';
+                const groups = doc.getElementsByTagName('group');
+                const editableGroups = doc.getElementsByTagName('editableGroup');
+                window.user = { firstName, lastName, mail, initials };
+                window.groups = [];
+                window.editableGroups = [];
+                for (const group of groups) {
+                    const uid = group.getElementsByTagName('uid')[0].textContent;
+                    const name = group.getElementsByTagName('name')[0].textContent;
+                    window.groups.push({ uid, name });
+                }
+                $('.newEventOwnerOptionGroup').remove();
+                for (const editableGroup of editableGroups) {
+                    const uid = editableGroup.getElementsByTagName('uid')[0].textContent;
+                    const name = editableGroup.getElementsByTagName('name')[0].textContent;
+                    window.editableGroups.push({ uid, name });
+                    window.groups.push({ uid, name });
+                    $('#newEventOwner').append(`<option value="${uid}" class="newEventOwnerOptionGroup">${name} (Gruppe)</option>`);
+                }
 
                 if (firstName != undefined && lastName != undefined)
                     $('#profileUserName').text(`${firstName} ${lastName}`);
@@ -264,10 +285,7 @@ $(async () => {
         return false;
     });
     $('#adminManageUsersButton').click(openAdminManageUsers);
-    $('#adminManageUsersForm').submit(function () {
-        submitAdminManageUsers();
-        return false;
-    });
+    $('#buttonGenApiToken').click(genApiToken);
 });
 
 /* UI events */
@@ -350,15 +368,44 @@ async function submitNewEvent() {
     const location = newEventForm['newEventLocation'].value;
     const start = newEventForm['newEventStart'].value;
     const end = newEventForm['newEventEnd'].value;
-    // $.post(`/api/calendar/${getUID()}`, `<Event><uid>placeholder</uid><title>${title}</title><description>${description}</description><category>${category}</category><start>${start}</start><end>${end}</end><location>${location}</location></Event>`);
-    $.post(`/api/calendar/${getUID()}`, {
-        uid: 'placeholder',
-        title,
-        description,
-        category,
-        location,
-        start,
-        end
+    const presenterFirstName = newEventForm['newEventPresenterFirstName'].value;
+    const presenterLastName = newEventForm['newEventPresenterLastName'].value;
+    var presenterInitials = newEventForm['newEventPresenterInitials'].value;
+    if (!presenterInitials.length && presenterFirstName.length && presenterLastName.length) {
+        presenterInitials = `${presenterFirstName[0]}. ${presenterLastName[0]}.`;
+    }
+    const presenterMail = newEventForm['newEventPresenterMail'].value;
+    const owner = newEventForm['newEventOwner'].value;
+    const ownerUid = owner.length == 0 ? getUID() : owner;
+
+
+
+    $.ajax({
+        url: `/api/calendar/${ownerUid}`,
+        method: 'POST',
+        contentType: 'application/xml',
+        data: `<Event>
+            <uid>${Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(+ new Date() + Math.random())))).map(b => b.toString(16).padStart(2, '0')).join('')}</uid>
+            <title>${title}</title>
+            <description>${description}</description>
+            <presenter>
+                <firstName>${presenterFirstName}</firstName>
+                <lastName>${presenterLastName}</lastName>
+                <mail>${presenterMail}</mail>
+                <initials>${presenterInitials}</initials>
+            </presenter>
+            <modifiedBy>
+                <firstName>${window.user.firstName}</firstName>
+                <lastName>${window.user.lastName}</lastName>
+                <mail>${window.user.mail}</mail>
+                <initials>${window.user.initials}</initials>
+            </modifiedBy>
+            <modified>${(new Date()).toISOString()}</modified>
+            <category>${category}</category>
+            <location>${location}</location>
+            <start>${start}</start>
+            <end>${end}</end>
+        </Event>`
     });
 }
 
@@ -436,19 +483,34 @@ async function submitUserSettingsChange() {
     const firstName = userSettingsForm['userSettingsFirstName'].value;
     const lastName = userSettingsForm['userSettingsLastName'].value;
 
-    const user = {};
-    user.uid = getUID()
-    if (mail !== '') user.mail = mail;
-    if (password !== '') user.passwordhash = password;
-    if (firstName !== '') user.firstname = firstName;
-    if (lastName !== '') user.lastname = lastName;
-    console.log(user);
-
+    var user = `<uid>${getUID()}</uid>`;
+    if (mail !== '') user += `<mail>${mail}</mail>`;
+    if (password !== '') user += `<passwordHash>${password}</passwordHash>`;
+    if (firstName !== '') user += `<firstName>${firstName}</firstName>`;
+    if (lastName !== '') user += `<lastName>${lastName}</lastName>`;
     $.ajax({
         url: `/api/users/${getUID()}`,
         method: 'PUT',
-        data: { user }
-    });
+        contentType: 'application/xml',
+        data: `<User>${user}</User>`
+    })
+        .done(function () {
+            userSettingsForm.reset();
+            checkTokenCredentials();
+        });
+}
+
+async function genApiToken() {
+    $.ajax({
+        url: '/api/token',
+        method: 'POST',
+        contentType: 'application/xml',
+        data: `<Token><uid>${getUID()}</uid><unlimited>true</unlimited><validUntil>2022-07-16T15:12:31.960Z</validUntil></Token>`
+    })
+        .done(function (data) {
+            console.info('API Token:', data);
+            alert(`WARNUNG: Dieser API-Token ist nur einmal gültig.\n\nToken:\n${data}`);
+        });
 }
 
 async function openAdminManageGroups() {
@@ -456,8 +518,7 @@ async function openAdminManageGroups() {
     groupsList.html('<li class="list-group-item">Gruppen werden geladen...</li>');
     $.get('/api/groups')
         .done(function (data) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data, 'application/xml');
+            const doc = parseXML(data);
             var adminManageGroupsGroupsList = '';
             const groups = doc.getElementsByTagName('groups')[0].getElementsByTagName('group');
             for (let i = 0; i < groups.length; i++) {
@@ -486,52 +547,123 @@ async function submitAdminManageGroups() {
 }
 
 async function openAdminManageUsers() {
-    $.get('/api/users')
+    $.get('/api/groups')
         .done(function (data) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data, 'application/xml');
-            console.log(data);
-            console.log(doc);
-            const users = doc.getElementsByTagName('user');
-            var tableContent = '';
-            for (let i = 0; i < users.length; i++) {
-                const uid = users[i].getElementsByTagName('uid')[0].textContent;
-                const firstName = users[i].getElementsByTagName('firstName')[0].textContent;
-                const lastName = users[i].getElementsByTagName('lastName')[0].textContent;
-                const initials = users[i].getElementsByTagName('initials')[0].textContent;
-                const mail = users[i].getElementsByTagName('mail')[0].textContent;
-                const isAdministrator = users[i].getElementsByTagName('isAdministrator')[0].textContent;
-                // console.log(firstName, lastName, initials, mail, isAdministrator);
-                const tableRow = `<tr>
-                    <td>${lastName}, ${firstName} (${initials})</td>
-                    <td>${mail}</td>
-                    <td>Gruppe TBD</td>
-                    <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
-                    data-uid="${uid}" data-first-name="${firstName}" data-last-name="${lastName}" data-mail="${mail}"\></td>
-                    </tr>`;
-                tableContent += tableRow;
+            const doc = parseXML(data);
+            const groups = doc.getElementsByTagName('groups')[0].getElementsByTagName('group');
+            const allGroups = [];
+            for (let i = 0; i < groups.length; i++) {
+                const uid = groups[i].getElementsByTagName('uid')[0].textContent;
+                const name = groups[i].getElementsByTagName('name')[0].textContent;
+                const url = groups[i].getElementsByTagName('url')[0]?.textContent;
+                allGroups.push({ uid, name, url });
             }
-            $('#adminManageUsersTableBody').html(tableContent);
 
-            $('.checkbox-admin').change(function () {
-                const uid = this.getAttribute('data-uid');
-                const firstName = this.getAttribute('data-first-name');
-                const lastName = this.getAttribute('data-last-name');
-                const mail = this.getAttribute('data-mail');
-                const passwordHash = this.getAttribute('data-password-hash');
-                const isAdministrator = this.checked ? 'true' : 'false';
-                $.ajax({
-                    url: `/api/users/${uid}`,
-                    method: 'PUT',
-                    data: { uid, firstName, lastName, mail, passwordHash, isAdministrator }
-                })
-                    .done(openAdminManageUsers);
-            });
+            $.get('/api/users')
+                .done(function (data) {
+                    const doc = parseXML(data);
+                    const users = doc.getElementsByTagName('user');
+                    $('#adminManageUsersTableBody').html('');
+                    for (let i = 0; i < users.length; i++) {
+                        const user = users[i];
+                        const uid = user.getElementsByTagName('uid')[0].textContent;
+                        const firstName = user.getElementsByTagName('firstName')[0].textContent;
+                        const lastName = user.getElementsByTagName('lastName')[0].textContent;
+                        const initials = user.getElementsByTagName('initials')[0].textContent;
+                        const mail = user.getElementsByTagName('mail')[0].textContent;
+                        const isAdministrator = user.getElementsByTagName('isAdministrator')[0].textContent;
+                        const groups = new Set();
+                        const editableGroups = new Set();
+                        for (const group of user.getElementsByTagName('group')) {
+                            const uid = group.getElementsByTagName('uid')[0].textContent;
+                            groups.add(uid);
+                        }
+                        $('.newEventOwnerOptionGroup').remove();
+                        for (const editableGroup of user.getElementsByTagName('editableGroup')) {
+                            const uid = editableGroup.getElementsByTagName('uid')[0].textContent;
+                            editableGroups.add(uid);
+                        }
+                        var groupsSelectedOptions = '';
+                        var editableGroupsSelectedOptions = '';
+                        for (const group of allGroups) {
+                            groupsSelectedOptions += `<option value="${group.uid}" ${groups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
+                            editableGroupsSelectedOptions += `<option value="${group.uid}" ${editableGroups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
+                        }
+                        const tableRow = `<tr>
+                            <td>${lastName}, ${firstName} (${initials})</td>
+                            <td>${mail}</td>
+                            <td>
+                            <a class="link" data-bs-toggle="collapse" href="#adminGroupSelects${uid}" role="button" aria-expanded="false" aria-controls="adminGroupSelects${uid}">Gruppen verwalten</a>
+                            <div class="collapse pt-2" id="adminGroupSelects${uid}">
+                                <label>Gruppen zum Anzeigen</label>
+                                <select class="form-select form-select-sm adminSelectGroup mb-1" multiple="multiple" data-user="${uid}">${groupsSelectedOptions}</select>
+                                <label>Gruppen zum Bearbeiten</label>
+                                <select class="form-select form-select-sm adminSelectEditableGroup mb-1" multiple="multiple" data-user="${uid}">${editableGroupsSelectedOptions}</select>
+                            </div>
+                            <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
+                            data-uid="${uid}" \></td>
+                            <td>
+                                <button type="button" class="btn btn-danger adminDeleteUserButton" title="Löschen" data-user="${uid}" data-username="${firstName} ${lastName}"><i class="bi bi-x"></i></button>
+                            </td>
+                            </tr>`;
+                        $('#adminManageUsersTableBody').append(tableRow);
+                    }
+                    $('.adminSelectGroup').change(function () {
+                        const uid = this.getAttribute('data-user');
+                        const groupUIDs = $(this).val();
+                        const selectedGroups = allGroups.filter(group => groupUIDs.includes(group.uid));
+                        const selectedGroupsXml = selectedGroups.map(group => `<group><uid>${group.uid}</uid><name>${group.name}</name><url>${group.url}</url></group>`).join('');
+                        $.ajax({
+                            url: `/api/users/${uid}`,
+                            method: 'PUT',
+                            contentType: 'application/xml',
+                            data: `<User><uid>${uid}</uid>${selectedGroupsXml}</User>`
+                        })
+                            .fail(function () {
+                                alert('Die Gruppen konnten nicht geändert werden.');
+                            });
+                    });
+                    $('.adminSelectEditableGroup').change(function () {
+                        const uid = this.getAttribute('data-user');
+                        const groupUIDs = $(this).val();
+                        const selectedGroups = allGroups.filter(group => groupUIDs.includes(group.uid));
+                        const selectedGroupsXml = selectedGroups.map(group => `<editableGroup><uid>${group.uid}</uid><name>${group.name}</name><url>${group.url}</url></editableGroup>`).join('');
+                        $.ajax({
+                            url: `/api/users/${uid}`,
+                            method: 'PUT',
+                            contentType: 'application/xml',
+                            data: `<User><uid>${uid}</uid>${selectedGroupsXml}</User>`
+                        })
+                            .fail(function () {
+                                alert('Die Gruppen konnten nicht geändert werden.');
+                            });
+                    });
+                    $('.adminDeleteUserButton').click(function () {
+                        const uid = this.getAttribute('data-user');
+                        const username = this.getAttribute('data-username');
+                        if (confirm(`Sie sind dabei, ${username} zu löschen.`)) {
+                            $.ajax({
+                                url: `/api/users/${uid}`,
+                                method: 'DELETE'
+                            })
+                                .done(openAdminManageUsers);
+                        }
+                    });
+
+                    $('.checkbox-admin').change(function () {
+                        const uid = this.getAttribute('data-uid');
+                        const isAdministrator = this.checked ? 'true' : 'false';
+                        $.ajax({
+                            url: `/api/users/${uid}`,
+                            method: 'PUT',
+                            contentType: 'application/xml',
+                            data: `<User><uid>${uid}</uid><isAdministrator>${isAdministrator}</isAdministrator></User>`
+                        })
+                            .always(openAdminManageUsers);
+                    });
+                });
         });
-}
 
-async function submitAdminManageUsers() {
-    // TODO
 }
 
 function setDarkMode(isDarkModeEnabled) {
@@ -549,11 +681,7 @@ async function handleDarkMode(sendToServer = false, darkMode = undefined) {
         $.ajax({
             url: `/api/users/${getUID()}`,
             method: 'PUT',
-            data: {
-                user: {
-                    uid: getUID(),
-                    darkmode: darkMode
-                }
-            }
+            contentType: 'application/xml',
+            data: `<User><uid>${getUID()}</uid><darkmode>${darkMode}</darkmode></User>`
         });
 }

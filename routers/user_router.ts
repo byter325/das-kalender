@@ -31,6 +31,7 @@ usersRouter.get("/", (request: express.Request, response: express.Response) => {
 });
 
 usersRouter.get('/:uid', (request: express.Request, response: express.Response) => {
+    AuthManager.loadUsers();
     if (request.user.uid == request.params.uid || request.user.isAdministrator) {
         const builder = new XMLBuilder({
             ignoreAttributes: false,
