@@ -288,34 +288,33 @@ $(async () => {
     $('#buttonGenApiToken').click(genApiToken);
 });
 
-/* UI events */
-function editEvent(buttonClicked) {
-    const eventId = buttonClicked.getAttribute('data-event-id');
-    const eventOwnerId = buttonClicked.getAttribute('data-event-owner-id');
-    // TODO: get event information
-    const editEventForm = document.forms['editEventForm'];
-    editEventForm['editEventId'].value = eventId;
-    console.log(eventId, editEventForm['editEventId'].value);
-    editEventForm['editEventTitle'].value = 'Ein zufälliger Titel';
-    editEventForm['editEventDescription'].value = 'Lorem ipsum';
-    editEventForm['editEventCategory'].value = 'Other';
-    editEventForm['editEventLocation'].value = 'Mond 🌛';
-    editEventForm['editEventStart'].value = '2020-02-02T22:22';
-    editEventForm['editEventEnd'].value = '2022-02-22T20:20';
-    editEventForm['editEventOwnerId'].value = eventOwnerId;
+async function insertEventDataIntoForm(eventOwnerId, eventId, eventForm) {
+    $.get(`/api/calendar/${eventOwnerId}`, { eventId })
+        .done(function (data) {
+            console.log('event information', data);
+            editEventForm['editEventId'].value = eventId;
+            editEventForm['editEventTitle'].value = 'Ein zufälliger Titel';
+            editEventForm['editEventDescription'].value = 'Lorem ipsum';
+            editEventForm['editEventCategory'].value = 'Other';
+            editEventForm['editEventLocation'].value = 'Mond 🌛';
+            editEventForm['editEventStart'].value = '2020-02-02T22:22';
+            editEventForm['editEventEnd'].value = '2022-02-22T20:20';
+            editEventForm['editEventOwnerId'].value = eventOwnerId;
+        });
 }
 
-function deleteEvent(buttonClicked) {
+function openEditEvent(buttonClicked) {
     const eventId = buttonClicked.getAttribute('data-event-id');
-    // TODO: get event information
+    const eventOwnerId = buttonClicked.getAttribute('data-event-owner-id');
+    const editEventForm = document.forms['editEventForm'];
+    insertEventDataIntoForm(eventOwnerId, eventId, editEventForm);
+}
+
+function openDeleteEvent(buttonClicked) {
+    const eventId = buttonClicked.getAttribute('data-event-id');
+    const eventOwnerId = buttonClicked.getAttribute('data-event-owner-id');
     const deleteEventForm = document.forms['deleteEventForm'];
-    deleteEventForm['deleteEventId'].value = eventId;
-    deleteEventForm['deleteEventTitle'].value = 'Etwas zum Löschen';
-    deleteEventForm['deleteEventDescription'].value = 'Das ist definitiv löschbar';
-    deleteEventForm['deleteEventCategory'].value = 'Lecture';
-    deleteEventForm['deleteEventLocation'].value = 'An der DHBW';
-    deleteEventForm['deleteEventStart'].value = '1970-01-01T08:00';
-    deleteEventForm['deleteEventEnd'].value = '1970-01-01T09:30';
+    insertEventDataIntoForm(eventOwnerId, eventId, deleteEventForm);
 }
 
 async function submitEditEvent() {
@@ -403,8 +402,8 @@ async function submitNewEvent() {
             <modified>${(new Date()).toISOString()}</modified>
             <category>${category}</category>
             <location>${location}</location>
-            <start>${start}</start>
-            <end>${end}</end>
+            <start>${(new Date(start)).toISOString()}</start>
+            <end>${(new Date(end)).toISOString()}</end>
         </Event>`
     });
 }
@@ -603,7 +602,7 @@ async function openAdminManageUsers() {
                             <td><input class="form-check-input checkbox-admin" type="checkbox" ${isAdministrator === 'true' ? 'checked="checked"' : ''}
                             data-uid="${uid}" \></td>
                             <td>
-                                <button type="button" class="btn btn-danger adminDeleteUserButton" title="Löschen" data-user="${uid}" data-username="${firstName} ${lastName}"><i class="bi bi-x"></i></button>
+                                <button type="button" class="btn btn-sm btn-danger adminDeleteUserButton" data-user="${uid}" data-username="${firstName} ${lastName}"><i class="bi bi-x"></i> Löschen</button>
                             </td>
                             </tr>`;
                         $('#adminManageUsersTableBody').append(tableRow);
