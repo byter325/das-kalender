@@ -170,7 +170,16 @@ export module XMLManager {
 
             const builder = new XMLBuilder({})
             let uid: string = Utils.getNextUID()
-            let xmlDataStr: string = builder.build({ group: { uid: uid, name: name, url: url.replace('&#38;', '&') } });
+            let xmlDataStr: string = builder.build({
+                group: {
+                    uid: uid,
+                    name: name,
+                    url: url.replace(/&#(\d+);/gi, function (match, numStr) {
+                        var num = parseInt(numStr, 10);
+                        return String.fromCharCode(num);
+                    })
+                }
+            });
             createFoldersIfNotExist()
 
             const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
