@@ -82,10 +82,6 @@ export module Handlers {
                 });
             }
         }
-        else
-            fs.writeFileSync(eventsPath, "<events></events>", { flag: "w+" })
-
-        
     }
 
     export function updateAllGroups(){
