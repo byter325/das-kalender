@@ -764,7 +764,7 @@ async function openAdminManageUsers() {
                     $('.checkbox-admin').change(function () {
                         const userId = this.getAttribute('data-uid');
                         const isAdministrator = this.checked ? 'true' : 'false';
-                        API.putUser({ uid: userId, userDoc: `<User><uid>${userId}</uid><isAdministrator>${isAdministrator}</isAdministrator></User>` })
+                        API.putUser({ userId, userDoc: `<User><uid>${userId}</uid><isAdministrator>${isAdministrator}</isAdministrator></User>` })
                             .always(openAdminManageUsers);
                     });
                 });
