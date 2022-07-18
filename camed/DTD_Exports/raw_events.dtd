@@ -1,5 +1,5 @@
 <!ELEMENT events (event*)>
-    <!ELEMENT event (uid, title, description, presenter, category, start, end, location, modified, modifiedBy)>
+    <!ELEMENT event (uid, title, description, presenter, category, start, end, location, modified, modifiedBy, ownerID)>
         <!ELEMENT uid (#PCDATA)>
         <!ELEMENT title (#PCDATA)>
         <!ELEMENT description (#PCDATA)>
