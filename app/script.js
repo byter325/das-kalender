@@ -701,7 +701,9 @@ async function openAdminManageUsers() {
                         var editableGroupsSelectedOptions = '';
                         for (const group of allGroups) {
                             groupsSelectedOptions += `<option value="${group.uid}" ${groups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
-                            editableGroupsSelectedOptions += `<option value="${group.uid}" ${editableGroups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
+                            if (!group.url || !group.url.length) {
+                                editableGroupsSelectedOptions += `<option value="${group.uid}" ${editableGroups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
+                            }
                         }
                         const tableRow = `<tr>
                             <td>${lastName}, ${firstName} (${initials})</td>
