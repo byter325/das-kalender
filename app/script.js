@@ -458,12 +458,13 @@ async function insertEventDataIntoForm(ownerId, eventId, eventForm, prefixTagNam
             const presenterInitials = doc.getElementsByTagName('presenter')[0].getElementsByTagName('initials')[0].textContent;
             const category = doc.getElementsByTagName('category')[0].textContent;
             var start = doc.getElementsByTagName('start')[0].textContent;
-            start = (new Date((new Date(start)).getTime() + (new Date()).getTimezoneOffset() * 60000));
+            start = (new Date((new Date(start)).getTime()));
             var end = doc.getElementsByTagName('end')[0].textContent;
-            end = (new Date((new Date(start)).getTime() + (new Date()).getTimezoneOffset() * 60000));
+            end = (new Date((new Date(end)).getTime()));
             const location = doc.getElementsByTagName('location')[0].textContent;
 
             eventForm[`${prefixTagName}Id`].value = eventId;
+            eventForm[`${prefixTagName}Owner`].value = ownerId;
             eventForm[`${prefixTagName}Title`].value = title;
             eventForm[`${prefixTagName}Description`].value = description;
             eventForm[`${prefixTagName}PresenterFirstName`].value = presenterFirstName;
@@ -516,6 +517,7 @@ async function submitDeleteEvent() {
     API.deleteEvent({ eventId: event.eventId, ownerId: event.ownerId })
         .done(function () {
             updateSite();
+            alert('Termin wurde erfolgreich gelöscht');
         });
 }
 

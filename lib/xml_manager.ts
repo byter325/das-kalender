@@ -185,14 +185,15 @@ export module XMLManager {
             const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml"
             xmlDataStr = '<?xml-model href="../../camed/DTD_Exports/raw_group.dtd" type="application/xml-dtd"?>' + xmlDataStr
-            if (!allowOverride && fs.existsSync(groupsPath))
-                return false;
-            else
-                writeFileSync(groupsPath, xmlDataStr, { flag: "w+" })
-
             if (!allowOverride && fs.existsSync(eventsPath))
                 return false;
+            else
+                writeFileSync(eventsPath, '<?xml-model href="../../camed/DTD_Exports/raw_events.dtd" type="application/xml-dtd"?><events></events>', { flag: "w+" })
+
+            if (!allowOverride && fs.existsSync(groupsPath))
+                return false;
             else {
+                writeFileSync(groupsPath, xmlDataStr, { flag: "w+" })
                 Handlers.updateGroup(uid);
             }
 
