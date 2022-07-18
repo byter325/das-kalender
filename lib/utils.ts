@@ -57,12 +57,12 @@ export module Utils {
         return BODY_INCORRECT
     }
 
-    export function convertFullPostBodyToEvent(body: any, ownerID:string): CalendarEvent {
+    export function convertFullPostBodyToEvent(body: any, ownerID: string): CalendarEvent {
         return new CalendarEvent(getNextUID(), body.title, body.description, body.presenter, body.category, body.start, body.end,
             body.location, body.modified, body.modifiedBy, ownerID)
     }
 
-    export function convertPartialPostBodyToEvent(body: any, ownerID:string): CalendarEvent {
+    export function convertPartialPostBodyToEvent(body: any, ownerID: string): CalendarEvent {
         return new CalendarEvent(getNextUID(), body.title, "No description", {}, "No category", body.start, body.end,
             "No location", new Date().toISOString(), {}, ownerID)
     }
@@ -124,18 +124,18 @@ export module Utils {
      * Waits for a file to be created
      * @param filename The name of the file to be checked
      */
-     export async function waitForFile(filename:string) {
+    export async function waitForFile(filename: string) {
         let exists = false;
         let i: number = 0;
-        while(!exists){
+        while (!exists) {
             try {
                 i++;
-                if (i > 200){
+                if (i > 200) {
                     console.log("x1b[31m\x1b[0m", "Huston we have a problem...");
                     process.exit(-1);
                 }
                 exists = fs.existsSync(filename);
-                
+
                 // wait 100ms
                 await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -143,10 +143,10 @@ export module Utils {
                 // console.log(error);
             }
         }
-            
+
     }
 
-    function createDirectoryIfNotExists(path: string): void {
+    export function createDirectoryIfNotExists(path: string): void {
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path);
         }

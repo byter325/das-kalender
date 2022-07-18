@@ -8,6 +8,7 @@ import { Handlers } from './lib/handlers'
 import * as cron from "node-cron"
 import * as https from "https"
 import * as fs from "fs"
+import { Utils } from './lib/utils'
 
 const path = require('path')
 const RateLimit = require('express-rate-limit');
@@ -26,6 +27,10 @@ if (!fs.existsSync(securityPath)) {
     console.log("There is no certificate. If you want to create a certificate, look at the README under 'Security'. The server will close now...");
     process.exit(-1);
 }
+
+Utils.createDirectoryIfNotExists("data");
+Utils.createDirectoryIfNotExists("data/utils");
+Utils.createDirectoryIfNotExists("data/users");
 
 let key: Buffer;
 let cert: Buffer;
