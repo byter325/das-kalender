@@ -771,9 +771,14 @@ async function openAdminManageUsers() {
 
                     $('.checkbox-admin').change(function () {
                         const userId = this.getAttribute('data-uid');
-                        const isAdministrator = this.checked ? 'true' : 'false';
-                        API.putUser({ userId, userDoc: `<User><uid>${userId}</uid><isAdministrator>${isAdministrator}</isAdministrator></User>` })
-                            .always(openAdminManageUsers);
+                        if (userId != getUserId()) {
+                            const isAdministrator = this.checked ? 'true' : 'false';
+                            API.putUser({ userId, userDoc: `<User><uid>${userId}</uid><isAdministrator>${isAdministrator}</isAdministrator></User>` })
+                                .always(openAdminManageUsers);
+                        } else {
+                            alert('Sie können nicht Ihren eigenen Adminstatus ändern');
+                            openAdminManageUsers();
+                        }
                     });
                 });
         });
