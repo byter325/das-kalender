@@ -488,20 +488,23 @@ function editEvent(buttonClicked) {
 async function submitEditEvent() {
     const editEventForm = document.forms['editEventForm'];
     const event = FormParser.fromEventForm(editEventForm, 'editEvent');
-
-    API.deleteEvent({ ownerId: event.ownerId, eventId: event.eventId })
-        .then(function () {
-            API.postEvent(event)
-                .done(function () {
-                    editEventForm.reset();
-                })
-                .fail(function () {
-                    alert('Termin konnte nicht geändert werden.');
-                });
-        })
-        .fail(function () {
-            alert('Termin konnte nicht geändert werden.');
-        });
+    if (new Date(event.start) <= new Date(event.end)) {
+        API.deleteEvent({ ownerId: event.ownerId, eventId: event.eventId })
+            .then(function () {
+                API.postEvent(event)
+                    .done(function () {
+                        editEventForm.reset();
+                    })
+                    .fail(function () {
+                        alert('Termin konnte nicht geändert werden.');
+                    });
+            })
+            .fail(function () {
+                alert('Termin konnte nicht geändert werden.');
+            });
+    } else {
+        alert('Startdatum liegt vor dem Enddatum');
+    }
 }
 
 function deleteEvent(buttonClicked) {
@@ -523,14 +526,19 @@ async function submitDeleteEvent() {
 
 async function submitNewEvent() {
     const newEventForm = document.forms['newEventForm'];
-    API.postEvent(FormParser.fromEventForm(newEventForm, 'newEvent'))
-        .done(function () {
-            newEventForm.reset();
-            alert('Termin wurde hinzugefügt');
-        })
-        .fail(function () {
-            alert('Termin konnte nicht hinzugefügt werden');
-        });
+    const event = FormParser.fromEventForm(newEventForm, 'newEvent');
+    if (new Date(event.start) <= new Date(event.end)) {
+        API.postEvent(event)
+            .done(function () {
+                newEventForm.reset();
+                alert('Termin wurde hinzugefügt');
+            })
+            .fail(function () {
+                alert('Termin konnte nicht hinzugefügt werden');
+            });
+    } else {
+        alert('Startdatum liegt vor dem Enddatum');
+    }
 }
 
 async function submitLogin() {

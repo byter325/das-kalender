@@ -14,6 +14,7 @@ export module XMLManager {
     export const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
     const PATH_DATA_UTILS: string = `${PATH_DATA_DIR}/utils/`
     const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
+    const PATH_DATA_SECUTIRY: string = `${PATH_DATA_DIR}/security/`
     export const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
     const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups/`
     const PATH_TOKEN_FILE: string = `${PATH_DATA_DIR}/AuthTokens.xml`
@@ -672,6 +673,9 @@ export module XMLManager {
 
         if (!fs.existsSync(PATH_DATA_DIR))
             fs.mkdirSync(PATH_DATA_DIR);
+
+        if (!fs.existsSync(PATH_DATA_SECUTIRY))
+            fs.mkdirSync(PATH_DATA_SECUTIRY);
 
         if (!fs.existsSync(PATH_DATA_UTILS))
             fs.mkdirSync(PATH_DATA_UTILS);
