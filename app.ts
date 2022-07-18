@@ -8,6 +8,7 @@ import { Handlers } from './lib/handlers'
 import * as cron from "node-cron"
 import * as https from "https"
 import * as fs from "fs"
+import { XMLManager } from './lib/xml_manager'
 
 const path = require('path')
 const RateLimit = require('express-rate-limit');
@@ -19,6 +20,8 @@ const YAML = require('yamljs')
 const app: Application = express()
 const port = 8080
 const securityPath = path.join(__dirname, "security")
+
+XMLManager.createFoldersIfNotExist();
 
 if (!fs.existsSync(securityPath)) {
     console.log("No security folder found. Creating one...");

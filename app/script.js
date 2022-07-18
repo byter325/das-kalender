@@ -488,20 +488,23 @@ function editEvent(buttonClicked) {
 async function submitEditEvent() {
     const editEventForm = document.forms['editEventForm'];
     const event = FormParser.fromEventForm(editEventForm, 'editEvent');
-
-    API.deleteEvent({ ownerId: event.ownerId, eventId: event.eventId })
-        .then(function () {
-            API.postEvent(event)
-                .done(function () {
-                    editEventForm.reset();
-                })
-                .fail(function () {
-                    alert('Termin konnte nicht geändert werden.');
-                });
-        })
-        .fail(function () {
-            alert('Termin konnte nicht geändert werden.');
-        });
+    if (new Date(event.start) <= new Date(event.end)) {
+        API.deleteEvent({ ownerId: event.ownerId, eventId: event.eventId })
+            .then(function () {
+                API.postEvent(event)
+                    .done(function () {
+                        editEventForm.reset();
+                    })
+                    .fail(function () {
+                        alert('Termin konnte nicht geändert werden.');
+                    });
+            })
+            .fail(function () {
+                alert('Termin konnte nicht geändert werden.');
+            });
+    } else {
+        alert('Startdatum liegt vor dem Enddatum');
+    }
 }
 
 function deleteEvent(buttonClicked) {
@@ -523,14 +526,19 @@ async function submitDeleteEvent() {
 
 async function submitNewEvent() {
     const newEventForm = document.forms['newEventForm'];
-    API.postEvent(FormParser.fromEventForm(newEventForm, 'newEvent'))
-        .done(function () {
-            newEventForm.reset();
-            alert('Termin wurde hinzugefügt');
-        })
-        .fail(function () {
-            alert('Termin konnte nicht hinzugefügt werden');
-        });
+    const event = FormParser.fromEventForm(newEventForm, 'newEvent');
+    if (new Date(event.start) <= new Date(event.end)) {
+        API.postEvent(event)
+            .done(function () {
+                newEventForm.reset();
+                alert('Termin wurde hinzugefügt');
+            })
+            .fail(function () {
+                alert('Termin konnte nicht hinzugefügt werden');
+            });
+    } else {
+        alert('Startdatum liegt vor dem Enddatum');
+    }
 }
 
 async function submitLogin() {
@@ -693,7 +701,9 @@ async function openAdminManageUsers() {
                         var editableGroupsSelectedOptions = '';
                         for (const group of allGroups) {
                             groupsSelectedOptions += `<option value="${group.uid}" ${groups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
-                            editableGroupsSelectedOptions += `<option value="${group.uid}" ${editableGroups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
+                            if (!group.url || !group.url.length) {
+                                editableGroupsSelectedOptions += `<option value="${group.uid}" ${editableGroups.has(group.uid) ? 'selected="selected"' : ''}>${group.name}</option>`;
+                            }
                         }
                         const tableRow = `<tr>
                             <td>${lastName}, ${firstName} (${initials})</td>
@@ -763,9 +773,14 @@ async function openAdminManageUsers() {
 
                     $('.checkbox-admin').change(function () {
                         const userId = this.getAttribute('data-uid');
-                        const isAdministrator = this.checked ? 'true' : 'false';
-                        API.putUser({ uid: userId, userDoc: `<User><uid>${userId}</uid><isAdministrator>${isAdministrator}</isAdministrator></User>` })
-                            .always(openAdminManageUsers);
+                        if (userId != getUserId()) {
+                            const isAdministrator = this.checked ? 'true' : 'false';
+                            API.putUser({ userId, userDoc: `<User><uid>${userId}</uid><isAdministrator>${isAdministrator}</isAdministrator></User>` })
+                                .always(openAdminManageUsers);
+                        } else {
+                            alert('Sie können nicht Ihren eigenen Adminstatus ändern');
+                            openAdminManageUsers();
+                        }
                     });
                 });
         });
