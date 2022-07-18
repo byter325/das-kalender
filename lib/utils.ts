@@ -146,7 +146,7 @@ export module Utils {
 
     }
 
-    export function createDirectoryIfNotExists(path: string): void {
+    function createDirectoryIfNotExists(path: string): void {
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path);
         }

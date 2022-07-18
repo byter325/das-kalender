@@ -12,6 +12,7 @@ export module XMLManager {
     // TODO: Change folder structure to /events/
     import GenerateHash = Utils.GenerateHash;
     export const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
+    const PATH_DATA_UTILS: string = `${PATH_DATA_DIR}/utils/`
     const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
     export const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
     const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups/`
@@ -667,7 +668,14 @@ export module XMLManager {
         } else return 400;
     }
 
-    function createFoldersIfNotExist() {
+    export function createFoldersIfNotExist() {
+
+        if (!fs.existsSync(PATH_DATA_DIR))
+            fs.mkdirSync(PATH_DATA_DIR);
+
+        if (!fs.existsSync(PATH_DATA_UTILS))
+            fs.mkdirSync(PATH_DATA_UTILS);
+
         if (!fs.existsSync(PATH_DATA_EVENTS))
             fs.mkdirSync(PATH_DATA_EVENTS);
 
