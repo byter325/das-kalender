@@ -446,6 +446,7 @@ $(async () => {
 });
 
 async function insertEventDataIntoForm(ownerId, eventId, eventForm, prefixTagName) {
+    eventForm.reset();
     API.getEvent({ ownerId, eventId })
         .done(function (data) {
             const doc = parseXML(data);
@@ -456,9 +457,12 @@ async function insertEventDataIntoForm(ownerId, eventId, eventForm, prefixTagNam
             const presenterMail = doc.getElementsByTagName('presenter')[0].getElementsByTagName('mail')[0].textContent;
             const presenterInitials = doc.getElementsByTagName('presenter')[0].getElementsByTagName('initials')[0].textContent;
             const category = doc.getElementsByTagName('category')[0].textContent;
-            const start = (new Date(doc.getElementsByTagName('start')[0].textContent));
-            const end = (new Date(doc.getElementsByTagName('end')[0].textContent));
+            var start = doc.getElementsByTagName('start')[0].textContent;
+            start = (new Date((new Date(start)).getTime() + (new Date()).getTimezoneOffset() * 60000));
+            var end = doc.getElementsByTagName('end')[0].textContent;
+            end = (new Date((new Date(start)).getTime() + (new Date()).getTimezoneOffset() * 60000));
             const location = doc.getElementsByTagName('location')[0].textContent;
+
             eventForm[`${prefixTagName}Id`].value = eventId;
             eventForm[`${prefixTagName}Title`].value = title;
             eventForm[`${prefixTagName}Description`].value = description;
