@@ -37,7 +37,7 @@
     "saxon-js": "^2.4.0",
     "swagger-ui-express": "^4.4.0",
     "tmp": "^0.2.1",
-    "ts-node": "^10.8.1",
+    "ts-node": "^10.9.1",
     "xml-js": "^1.6.11",
     "yaml": "^2.1.1",
     "yamljs": "^0.3.0"
