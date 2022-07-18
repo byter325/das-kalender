@@ -1,8 +1,8 @@
 import * as express from 'express'
-import {Utils} from '../lib/utils';
-import {XMLManager} from '../lib/xml_manager';
-import {AuthManager} from "../lib/authManager";
-import {XMLBuilder} from "fast-xml-parser";
+import { Utils } from '../lib/utils';
+import { XMLManager } from '../lib/xml_manager';
+import { AuthManager } from "../lib/authManager";
+import { XMLBuilder } from "fast-xml-parser";
 
 const usersRouter = express.Router();
 
@@ -31,15 +31,25 @@ usersRouter.get("/", (request: express.Request, response: express.Response) => {
 });
 
 usersRouter.get('/:uid', (request: express.Request, response: express.Response) => {
+    AuthManager.loadUsers();
     if (request.user.uid == request.params.uid || request.user.isAdministrator) {
         const builder = new XMLBuilder({
             ignoreAttributes: false,
             attributesGroupName: "token"
         })
-        const value = AuthManager.users.get(request.params.uid)
+        var value = AuthManager.users.get(request.params.uid)
+        if (value == undefined) {
+            const uidAsNumber: any = + request.params.uid
+            if (isNaN(uidAsNumber))
+                value = undefined
+            else
+                value = AuthManager.users.get(uidAsNumber)
+        }
+
         if (value != undefined) {
             value.passwordHash = ""
-            const xmlDataStr = builder.build(value)
+            value.fileName = ""
+            const xmlDataStr = builder.build({ user: value })
             response.status(200)
             response.send(xmlDataStr)
         } else return response.sendStatus(404)
@@ -48,6 +58,13 @@ usersRouter.get('/:uid', (request: express.Request, response: express.Response) 
 
 usersRouter.put("/:uid", (request: express.Request, response: express.Response) => {
     let originalUser = AuthManager.users.get(request.params.uid)
+    if (originalUser == undefined) {
+        const uidAsNumber: any = + request.params.uid
+        if (isNaN(uidAsNumber))
+            originalUser = undefined
+        else
+            originalUser = AuthManager.users.get(uidAsNumber)
+    }
     if (originalUser != undefined) {
         if (request.user.isAdministrator) {
             return response.sendStatus(XMLManager.updateUserAsAdmin(request.params.uid, request.body))
@@ -56,6 +73,14 @@ usersRouter.put("/:uid", (request: express.Request, response: express.Response) 
         return response.sendStatus(401)
     }
     return response.sendStatus(404)
+})
+
+usersRouter.delete('/:uid/groups', (request: express.Request, response) => {
+    let type:string | undefined = request.query.type?.toString();
+
+    if(type == undefined) return 400;
+
+    return response.sendStatus(XMLManager.unassignAllGroupsFromUser(request.params.uid, type))
 })
 
 usersRouter.delete("/:uid", (request: express.Request, response) => {

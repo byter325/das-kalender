@@ -1,16 +1,17 @@
 <!ELEMENT events (event*)>
-    <!ELEMENT event (uid, title, description, presenter, category, start, end, location, modified, modifiedBy)>
+    <!ELEMENT event (uid, title, description, presenter, category, start, end, location, modified, modifiedBy, ownerID)>
         <!ELEMENT uid (#PCDATA)>
         <!ELEMENT title (#PCDATA)>
         <!ELEMENT description (#PCDATA)>
         <!ELEMENT presenter (firstName, lastName, initials, mail)>
             <!ELEMENT firstName (#PCDATA)>
             <!ELEMENT lastName (#PCDATA)>
-            <!ELEMENT initials (#PCDATA)>
             <!ELEMENT mail (#PCDATA)>
+            <!ELEMENT initials (#PCDATA)>
         <!ELEMENT category (#PCDATA)>
         <!ELEMENT start (#PCDATA)>
         <!ELEMENT end (#PCDATA)>
         <!ELEMENT location (#PCDATA)>
         <!ELEMENT modified (#PCDATA)>
         <!ELEMENT modifiedBy (firstName, lastName, initials, mail)>
+        <!ELEMENT ownerID (#PCDATA)>

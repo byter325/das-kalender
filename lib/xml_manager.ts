@@ -1,17 +1,21 @@
 import * as path from "path";
-import fs, {writeFileSync} from "fs"
-import {User} from "./classes/user"
-import {CalendarEvent} from "./classes/userEvent"
-import {Utils} from "./utils"
-import {XMLBuilder, XMLParser} from 'fast-xml-parser'
-import {Handlers} from "./handlers";
+import fs, { readFileSync, writeFileSync } from "fs"
+import { User } from "./classes/user"
+import { CalendarEvent } from "./classes/userEvent"
+import { Utils } from "./utils"
+import { XMLBuilder, XMLParser } from 'fast-xml-parser'
+import { Handlers } from "./handlers";
+import { AuthManager } from "./authManager";
 
 export module XMLManager {
 
     // TODO: Change folder structure to /events/
-    const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
+    import GenerateHash = Utils.GenerateHash;
+    export const PATH_DATA_DIR: string = path.resolve(__dirname, '..', 'data')
+    const PATH_DATA_UTILS: string = `${PATH_DATA_DIR}/utils/`
     const PATH_DATA_USERS: string = `${PATH_DATA_DIR}/users/`
-    const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
+    const PATH_DATA_SECUTIRY: string = `${PATH_DATA_DIR}/security/`
+    export const PATH_DATA_EVENTS: string = `${PATH_DATA_DIR}/events/`
     const PATH_DATA_GROUPS: string = `${PATH_DATA_DIR}/groups/`
     const PATH_TOKEN_FILE: string = `${PATH_DATA_DIR}/AuthTokens.xml`
 
@@ -22,16 +26,6 @@ export module XMLManager {
      * @param {string} uid unique user id
      * @return {string} Returns an XML string of a user
      */
-    export function getUser(uid: string): string | null {
-        try {
-            const path = PATH_DATA_USERS + Utils.GenerateHash(uid) + ".xml";
-            return fs.readFileSync(path, "utf-8")
-        } catch (e) {
-            console.log(e);
-            return null
-        }
-    }
-
     export function getUserByUid(uid: string): User | null {
         try {
             const parser = new XMLParser({
@@ -40,12 +34,12 @@ export module XMLManager {
             })
             const path = PATH_DATA_USERS + Utils.GenerateHash(uid) + ".xml"
             console.log("Reading file of user " + uid + " from " + path)
-            if (!fs.existsSync(path)) throw new Error("File for user '" + uid + "' does not exist")
+            if (!fs.existsSync(path)) return null
             const data = fs.readFileSync(path, "utf-8")
             const person = parser.parse(data)["person"]
             console.log("parsed person: " + person)
             return new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
-                person.group, person.editableGroup, person.darkMode, person.isAdministrator)
+                person.group, person.editableGroup, person.darkMode, person.isAdministrator, Utils.GenerateHash(uid) + ".xml")
         } catch (e) {
             console.log(e);
             return null
@@ -81,14 +75,16 @@ export module XMLManager {
         try {
             const parser = new XMLParser()
             const builder = new XMLBuilder({})
-            let data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenerateHash(uid) + ".xml");
+            let data = fs.readFileSync(PATH_DATA_EVENTS + "/" + Utils.GenerateHash(uid) + ".xml")
             let events = parser.parse(data)["events"]
             if (events['event'] == "") {
                 return undefined
+            } else if (!Array.isArray(events['event'])) {
+                return builder.build({ event: events['event'] })
             } else {
                 let filteredEvents = events['event'].filter((event: { [x: string]: String }) => event['uid'] == eventUid)
-                let firstElementAsXML = builder.build({event: filteredEvents[0]})
-                console.log("MULTIPLE EVENTS: " + filteredEvents + firstElementAsXML);
+                let firstElementAsXML = builder.build({ event: filteredEvents[0] })
+                console.log("MULTIPLE EVENTS: " + filteredEvents + firstElementAsXML)
 
                 return firstElementAsXML
             }
@@ -126,28 +122,31 @@ export module XMLManager {
             };
 
             const builder = new XMLBuilder({
-                ignoreAttributes: false,
-                attributesGroupName: "group"
+                ignoreAttributes: false
             })
 
             let xmlDataStr: string = builder.build(json);
             createFoldersIfNotExist();
 
-            console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml")
+            console.log("Writing user '" + user.uid + "' to " + PATH_DATA_USERS + user.fileName)
 
-            const usersPath = PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml"
-            const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(user.uid) + ".xml"
+            // const usersPath = PATH_DATA_USERS + Utils.GenerateHash(user.uid) + ".xml"
+            // const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(user.uid) + ".xml"
+            const usersPath = PATH_DATA_USERS + user.fileName
+            const eventsPath = PATH_DATA_EVENTS + user.fileName
+
+            xmlDataStr = '<?xml-model href="../../camed/DTD_Exports/raw_person.dtd" type="application/xml-dtd"?>' + xmlDataStr
 
             if (!allowOverride && fs.existsSync(usersPath))
                 return false;
             else
-                writeFileSync(usersPath, xmlDataStr, {flag: "w+"})
+                writeFileSync(usersPath, xmlDataStr, { flag: "w+" })
 
             if (!allowOverride && fs.existsSync(eventsPath))
                 return false;
             else {
                 if (createOrOverrideEvents)
-                    writeFileSync(eventsPath, "<events></events>", {flag: "w+"})
+                    writeFileSync(eventsPath, "<events></events>", { flag: "w+" })
             }
 
             return true
@@ -168,24 +167,37 @@ export module XMLManager {
      * @param {boolean} allowOverride Set to true to allow overriding existing groups
      * @return {boolean} Returns if the operation was successful or not
      */
-    export function insertGroup(uid: string, name: string, url: string, allowOverride: boolean): boolean {
+    export function insertGroup(name: string, url: string, allowOverride: boolean): boolean {
         try {
+
             const builder = new XMLBuilder({})
-            let xmlDataStr: string = builder.build({group: {uid: uid, name: name, url: url}});
+            let uid: string = Utils.getNextUID()
+            let xmlDataStr: string = builder.build({
+                group: {
+                    uid: uid,
+                    name: name,
+                    url: url.replace(/&#(\d+);/gi, function (match, numStr) {
+                        var num = parseInt(numStr, 10);
+                        return String.fromCharCode(num);
+                    })
+                }
+            });
             createFoldersIfNotExist()
 
             const groupsPath = PATH_DATA_GROUPS + Utils.GenerateHash(uid) + ".xml"
             const eventsPath = PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml"
-
-            if (!allowOverride && fs.existsSync(groupsPath))
-                return false;
-            else
-                writeFileSync(groupsPath, xmlDataStr, {flag: "w+"})
-
+            xmlDataStr = '<?xml-model href="../../camed/DTD_Exports/raw_group.dtd" type="application/xml-dtd"?>' + xmlDataStr
             if (!allowOverride && fs.existsSync(eventsPath))
                 return false;
             else
-                writeFileSync(eventsPath, "<events></events>", {flag: "w+"})
+                writeFileSync(eventsPath, '<?xml-model href="../../camed/DTD_Exports/raw_events.dtd" type="application/xml-dtd"?><events></events>', { flag: "w+" })
+
+            if (!allowOverride && fs.existsSync(groupsPath))
+                return false;
+            else {
+                writeFileSync(groupsPath, xmlDataStr, { flag: "w+" })
+                Handlers.updateGroup(uid);
+            }
 
             return true
 
@@ -194,6 +206,7 @@ export module XMLManager {
             return false
         }
     }
+
 
     /**
      * Adds an event to a user's or a group's events
@@ -214,12 +227,13 @@ export module XMLManager {
             console.log(events);
 
             events.event.push(event)
-            events = {events: events}
+            events = { events: events }
 
             var xmlDataStr: string = builder.build(events)
-            console.log(xmlDataStr);
 
-            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            xmlDataStr = '<?xml-model href="../../camed/DTD_Exports/raw_events.dtd" type="application/xml-dtd"?>' + xmlDataStr
+
+            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, { flag: "w+" })
             return true
         } catch (e) {
             console.log(e);
@@ -236,7 +250,7 @@ export module XMLManager {
      */
     export function getAllEvents(uid: string): string {
         try {
-            return fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", {encoding: "utf-8"})
+            return fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", { encoding: "utf-8" })
         } catch (error) {
             console.log(error);
             return "<events></events>"
@@ -258,9 +272,56 @@ export module XMLManager {
         //fetch
         let boundaryStartDate = new Date(startdate);
         let boundaryEndDate = new Date(enddate);
-        const builder = new XMLBuilder({attributesGroupName: "event"})
+        const builder = new XMLBuilder({})
+
+        let user: User | null = getUserByUid(uid)
+        if (user == null) return "";
 
         let events = getAllEventsJSON(uid);
+
+        if (user.group != undefined) {
+
+            let userGroups = []
+            if (!Array.isArray(user.group)) {
+                userGroups.push(user.group)
+            } else {
+                userGroups = user.group
+            }
+
+            for (let index = 0; index < userGroups.length; index++) {
+                const element = userGroups[index];
+                try {
+                    let groupEvents = getAllEventsJSON(element.uid)
+
+                    events['event'] = events['event'].concat(groupEvents.event)
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
+
+        if (user.editableGroup != undefined) {
+
+            let userGroups = []
+            if (!Array.isArray(user.editableGroup)) {
+                userGroups.push(user.editableGroup)
+            } else {
+                userGroups = user.editableGroup
+            }
+
+            for (let index = 0; index < userGroups.length; index++) {
+                const element = userGroups[index];
+                try {
+                    let groupEvents = getAllEventsJSON(element.uid)
+
+                    events['event'] = events['event'].concat(groupEvents.event)
+                } catch (error) {
+                    console.log(error);
+
+                }
+            }
+        }
+
         if (events == "") {
             return null
         } else if (Array.isArray(events['event'])) {
@@ -271,7 +332,7 @@ export module XMLManager {
                     return event
 
             });
-            let x = {event: filteredEvents};
+            let x = { event: filteredEvents };
             let xmlEvents = "<events>";
             xmlEvents += builder.build(x) + "</events>"
 
@@ -309,10 +370,13 @@ export module XMLManager {
 
             },
         })
-        var data = fs.readFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", {encoding: "utf-8"})
+        let hash = Utils.GenerateHash("" + uid)
+        console.log("uid: " + uid + " hash: " + hash);
+
+        var data = fs.readFileSync(PATH_DATA_EVENTS + hash + ".xml", { encoding: "utf-8" })
         var events = parser.parse(data)["events"]
         if (events == undefined || events == "")
-            events = {event: []}
+            events = { event: [] }
         return events
     }
 
@@ -364,7 +428,7 @@ export module XMLManager {
             let events: any[] = getAllEventsJSON(uid)['event'];
             let filteredEvents: any[] = events.filter(event => event.uid != eventUid);
 
-            let data = {events: {event: filteredEvents}};
+            let data = { events: { event: filteredEvents } };
 
             const builder = new XMLBuilder({
                 ignoreAttributes: false,
@@ -373,7 +437,7 @@ export module XMLManager {
             let xmlDataStr = builder.build(data);
             console.log(xmlDataStr);
 
-            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, {flag: "w+"})
+            writeFileSync(PATH_DATA_EVENTS + Utils.GenerateHash(uid) + ".xml", xmlDataStr, { flag: "w+" })
             return true
         } catch (e) {
             console.log(e)
@@ -432,6 +496,8 @@ export module XMLManager {
     }
 
     export function convertXMLResponseJSONToCorrectJSONForUser(xmlJSON: any) {
+        console.log(xmlJSON);
+
         let person = {
             uid: xmlJSON.uid != undefined ? xmlJSON.uid[0] : undefined,
             firstName: xmlJSON.firstname != undefined ? xmlJSON.firstname[0] : undefined,
@@ -439,8 +505,8 @@ export module XMLManager {
             initials: xmlJSON.initials != undefined ? xmlJSON.initials[0] : undefined,
             mail: xmlJSON.mail != undefined ? xmlJSON.mail[0] : undefined,
             passwordHash: xmlJSON.passwordhash != undefined ? xmlJSON.passwordhash[0] : undefined,
-            group: xmlJSON.group != undefined ? [xmlJSON.group.length] : undefined,
-            editableGroup: xmlJSON.editablegroup != undefined ? [xmlJSON.editablegroup.length] : undefined,
+            group: xmlJSON.group != undefined ? [xmlJSON.group[0].length] : undefined,
+            editableGroup: xmlJSON.editablegroup != undefined ? [xmlJSON.editablegroup[0].length] : undefined,
             darkMode: xmlJSON.darkmode != undefined ? xmlJSON.darkmode[0] : undefined,
             isAdministrator: xmlJSON.isadministrator != undefined ? xmlJSON.isadministrator[0] : undefined
         }
@@ -470,7 +536,6 @@ export module XMLManager {
 
     export function convertXMLResponseJSONToCorrectJSONForGroup(xmlJSON: any) {
         return {
-            uid: xmlJSON.uid[0],
             name: xmlJSON.name[0],
             url: xmlJSON.url[0],
         }
@@ -490,7 +555,7 @@ export module XMLManager {
                     let data = fs.readFileSync(PATH_DATA_USERS + element, "utf-8");
                     const person = parser.parse(data)["person"]
                     result.push(new User(person.uid, person.firstName, person.lastName, person.initials, person.mail, person.passwordHash,
-                        person.group, person.editableGroup, person.darkMode, person.isAdministrator))
+                        person.group, person.editableGroup, person.darkMode, person.isAdministrator, element))
                 }
             }
         } catch (error) {
@@ -508,25 +573,51 @@ export module XMLManager {
             friendlyArray.push(user)
         });
         console.log(friendlyArray);
-        let xmlString: string = builder.build({user: friendlyArray})
+        let xmlString: string = builder.build({ user: friendlyArray })
         return "<users>" + xmlString + "</users>"
     }
 
     export function getTokens() {
         const parser = new XMLParser()
         try {
-            const data = fs.readFileSync(PATH_TOKEN_FILE, {encoding: "utf-8"})
+            const data = fs.readFileSync(PATH_TOKEN_FILE, { encoding: "utf-8" })
             return parser.parse(data)["Tokens"]["Token"]
         } catch {
             return []
         }
     }
 
-    export function saveTokens(xmlString: string) {
-        writeFileSync(PATH_TOKEN_FILE, xmlString, {flag: "w+", encoding: "utf-8"})
+    export function saveTokens() {
+        try {
+            var tokens: { Token: { tokenString: string; uid: string; unlimited: boolean; validUntil: string; }[] } = { Token: [] }
+            const builder = new XMLBuilder({
+                ignoreAttributes: false,
+                attributesGroupName: "Token"
+            })
+
+            AuthManager.authTokens.forEach((value, key) => {
+                tokens.Token.push({
+                    tokenString: key,
+                    uid: value.uid,
+                    unlimited: value.unlimited,
+                    validUntil: value.validUntil
+                })
+            })
+            let result = { Tokens: tokens }
+            // let xmlDataStr: string = '<Tokens>' + builder.build(tokens) + '</Tokens>'
+            let xmlDataStr: string = builder.build(result)
+            console.log(xmlDataStr);
+
+            fs.writeFileSync(PATH_TOKEN_FILE, xmlDataStr, { flag: "w+", encoding: "utf-8" })
+            return true
+        } catch (e) {
+            console.log(e);
+            return false
+        }
     }
 
     export function updateUser(uid: string, requestBody: any): number {
+        console.log('RB', requestBody)
         let json = convertXMLResponseJSONToCorrectJSONForUser(requestBody.user)
         let user: User | null = getUserByUid(uid)
 
@@ -538,7 +629,7 @@ export module XMLManager {
         if (json.initials != undefined) user.initials = json.initials
         if (json.mail != undefined) user.mail = json.mail
         if (json.darkMode != undefined) user.darkMode = json.darkMode
-        if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
+        if (json.passwordHash != undefined) user.passwordHash = GenerateHash(json.passwordHash)
 
         if (insertUser(user, true, false)) return 204
         return 400
@@ -557,14 +648,38 @@ export module XMLManager {
         if (json.darkMode != undefined) user.darkMode = json.darkMode
         if (json.group != undefined) user.group = json.group
         if (json.editableGroup != undefined) user.editableGroup = json.editableGroup
-        if (json.passwordHash != undefined) user.passwordHash = json.passwordHash
+        if (json.passwordHash != undefined) user.passwordHash = GenerateHash(json.passwordHash)
         if (json.isAdministrator != undefined) user.isAdministrator = json.isAdministrator
 
         if (insertUser(user, true, false)) return 204
         return 400
     }
 
-    function createFoldersIfNotExist() {
+    export function unassignAllGroupsFromUser(uid: string, type: string): number {
+        let user: User | null = getUserByUid(uid)
+
+        if (user == null) return 404;
+
+        if (type == "group") {
+            user.group = []
+            return insertUser(user, true, false) == true ? 200 : 500
+        } else if (type == "editableGroup") {
+            user.editableGroup = []
+            return insertUser(user, true, false) == true ? 200 : 500
+        } else return 400;
+    }
+
+    export function createFoldersIfNotExist() {
+
+        if (!fs.existsSync(PATH_DATA_DIR))
+            fs.mkdirSync(PATH_DATA_DIR);
+
+        if (!fs.existsSync(PATH_DATA_SECUTIRY))
+            fs.mkdirSync(PATH_DATA_SECUTIRY);
+
+        if (!fs.existsSync(PATH_DATA_UTILS))
+            fs.mkdirSync(PATH_DATA_UTILS);
+
         if (!fs.existsSync(PATH_DATA_EVENTS))
             fs.mkdirSync(PATH_DATA_EVENTS);
 

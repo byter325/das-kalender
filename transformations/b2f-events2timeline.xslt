@@ -2,7 +2,7 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xsl:output method="html" />
 	<xsl:template match="/">
-		<article id="timelines">
+		<article id="timelines" class="container">
 			<xsl:call-template name="printweekday">
 				<xsl:with-param name="weekdayE" select="'monday'" />
 				<xsl:with-param name="weekdayD" select="'Montag'" />
@@ -40,7 +40,6 @@
 			</xsl:call-template>
 		</article>
 	</xsl:template>
-
 	<xsl:template name="printweekday">
 		<xsl:param name="weekdayE" />
 		<xsl:param name="weekdayD" />
@@ -61,7 +60,6 @@
 		</div>
 		<hr />
 	</xsl:template>
-
 	<xsl:template match="event">
 		<xsl:param name="weekday" />
 		<xsl:variable name="startDay" select="format-dateTime(start,'[Fn]')" />
@@ -70,36 +68,53 @@
 			<xsl:variable name="startMinute" select="number(format-dateTime(start,'[m]'))" />
 			<xsl:variable name="startHour" select="number(format-dateTime(start,'[H]'))" />
 			<li class="timeline-item mb-4 mt-3">
+				<xsl:attribute name="title">
+					<xsl:value-of select="category" />
+					<xsl:text disable-output-escaping="yes">&#13;</xsl:text>
+					<xsl:value-of select="description" />
+					<xsl:if test="presenters/presenter">
+						<xsl:text disable-output-escaping="yes">&#13;</xsl:text>
+						<xsl:value-of select="concat(presenters/presenter/lastName,' (',presenters/presenter/mail,')')" />
+					</xsl:if>
+				</xsl:attribute>
 				<span class="timeline-icon">
 					<i class="bi bi-book"></i>
 				</span>
 				<h6 class="fw-bold d-inline">
 					<xsl:value-of select="title" />
 				</h6>
+				<xsl:if test="(category != 'Lehrveranstaltung') and (category != 'Prüfung')">
+					<div class="btn-group float-end">
+						<button class="btn btn-outline-secondary btn-sm" title="Bearbeiten" data-bs-toggle="modal" data-bs-target="#editEvent" onclick="editEvent(this)" data-event-id="{uid}">
+							<xsl:if test="ownerID">
+								<xsl:attribute name="data-event-ownerID">
+									<xsl:value-of select="ownerID" />
+								</xsl:attribute>
+							</xsl:if>
+							<i class="bi bi-pencil-fill"></i>
+						</button>
+						<button class="btn btn-outline-secondary btn-sm" title="Löschen" data-bs-toggle="modal" data-bs-target="#deleteEvent" onclick="deleteEvent(this)" data-event-id="{uid}">
+							<xsl:if test="ownerID">
+								<xsl:attribute name="data-event-ownerID">
+									<xsl:value-of select="ownerID" />
+								</xsl:attribute>
+							</xsl:if>
+							<i class="bi bi-trash-fill"></i>
+						</button>
+					</div>
+				</xsl:if>
 				<p class="text-muted mb-1 fw-bold">
-					<xsl:value-of select="format-dateTime(start,'[D].[M].[Y]')" />
-					,
-					<xsl:value-of select="format-dateTime(start,'[H]:[m]')" />
-					-
-					<xsl:value-of select="format-dateTime(end,'[H]:[m]')" />
+					<xsl:value-of select="concat(format-dateTime(start,'[D].[M].[Y], [H]:[m]'),' - ', format-dateTime(end,'[H]:[m]'))" />
 					<span class="ms-2">
-						(
-						<xsl:value-of select="$duration" />
-						min
-						)
+						<xsl:value-of select="concat('(',$duration,' min)')" />
 					</span>
 				</p>
-				<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="{location}">
-					<i class="bi bi-geo-alt-fill me-1"></i>
-					<xsl:value-of select="location" />
-				</span>
+				<i class="bi bi-geo-alt-fill me-1"></i>
+				<xsl:value-of select="location" />
 				<br />
-
 				<xsl:if test="presenters/presenter">
-					<span class="text-muted mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="{presenters/presenter/lastName}">
-						<i class=" bi bi-person-square me-1" />
-						<xsl:value-of select="presenters/presenter/lastName" />
-					</span>
+					<i class=" bi bi-person-square me-1" />
+					<xsl:value-of select="presenters/presenter/lastName" />
 				</xsl:if>
 			</li>
 		</xsl:if>

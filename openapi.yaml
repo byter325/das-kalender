@@ -220,7 +220,7 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/Person'
+                $ref: '#/components/schemas/User'
         "404":
           description: User not found
       security:
@@ -281,6 +281,41 @@ paths:
       security:
         - auth_token_header: []
         - auth_token_cookie: []
+  /api/users/{uid}/groups:
+    delete:
+        tags:
+          - Users
+        summary: Unassignes all groups or editableGroups from a user
+        description: "You must either be the corresponding user or an administrator to perform this action."
+        operationId: deleteGroupsFromUser
+        parameters:
+          - name: uid
+            in: path
+            description: UID of the user from whom the groups will be removed
+            required: true
+            style: simple
+            explode: false
+            schema:
+              type: string
+          - name: type
+            in: query
+            description: Which group type to delete
+            required: true
+            style: simple
+            explode: true
+            schema:
+              type: string
+              enum: ["group", "editableGroup"]
+        responses:
+          "204":
+            description: Successfully unassigned groups
+          "400":
+            description: Bad Request
+          "404":
+            description: User not found
+        security:
+          - auth_token_header: []
+          - auth_token_cookie: []
 
   /api/groups:
     post:

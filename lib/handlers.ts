@@ -4,6 +4,10 @@ import * as ical from "node-ical";
 import * as fs from "fs";
 import {Utils} from "./utils";
 import * as https from "https";
+import e from "express";
+import * as fsPromises from "fs/promises";
+import { XMLManager } from "./xml_manager";
+import { nodeModuleNameResolver } from "typescript";
 
 export module Handlers {
     const SaxonJs = require("saxon-js");
@@ -60,28 +64,71 @@ export module Handlers {
     //     }
     // }
 
+    export function updateGroup(uid: string){
+        console.log("Updating group " + uid);
+        const eventsPath = path.join(XMLManager.PATH_DATA_EVENTS, Utils.GenerateHash(uid) + ".xml");
+        const url = /<url>([A-z0-9\:\/\.\-\?\=\&\;]+)<\/url>/.exec(XMLManager.getGroup(uid))?.at(1);
+        const urlRe = /([https:\/\/]*rapla\.dhbw-karlsruhe\.de\/rapla\?page=[A-z]+&user=[A-z]+&file=[A-z0-9]+)/;
+        if(url != null){
+            const lecturer = /user=([A-z]+)/.exec(url); 
+            const course = /file=([A-z0-9]+)/.exec(url);
+            if(lecturer != null && lecturer.length > 1 && course != null && course.length > 1){
+                Handlers.updateRaplaEvents(lecturer[1], course[1]);
+                let dataFilePath = path.join(XMLManager.PATH_DATA_DIR, course[1] + "-Kalender.xml");
+                console.log("Writing to " + eventsPath);
+                Utils.waitForFile(dataFilePath).then(() => {
+                    fs.writeFileSync(eventsPath, fs.readFileSync(dataFilePath, {flag: "r"}), { flag: "w+" } );
+                    console.log("Writing to " + eventsPath + " sucessfully");
+                });
+            }
+        }
+    }
+
+    export function updateAllGroups(){
+        const uidRe = /<uid>([A-z0-9-\.\& \/]+)<\/uid>/g;
+        let allGroups = XMLManager.getAllGroups();
+        // console.log("Groups: " + allGroups);
+        let result;
+        do {
+            result = uidRe.exec(allGroups);
+            if(result != null && result.length > 1){
+                let res = result.at(1);
+                if(res)
+                    updateGroup(res);
+            }
+        } while (result);
+    }
+
     /**
      * Fetch events from RAPLA
      * @param {string} lecturer
      * @param {string} course
      */
-    export function updateRaplaEvents(lecturer: string, course: string) {
+    export async function updateRaplaEvents(lecturer: string, course: string) {
         console.log(`Fetching events from Rapla for ${lecturer}/${course}`);
         const outfile: string = `${dataDir}/${course}.xml`;
         const outkalfile: string = `${dataDir}/${course}-kalender.xml`;
-        const icsUrl: string = raplaUrl.replace('@@page@@', 'ical').replace('@@lecturer@@', lecturer).replace('@@course@@', course);
-        fs.opendir(`${dataDir}`, (err: NodeJS.ErrnoException | null, dir: fs.Dir) => {
-            if (err) {
-                // dir.close();
-                fs.mkdir(`${dataDir}`, (err: NodeJS.ErrnoException | null) => {
-                    if (err) {
-                        throw err;
-                    }
-                });
-            } else {
-                dir.close();
-            }
-        });
+        const icsUrl: string = raplaUrl.replace('@@page@@', 'ical').replace('@@lecturer@@', lecturer).replace('@@course@@', course);        
+        
+        try {
+            await fsPromises.access(dataDir, fs.constants.R_OK | fs.constants.W_OK);
+        }
+        catch(err) {
+            console.log("x1b[31m\x1b[0m", "Can't access directory: " + dataDir);
+            return;
+        }
+        // fs.opendir(`${dataDir}`, (err: NodeJS.ErrnoException | null, dir: fs.Dir) => {
+        //     if (err) {
+        //         // dir.close();
+        //         fs.mkdir(`${dataDir}`, (err: NodeJS.ErrnoException | null) => {
+        //             if (err) {
+        //                 throw err;
+        //             }
+        //         });
+        //     } else {
+        //         dir.close();
+        //     }
+        // });
 
         /**
          * download ics

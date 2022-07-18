@@ -1,6 +1,6 @@
 import * as express from 'express'
-import {Utils} from '../lib/utils';
-import {XMLManager} from '../lib/xml_manager';
+import { Utils } from '../lib/utils';
+import { XMLManager } from '../lib/xml_manager';
 
 
 const calendarRouter = express.Router();
@@ -8,7 +8,7 @@ const calendarRouter = express.Router();
 calendarRouter.post('/:uid', (request: express.Request, response) => {
     if (!(
         request.user.uid == request.params.uid ||
-        request.user.editableGroup.uid == request.params.uid ||
+        //request.user.editableGroup.uid == request.params.uid ||
         request.user.isAdministrator)) return response.sendStatus(401)
 
     let body = request.body
@@ -17,8 +17,8 @@ calendarRouter.post('/:uid', (request: express.Request, response) => {
         body = XMLManager.convertXMLResponseJSONToCorrectJSONForEvent(body.event)
     }
 
-    if (Utils.isBodyForEventCorrect(request.body, false) >= Utils.BODY_PARTIALLY_CORRECT) {
-        let b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body))
+    if (Utils.isBodyForEventCorrect(request.body.event, false) >= Utils.BODY_PARTIALLY_CORRECT) {
+        let b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body, request.params.uid))
         if (b) return response.sendStatus(201)
     }
     response.status(400)

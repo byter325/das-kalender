@@ -1,14 +1,14 @@
-import express, {Application} from 'express'
-import {AuthManager} from "./lib/authManager"
+import express, { Application } from 'express'
+import { AuthManager } from "./lib/authManager"
 import usersRouter from "./routers/user_router"
 import groupsRouter from "./routers/group_router"
 import calendarRouter from "./routers/calendar_router"
 import tokenRouter from "./routers/token_router"
-import {Server} from 'http'
-import {Handlers} from './lib/handlers'
+import { Handlers } from './lib/handlers'
 import * as cron from "node-cron"
 import * as https from "https"
 import * as fs from "fs"
+import { XMLManager } from './lib/xml_manager'
 
 const path = require('path')
 const RateLimit = require('express-rate-limit');
@@ -20,6 +20,8 @@ const YAML = require('yamljs')
 const app: Application = express()
 const port = 8080
 const securityPath = path.join(__dirname, "security")
+
+XMLManager.createFoldersIfNotExist();
 
 if (!fs.existsSync(securityPath)) {
     console.log("No security folder found. Creating one...");
@@ -42,10 +44,10 @@ const options = {
     cert: cert
 };
 
-const server: Server = https.createServer(options, app).listen(port, () => {
-    Handlers.updateRaplaEvents("freudenmann", "TINF21B1")
+https.createServer(options, app).listen(port, () => {
     AuthManager.loadUsers()
     AuthManager.loadTokens()
+    Handlers.updateAllGroups();
 
     console.log()
     console.log("\x1b[1m\x1b[5m\x1b[33m%s\x1b[0m\x1b[1m", '--------------------------------------------------------------------------------')
@@ -58,8 +60,8 @@ const server: Server = https.createServer(options, app).listen(port, () => {
 
 app.use(RateLimit({
     windowMs: 1000, // 1 second
-    max: 5 // limit each IP to 5 requests per second
-    }));
+    max: 15 // limit each IP to 15 requests per second
+}));
 app.use(cookieParser())
 app.use(bodyParser.urlencoded())
 app.use(xmlparser())
@@ -148,6 +150,6 @@ app.post("/register", (req: express.Request, res: express.Response) => {
 const swaggerDocument = YAML.load('./openapi.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
-cron.schedule("0 */15 * * * *", () => {
-    Handlers.updateRaplaEvents("freudenmann", "TINF21B1")
+cron.schedule("0 */1 * * * *", () => {
+    Handlers.updateAllGroups();
 })
