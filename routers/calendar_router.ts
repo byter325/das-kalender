@@ -18,7 +18,7 @@ calendarRouter.post('/:uid', (request: express.Request, response) => {
     }
 
     if (Utils.isBodyForEventCorrect(request.body.event, false) >= Utils.BODY_PARTIALLY_CORRECT) {
-        let b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body, request.user.uid))
+        let b: boolean = XMLManager.insertEvent(request.params.uid, Utils.convertFullPostBodyToEvent(body, request.params.uid))
         if (b) return response.sendStatus(201)
     }
     response.status(400)
