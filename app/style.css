@@ -25,7 +25,6 @@ tbody tr th {
 
 td {
     word-break: break-word;
-    /* TODO: word-break or table-responsive */
 }
 
 table {
@@ -59,10 +58,6 @@ table {
     background-color: var(--bs-body-bg);
     font-size: 9pt;
     overflow: hidden;
-}
-
-#timelines {
-    display: none;
 }
 
 .ki-heading {

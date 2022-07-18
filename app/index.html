@@ -20,9 +20,11 @@
 		integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
 		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="./script.js"></script>
+
+	<style id="chagingStyle"></style>
 </head>
 
-<body class="container pt-3">
+<body class="container-fluid pt-3">
 	<header class="row row-cols-auto justify-content-between">
 		<h1 class="d-inline">
 			<img src="./favicon.svg" width="50rem" height="50rem"> das kalender
@@ -53,7 +55,7 @@
 			Diese Seite benötigt Javascript, um zu funktionieren. Bitte aktivieren Sie es in Ihrem Browser.
 		</noscript>
 
-		<article id="login-and-registration">
+		<article id="login-and-registration" class="container">
 			<div class="row justify-content-center">
 				<div class="col-sm-9 col-md-6 col-lg-5 col-xl-4 col-xxl-3">
 					<nav>
@@ -219,20 +221,13 @@
 			</div>
 		</article>
 
-		<article id="button-row" class="mb-3">
-			<!-- TODO: entfernen, wenn es nicht funktioniert
-			<button type="button" class="btn btn-primary me-1 mb-1" data-bs-toggle="modal"
-				data-bs-target="#selectGroupModal">
-				<i class="bi bi-funnel-fill me-1"></i>
-				Gruppen auswählen
-			</button>
-			-->
+		<article id="button-row" class="container mb-3">
 			<button type="button" class="btn btn-success me-1 mb-1" data-bs-toggle="modal" data-bs-target="#newEvent"
 				id="buttonNewEvent">
 				<i class="bi bi-plus-circle me-1"></i>
 				Neuer Termin
 			</button>
-			<div id="admin-tools">
+			<div id="admin-tools btn-group">
 				<button type="button" class="btn btn-dark me-1 mb-1" data-bs-toggle="modal"
 					data-bs-target="#adminManageUsers" id="adminManageUsersButton">
 					<i class="bi bi-wrench"></i>
@@ -251,7 +246,7 @@
 
 	<!-- Modal: newEvent -->
 	<div class="modal fade" id="newEvent" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<form id="newEventForm">
 					<div class="modal-header">
@@ -351,6 +346,7 @@
 				<form id="editEventForm">
 					<input type="hidden" id="editEventId" />
 					<input type="hidden" id="editEventOwnerId" />
+					<input type="hidden" id="editEventOwner" />
 					<div class="modal-header">
 						<h5 class="modal-title" id="editEventModalLabel">Termin bearbeiten</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -396,6 +392,34 @@
 									required="required" />
 							</div>
 						</div>
+						<hr>
+						<h6>Präsentator:</h6>
+						<div class="row row-cols-sm-2">
+							<div class="mb-2">
+								<label for="editEventPresenterFirstName" class="form-label">
+									<i class="bi bi-person me-1"></i> Vorname</label>
+								<input type="text" class="form-control" id="editEventPresenterFirstName"
+									required="required" />
+							</div>
+							<div class="mb-2">
+								<label for="editEventPresenterLastName" class="form-label">
+									<i class="bi bi-person me-1"></i> Nachname</label>
+								<input type="text" class="form-control" id="editEventPresenterLastName"
+									required="required" />
+							</div>
+						</div>
+						<div class="row row-cols-sm-2">
+							<div class="mb-2">
+								<label class="form-label" for="editEventPresenterInitials">
+									<i class="bi bi-person"></i> Initialien (optional)</label>
+								<input type="text" class="form-control" id="editEventPresenterInitials" />
+							</div>
+							<div class="mb-2">
+								<label class="form-label" for="editEventPresenterMail">
+									<i class="bi bi-envelope"></i> E-Mail (optional)</label>
+								<input type="email" class="form-control" id="editEventPresenterMail" />
+							</div>
+						</div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
@@ -412,6 +436,8 @@
 			<div class="modal-content">
 				<form id="deleteEventForm">
 					<input type="hidden" id="deleteEventId" />
+					<input type="hidden" id="deleteEventOwnerId" />
+					<input type="hidden" id="deleteEventOwner" />
 					<div class="modal-header">
 						<h5 class="modal-title" id="deleteEventModalLabel">Termin löschen</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -461,10 +487,40 @@
 									disabled="disabled" />
 							</div>
 						</div>
+						<hr>
+						<h6>Präsentator:</h6>
+						<div class="row row-cols-sm-2">
+							<div class="mb-2">
+								<label for="deleteEventPresenterFirstName" class="form-label">
+									<i class="bi bi-person me-1"></i> Vorname</label>
+								<input type="text" class="form-control" id="deleteEventPresenterFirstName"
+									required="required" disabled="disabled" />
+							</div>
+							<div class="mb-2">
+								<label for="deleteEventPresenterLastName" class="form-label">
+									<i class="bi bi-person me-1"></i> Nachname</label>
+								<input type="text" class="form-control" id="deleteEventPresenterLastName"
+									required="required" disabled="disabled" />
+							</div>
+						</div>
+						<div class="row row-cols-sm-2">
+							<div class="mb-2">
+								<label class="form-label" for="deleteEventPresenterInitials">
+									<i class="bi bi-person"></i> Initialien (optional)</label>
+								<input type="text" class="form-control" id="deleteEventPresenterInitials"
+									disabled="disabled" />
+							</div>
+							<div class="mb-2">
+								<label class="form-label" for="deleteEventPresenterMail">
+									<i class="bi bi-envelope"></i> E-Mail (optional)</label>
+								<input type="email" class="form-control" id="deleteEventPresenterMail"
+									disabled="disabled" />
+							</div>
+						</div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-						<button type="submit" class="btn btn-danger">Termin löschen</button>
+						<button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Termin löschen</button>
 					</div>
 				</form>
 			</div>
@@ -552,16 +608,13 @@
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
 					</div>
 					<div class="modal-body">
-						<div class="row row-cols-sm-2">
-							<div class="mb-2">
-								<label for="adminManageGroupsName" class="form-label">Name</label>
-								<input type="text" class="form-control" id="adminManageGroupsName"
-									required="required" />
-							</div>
-							<div class="mb-2">
-								<label for="adminManageGroupsRaplaUrl" class="form-label">Rapla-URL (optional)</label>
-								<input type="url" class="form-control" id="adminManageGroupsRaplaUrl" />
-							</div>
+						<div class="mb-2">
+							<label for="adminManageGroupsName" class="form-label">Name</label>
+							<input type="text" class="form-control" id="adminManageGroupsName" required="required" />
+						</div>
+						<div class="mb-2">
+							<label for="adminManageGroupsRaplaUrl" class="form-label">Rapla-URL (optional)</label>
+							<input type="url" class="form-control" id="adminManageGroupsRaplaUrl" />
 						</div>
 						<button type="submit" class="btn btn-success mb-4">Gruppe hinzufügen</button>
 						<h6>Liste bisheriger Gruppen:</h6>

@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <!-- Brauchen wir noch ein element "events" als Sequenz aus "event"s? -->
     <xs:element name="event">
         <xs:annotation>
             <xs:documentation xml:lang="en">
@@ -15,29 +14,28 @@
                 start - (dateTime) Date and time of the start of the event
                 end - (dateTime) Date and time of the end of the event
                 location - (string) Location of the event (e.g. room number, address, ...)
-                modified - (dateTime) Date and time of the last modification of the event <!-- TODO: bei eigenen Terminen Admin anzeigen? -->
+                modified - (dateTime) Date and time of the last modification of the event
                 modifiedBy - (personInfo only one) Information about the person who lastly modified the event (name,
                 initials and mail) for contact
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="title" type="xs:string"/>
-                <xs:element name="description" type="xs:string"/>
-                <xs:element name="presenter" type="personInfo" maxOccurs="unbounded"/>
-                <xs:element name="category" type="category"/>
-                <xs:element name="participant" type="group" maxOccurs="unbounded"/>
-                <xs:element name="start" type="xs:dateTime"/>
-                <xs:element name="end" type="xs:dateTime"/>
-                <xs:element name="location" type="xs:string"/>
-                <xs:element name="modified" type="xs:dateTime"/>
-                <xs:element name="modifiedBy" type="personInfo"/>
+                <xs:element name="title" type="xs:string" />
+                <xs:element name="description" type="xs:string" />
+                <xs:element name="presenter" type="personInfo" maxOccurs="unbounded" />
+                <xs:element name="category" type="category" />
+                <xs:element name="participant" type="group" maxOccurs="unbounded" />
+                <xs:element name="start" type="xs:dateTime" />
+                <xs:element name="end" type="xs:dateTime" />
+                <xs:element name="location" type="xs:string" />
+                <xs:element name="modified" type="xs:dateTime" />
+                <xs:element name="modifiedBy" type="personInfo" />
             </xs:sequence>
-            <xs:attribute name="uid" type="xs:string" use="required"/>
+            <xs:attribute name="uid" type="xs:string" use="required" />
         </xs:complexType>
     </xs:element>
 
-    <!-- Ist das nur der user? -> Umbenennung in user sinnvoll. -->
     <xs:element name="person">
         <xs:annotation>
             <xs:documentation>
@@ -60,31 +58,31 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="firstName" type="xs:string"/>
-                <xs:element name="lastName" type="xs:string"/>
+                <xs:element name="firstName" type="xs:string" />
+                <xs:element name="lastName" type="xs:string" />
                 <xs:element name="initials">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
-                            <xs:pattern value="[A-Z][A-Z]"/>
+                            <xs:pattern value="[A-Z][A-Z]" />
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>
                 <xs:element name="mail">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
-                            <xs:pattern value=".+@.+\..+"/>
+                            <xs:pattern value=".+@.+\..+" />
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>
-                <xs:element name="passwordHash" type="xs:string"/>
+                <xs:element name="passwordHash" type="xs:string" />
                 <xs:choice maxOccurs="unbounded">
-                    <xs:element name="group" type="group"/>
-                    <xs:element name="editableGroup" type="group"/>
+                    <xs:element name="group" type="group" />
+                    <xs:element name="editableGroup" type="group" />
                 </xs:choice>
-                <xs:element name="darkMode" type="xs:boolean"/>
-                <xs:element name="isAdministrator" type="xs:boolean"/>
+                <xs:element name="darkMode" type="xs:boolean" />
+                <xs:element name="isAdministrator" type="xs:boolean" />
             </xs:sequence>
-            <xs:attribute name="uid" type="xs:string" use="required"/>
+            <xs:attribute name="uid" type="xs:string" use="required" />
         </xs:complexType>
     </xs:element>
 
@@ -101,19 +99,19 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="firstName" type="xs:string"/>
-            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="firstName" type="xs:string" />
+            <xs:element name="lastName" type="xs:string" />
             <xs:element name="initials">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
-                        <xs:pattern value="[A-Z][A-Z]"/>
+                        <xs:pattern value="[A-Z][A-Z]" />
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
             <xs:element name="mail">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
-                        <xs:pattern value=".+@.+\..+"/> <!-- Was macht der Punkt ? -->
+                        <xs:pattern value=".+@.+\..+" />
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
@@ -130,11 +128,11 @@
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:string">
-            <xs:enumeration value="Lecture"/>
-            <xs:enumeration value="Exam"/>
-            <xs:enumeration value="Oral Exam"/>
-            <xs:enumeration value="Meeting"/> <!-- Was ist ein Meeting? -->
-            <xs:enumeration value="Other"/>
+            <xs:enumeration value="Lecture" />
+            <xs:enumeration value="Exam" />
+            <xs:enumeration value="Oral Exam" />
+            <xs:enumeration value="Meeting" />
+            <xs:enumeration value="Other" />
         </xs:restriction>
     </xs:simpleType>
 
@@ -147,8 +145,8 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="uid" type="xs:string"/>
-            <xs:element name="name" type="xs:string"/>
+            <xs:element name="uid" type="xs:string" />
+            <xs:element name="name" type="xs:string" />
         </xs:sequence>
     </xs:complexType>
 </xs:schema>
