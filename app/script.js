@@ -523,7 +523,7 @@ async function submitNewEvent() {
             alert('Termin wurde hinzugefügt');
         })
         .fail(function () {
-            alert('Termin konnte nicht gelöscht werden');
+            alert('Termin konnte nicht hinzugefügt werden');
         });
 }
 
