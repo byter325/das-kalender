@@ -11,7 +11,7 @@
 		<xsl:variable name="startMinute" select="number(format-dateTime(start,'[m]'))" />
 		<xsl:variable name="startHour" select="number(format-dateTime(start,'[H]'))" />
 		<xsl:variable name="startDay" select="format-dateTime(start,'[Fn]')" />
-		<div class="kalenderitem ki-colspan-4 ki-day-{$startDay} ki-hour-{format-number($startHour,'#')}{format-number($startMinute - ($startMinute mod 15),'00')} ki-duration-{$duration - ($duration mod 15)}" data-uid="{uid}" data-day="{$startDay}" data-colspan="4" data-duration="{$duration}" data-starthour="{$startHour}" data-startminute="{$startMinute}">
+		<div class="kalenderitem ki-colspan-4 ki-day-{$startDay} ki-hour-{format-number($startHour,'#')}{format-number($startMinute - ($startMinute mod 15),'00')} ki-duration-{round($duration div 15) * 15}" data-uid="{uid}" data-day="{$startDay}" data-colspan="4" data-duration="{$duration}" data-starthour="{$startHour}" data-startminute="{$startMinute}">
 			<xsl:attribute name="title">
 				<xsl:value-of select="category" />
 				<xsl:text disable-output-escaping="yes">&#13;</xsl:text>
