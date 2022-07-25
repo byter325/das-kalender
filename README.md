@@ -56,3 +56,11 @@ or run:
 
 ## Misc
 The API documentation is available at https://localhost:8080/docs.
+
+## The Team
+Project Lead & Backend Dev - [maxomnia](https://github.com/maxomnia/)  
+Backend Developer - [sockel12](https://github.com/sockel12)  
+Backend Developer - [maximiliani](https://github.com/maximiliani)  
+Full Stack Developer - [kdeckert](https://github.com/kdeckert)  
+Frontend Developer - [Tacconinja007](https://github.com/Tacconinja007)  
+Frontend Develoer - [Dahmspiegel](https://github.com/Dahmspiegel)  
